@@ -2,6 +2,7 @@ from json import dumps, loads
 from os import set_blocking
 from sys import exit, stdin, stdout
 from time import sleep, time
+from resreq import ResReq
 
 random_list: list[str] = ["apples", "oranges", "bananas"]
 
@@ -19,7 +20,7 @@ def get_item(index: str) -> str:
 
 
 id_list: list[int] = []
-newest_request: dict = {}
+newest_request: ResReq | None = None
 newest_id: int = 0
 old_time: float = time()
 set_blocking(stdin.fileno(), False)
@@ -31,8 +32,8 @@ while True:
 
     for line in stdin:
         old_time = current_time
-        json_input: dict = loads(line)
-        id = int(json_input["id"])
+        json_input: ResReq = loads(line)
+        id: int = json_input["id"]
         if json_input["type"] == "refresh":
             stdout.write(
                 dumps(
@@ -57,13 +58,13 @@ while True:
     if not newest_request:
         continue
 
-    index_request: str = newest_request["index"]
+    index_request: str = newest_request["index"]  # type: ignore
     item = get_item(index_request)
 
     stdout.write(dumps({"id": newest_id, "type": "response", "item": item}) + "\n")
     stdout.flush()
 
     id_list = []
-    newest_request = {}
+    newest_request = None
     newest_id = 0
     sleep(0.025)

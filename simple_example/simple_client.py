@@ -3,6 +3,7 @@ from os import set_blocking
 from random import randint
 from subprocess import PIPE, Popen
 from tkinter import Entry, Event, Label, Tk
+from resreq import ResReq
 
 used_ids: list[int] = []
 current_id: int = 0
@@ -28,15 +29,16 @@ def read_server_output() -> None:
 
     for line in server_stdout:  # type: ignore
         global current_id
-        response_json: dict = loads(line)
-        id = response_json["id"]
+        response_json: ResReq = loads(line)
+        id: int = response_json["id"]
         used_ids.remove(id)
 
         if id != current_id:
             continue
 
         current_id = 0
-        item = response_json["item"]
+        item = response_json["item"]  # type: ignore
+        # We only update the current id for the most recent *request*, never status refreshes
         output_label.configure(text=f"Item at index requested: {item}")
 
     refresh_server()
@@ -57,7 +59,7 @@ def create_request(_: Event, type: str = "request") -> None:
     if type != "refresh":
         current_id = id  # We don't care for refresh request data
 
-    request = dumps({"id": id, "type": type, "index": user_entry.get()})
+    request: str = dumps({"id": id, "type": type, "index": user_entry.get()})
     server_stdin = main_server.stdin
     if server_stdin is not None:
         server_stdin.write(f"{request}\n".encode())
