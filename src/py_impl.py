@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
 from json import load
 from json.decoder import JSONDecodeError
-from unicodedata import category
 from sys import exit
+from unicodedata import category
 
 __version__ = "0.1.0"
 
