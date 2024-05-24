@@ -1,70 +1,97 @@
 from json import dumps, loads
 from os import set_blocking
 from sys import exit, stdin, stdout
-from time import sleep, time
-from resreq import ResReq
-
-random_list: list[str] = ["apples", "oranges", "bananas"]
-
-
-def get_item(index: str) -> str:
-    try:
-        intdex = int(index)
-    except ValueError:
-        return "?"
-
-    try:
-        return random_list[intdex]
-    except IndexError:
-        return "?"
+from time import time
+from typing import TypedDict, NotRequired
+from selectors import EVENT_READ, DefaultSelector
 
 
-id_list: list[int] = []
-newest_request: ResReq | None = None
-newest_id: int = 0
-old_time: float = time()
-set_blocking(stdin.fileno(), False)
-set_blocking(stdout.fileno(), False)
-while True:
-    current_time = time()
-    if current_time - old_time > 5:
-        exit(0)
+class ResReq(TypedDict):
+    id: int
+    type: str  # "cancelled", "response", "refresh", "request"
+    index: NotRequired[str]  # Only in "request"
+    item: NotRequired[str]  # Only in "response"
 
-    for line in stdin:
-        old_time = current_time
+
+class RequestHandler:
+    def __init__(self):
+        set_blocking(stdin.fileno(), False)
+        set_blocking(stdout.fileno(), False)
+        self.selector = DefaultSelector()
+        self.selector.register(stdin, EVENT_READ)
+
+        self.id_list = []
+        self.newest_request = None
+        self.newest_id = 0
+
+        self.old_time = time()
+
+        self.random_list = ["apples", "oranges", "bananas"]
+
+    def get_item(self, index: str) -> str:
+        try:
+            intdex = int(index)
+        except ValueError:
+            return "?"
+        try:
+            return self.random_list[intdex]
+        except IndexError:
+            return "?"
+
+    def write_resreq(self, response: ResReq) -> None:
+        stdout.write(dumps(response) + "\n")
+        stdout.flush()
+
+    def parse_line(self, line: str) -> None:
         json_input: ResReq = loads(line)
         id: int = json_input["id"]
         if json_input["type"] == "refresh":
-            stdout.write(
-                dumps(
-                    {
-                        "id": id,
-                        "type": "response",
-                    }
-                )
-                + "\n"
-            )
-            stdout.flush()
-            continue
-        id_list.append(id)
-        newest_id = id
-        newest_request = json_input
+            self.write_resreq({"id": id, "type": "response"})
+            return
+        self.id_list.append(id)
+        self.newest_id = id
+        self.newest_request = json_input
 
-    for id in id_list:
-        if id == newest_id:
-            continue
-        stdout.write(dumps({"id": id, "type": "cancelled"}) + "\n")
+    def cancel_all_ids_except_newest(self) -> None:
+        for id in self.id_list:
+            if id == self.newest_id:
+                continue
+            self.write_resreq({"id": id, "type": "cancelled"})
 
-    if not newest_request:
-        continue
+    def run_tasks(self):
+        current_time = time()
+        if current_time - self.old_time > 5:
+            exit(0)
 
-    index_request: str = newest_request["index"]  # type: ignore
-    item = get_item(index_request)
+        events = self.selector.select(0.025)
+        if not events:
+            return
 
-    stdout.write(dumps({"id": newest_id, "type": "response", "item": item}) + "\n")
-    stdout.flush()
+        for line in stdin:
+            self.old_time = current_time
+            self.parse_line(line)
 
-    id_list = []
-    newest_request = None
-    newest_id = 0
-    sleep(0.025)
+        self.cancel_all_ids_except_newest()
+
+        if not self.newest_request:  # There may have only been refreshes
+            return
+
+        index_request: str = self.newest_request["index"]  # type: ignore
+
+        self.write_resreq(
+            {
+                "id": self.newest_id,
+                "type": "response",
+                "item": self.get_item(index_request),
+            }
+        )
+
+        self.id_list = []
+        self.newest_request = None
+        self.newest_id = 0
+
+
+if __name__ == "__main__":
+    handler = RequestHandler()
+    while True:
+        handler.run_tasks()

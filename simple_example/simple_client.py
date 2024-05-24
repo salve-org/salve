@@ -3,77 +3,84 @@ from os import set_blocking
 from random import randint
 from subprocess import PIPE, Popen
 from tkinter import Entry, Event, Label, Tk
-from resreq import ResReq
-
-used_ids: list[int] = []
-current_id: int = 0
+from typing import IO
 
 
-def create_server() -> Popen:
-    server: Popen = Popen(["python3", "simple_server.py"], stdin=PIPE, stdout=PIPE)
-    set_blocking(server.stdout.fileno(), False)  # type: ignore
-    set_blocking(server.stdin.fileno(), False)  # type: ignore
-    return server
+class ServerApp:
+    def __init__(self):
+        self.used_ids = []
+        self.current_id = 0
+        self.main_server: Popen
+        self.create_server()
 
+        self.app = Tk()
+        self.user_entry = Entry(self.app)
+        self.user_entry.pack()
+        self.user_entry.bind("<Return>", self.create_request)
+        self.user_entry.focus()
 
-app = Tk()
-main_server: Popen = create_server()
+        self.output_label = Label(self.app, text="Item at index ?: ?")
+        self.output_label.pack()
 
+        self.app.after_idle(self.read_server_output)
+        self.app.mainloop()
 
-def read_server_output() -> None:
-    global main_server
-    if main_server.poll():
-        main_server = create_server()
+    def create_server(self) -> None:
+        server = Popen(["python3", "simple_server.py"], stdin=PIPE, stdout=PIPE)
+        set_blocking(server.stdout.fileno(), False)  # type: ignore
+        set_blocking(server.stdin.fileno(), False)  # type: ignore
+        self.main_server = server
 
-    server_stdout = main_server.stdout
+    def check_server(self) -> None:
+        if self.main_server.poll():
+            self.create_server()
 
-    for line in server_stdout:  # type: ignore
-        global current_id
-        response_json: ResReq = loads(line)
-        id: int = response_json["id"]
-        used_ids.remove(id)
+    def get_server_file(self, file: str) -> IO:
+        self.check_server()
+        if file == "stdout":
+            return self.main_server.stdout  # type: ignore
+        return self.main_server.stdin  # type: ignore
 
-        if id != current_id:
-            continue
+    def parse_line(self, line: str) -> None:
+        response_json = loads(line)
+        id = response_json["id"]
+        self.used_ids.remove(id)
 
-        current_id = 0
+        if id != self.current_id:
+            return
+
+        self.current_id = 0
         item = response_json["item"]  # type: ignore
-        # We only update the current id for the most recent *request*, never status refreshes
-        output_label.configure(text=f"Item at index requested: {item}")
+        self.output_label.configure(text=f"Item at index requested: {item}")
 
-    refresh_server()
-    app.after(50, read_server_output)
+    def read_server_output(self) -> None:
+        server_stdout: IO = self.get_server_file("stdout")
 
+        for line in server_stdout:  # type: ignore
+            self.parse_line(line)
 
-def refresh_server() -> None:
-    create_request(Event(), "refresh")
+        self.refresh_server()
+        self.app.after(50, self.read_server_output)
 
+    def refresh_server(self) -> None:
+        self.create_request(Event(), "refresh")
 
-def create_request(_: Event, type: str = "request") -> None:
-    global current_id
-    id = randint(0, 5000)
-    while id in used_ids:
+    def create_request(self, _: Event, type: str = "request") -> None:
         id = randint(0, 5000)
+        while id in self.used_ids:
+            id = randint(0, 5000)
 
-    used_ids.append(id)
-    if type != "refresh":
-        current_id = id  # We don't care for refresh request data
+        self.used_ids.append(id)
+        if type != "refresh":
+            self.current_id = id  # We don't care for refresh request data
 
-    request: str = dumps({"id": id, "type": type, "index": user_entry.get()})
-    server_stdin = main_server.stdin
-    if server_stdin is not None:
+        request = dumps({"id": id, "type": type, "index": self.user_entry.get()})
+
+        server_stdin = self.get_server_file("stdin")
+
         server_stdin.write(f"{request}\n".encode())
         server_stdin.flush()
 
 
-user_entry = Entry(app)
-user_entry.pack()
-user_entry.bind("<Return>", create_request)
-user_entry.focus()
-
-output_label = Label(app, text="Item at index ?: ?")
-output_label.pack()
-
-app.after_idle(read_server_output)
-
-app.mainloop()
+if __name__ == "__main__":
+    ServerApp()
