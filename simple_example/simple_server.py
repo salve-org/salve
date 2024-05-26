@@ -1,6 +1,6 @@
 from json import dumps, loads
-from os import set_blocking
 from sys import exit, stdin, stdout
+from os import set_blocking
 from time import time
 from typing import TypedDict, NotRequired
 from selectors import EVENT_READ, DefaultSelector
@@ -67,8 +67,8 @@ class RequestHandler:
         if not events:
             return
 
+        self.old_time = current_time
         for line in stdin:
-            self.old_time = current_time
             self.parse_line(line)
 
         self.cancel_all_ids_except_newest()
