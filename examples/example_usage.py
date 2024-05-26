@@ -1,10 +1,10 @@
-from salve import IPC, Response
+from salve_ipc import IPC, Response
 from selectors import EVENT_READ, DefaultSelector
 from os import set_blocking
 from sys import stdin, stdout
 
 
-autocompleter = IPC()  # only_newest=True)
+autocompleter = IPC()
 
 set_blocking(stdin.fileno(), False)
 set_blocking(stdin.fileno(), False)
@@ -31,8 +31,8 @@ while True:
             )
 
     # Check output
-    if not autocompleter.has_response():
-        continue
     output: Response | None = autocompleter.get_response()
+    if not output:
+        continue
     stdout.write(str(output) + "\n")
     stdout.flush()

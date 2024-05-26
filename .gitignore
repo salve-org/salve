@@ -2,6 +2,7 @@
 .DS_Store
 
 # Python
+/dist
+/src/salve_ipc.egg-info
 /__pycache__
-/simple_example/__pycache__
-/salve/__pycache__
+/src/__pycache__

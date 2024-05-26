@@ -84,18 +84,14 @@ class IPC:
         self.current_id = 0
         self.newest_response["autocomplete"] = response_json
 
-    def has_response(self, type: str = "autocomplete") -> bool:
+    def check_responses(self, type: str = "autocomplete") -> None:
         server_stdout: IO = self.get_server_file("stdout")
 
         for line in server_stdout:  # type: ignore
             self.parse_line(line)
 
-        if self.newest_response["autocomplete"]:
-            return True
-
-        return False
-
     def get_response(self, type: str = "autocomplete") -> Response | None:
+        self.check_responses()
         response: Response | None = self.newest_response["autocomplete"]
         self.newest_response["autocomplete"] = None
         return response
