@@ -6,7 +6,7 @@ from random import randint
 from subprocess import PIPE, Popen
 from typing import IO
 
-from .message import AutocompleteRequest, Message, Notification, Ping, Response
+from .message import Request, Message, Notification, Ping, Response
 
 
 class IPC:
@@ -50,7 +50,7 @@ class IPC:
         server_stdin.write(f"{json_request}\n".encode())
         server_stdin.flush()
 
-    def create_message(self, type: str = "request", **kwargs) -> None:
+    def create_message(self, type: str, **kwargs) -> None:
         id = randint(0, self.id_max)
         while id in self.used_ids:
             id = randint(0, self.id_max)
@@ -62,35 +62,35 @@ class IPC:
                 self.send_message(ping)
             case "request":
                 self.current_id = id
-                request: AutocompleteRequest = {
+                request: Request = {
                     "id": id,
                     "type": type,
-                    "form": kwargs.get("type", "autocomplete"),
+                    "command": kwargs.get("command", ""),
                     "expected_keywords": kwargs.get("expected_keywords", []),
                     "full_text": kwargs.get("full_text", ""),
                     "current_word": kwargs.get("current_word", ""),
                 }
                 self.send_message(request)
-            case "notify":
+            case "notification":
                 notification: Notification = {
                     "id": id,
                     "type": type,
-                    "remove": True,
+                    "remove": kwargs.get("remove", False),
                     "filename": kwargs.get("filename", ""),
+                    "diff": kwargs.get("diff", "")
                 }
-
-                if kwargs.get("remove", False):
-                    notification["remove"] = False
-                    notification["diff"] = kwargs.get("diff", "")
-
                 self.send_message(notification)
+            case _:
+                ping: Ping = {"id": id, "type": "ping"}
+                self.send_message(ping)
 
     def ping(self) -> None:
         self.create_message("ping")
 
-    def request(self, type: str = "autocomplete", **kwargs) -> None:
+    def request(self, command: str, **kwargs) -> None:
         self.create_message(
-            form=type,
+            type="request",
+            command=command,
             expected_keywords=kwargs.get("expected_keywords", []),
             full_text=kwargs.get("full_text", ""),
             current_word=kwargs.get("current_word", ""),
@@ -107,13 +107,13 @@ class IPC:
         self.current_id = 0
         self.newest_response = response_json
 
-    def check_responses(self, type: str = "autocomplete") -> None:
+    def check_responses(self) -> None:
         server_stdout: IO = self.get_server_file("stdout")
 
         for line in server_stdout:  # type: ignore
             self.parse_line(line)
 
-    def get_response(self, type: str = "autocomplete") -> Response | None:
+    def get_response(self) -> Response | None:
         self.check_responses()
         response: Response | None = self.newest_response
         self.newest_response = None

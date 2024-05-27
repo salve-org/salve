@@ -6,7 +6,7 @@ from sys import exit, stdin, stdout
 from time import time
 from unicodedata import category
 
-from message import AutocompleteRequest, Message, Response
+from message import Request, Message, Response
 
 
 def find_words(full_text: str) -> list[str]:
@@ -35,14 +35,14 @@ def find_words(full_text: str) -> list[str]:
 
 
 def find_autocompletions(
-    expected_keywords: list[str], full_text: str, original_word: str
+    full_text: str, expected_keywords: list[str], current_word: str
 ) -> list[str]:
     """Returns a list of autocompletions based on the word"""
 
     words_in_text: list[str] = find_words(full_text)
 
     words_after_original_removal = [
-        word for word in words_in_text if word != original_word
+        word for word in words_in_text if word != current_word
     ]
 
     no_usable_words_in_text: bool = not words_after_original_removal
@@ -50,7 +50,7 @@ def find_autocompletions(
         words_after_original_removal += expected_keywords
 
     relevant_words = [
-        word for word in words_after_original_removal if word.startswith(original_word)
+        word for word in words_after_original_removal if word.startswith(current_word)
     ]
 
     autocomplete_matches = sorted(
@@ -105,7 +105,7 @@ class Handler:
         self.selector.register(stdin, EVENT_READ)
 
         self.id_list: list[int] = []
-        self.newest_request: AutocompleteRequest | None = None
+        self.newest_request: Request | None = None
         self.newest_id: int = 0
 
         self.files: dict[str, str] = {}
@@ -163,17 +163,20 @@ class Handler:
             return
 
         # Actual work
-        autocomplete = find_autocompletions(
-            self.newest_request["expected_keywords"],
-            self.newest_request["full_text"],
-            self.newest_request["current_word"],
-        )
+        request = self.newest_request
+        match request["command"]:
+            case _:
+                result = find_autocompletions(
+                    full_text=request["full_text"],
+                    expected_keywords=["expected_keywords"],
+                    current_word=request["current_word"],
+                )
 
         response: Response = {
             "id": self.newest_request["id"],
             "type": "response",
             "cancelled": False,
-            "result": autocomplete,
+            "result": result,
         }
         self.write_response(response)
 
