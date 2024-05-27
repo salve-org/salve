@@ -4,39 +4,43 @@ from sys import stdin, stdout
 
 from salve_ipc import IPC, Response
 
-autocompleter = IPC()
+# Create context for IPC
+context = IPC()
 
+# Allow for nice input
 set_blocking(stdin.fileno(), False)
 set_blocking(stdin.fileno(), False)
 selector = DefaultSelector()
 selector.register(stdin, EVENT_READ)
 
+# Print out "Code: "
 stdout.write("Code: \n")
 stdout.flush()
 
 while True:
     # Keep IPC alive
-    autocompleter.ping()
-
-    # Add file
-    autocompleter.add_file("test", "")
+    context.ping()
 
     # Check input
     events = selector.select(0.025)
     if events:
         # Make requests
         for line in stdin:
-            autocompleter.update_file("test", line)
-            autocompleter.request(
+            # Update file
+            context.update_file("test", line)
+
+            # Make request to server
+            context.request(
                 "autocomplete",
                 expected_keywords=[],
-                full_text=line,
+                file="test",
                 current_word=line[-2],
             )
 
     # Check output
-    output: Response | None = autocompleter.get_response()
+    output: Response | None = context.get_response()
     if not output:
         continue
+    # Write response
     stdout.write(str(output) + "\n")
     stdout.flush()

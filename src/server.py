@@ -166,11 +166,14 @@ class Handler:
         request = self.newest_request
         match request["command"]:
             case _:
-                result = find_autocompletions(
-                    full_text=request["full_text"],
-                    expected_keywords=["expected_keywords"],
-                    current_word=request["current_word"],
-                )
+                file: str = request["file"]
+                result: list[str] = []
+                if file in self.files:
+                    result = find_autocompletions(
+                        full_text=self.files[file],
+                        expected_keywords=["expected_keywords"],
+                        current_word=request["current_word"],
+                    )
 
         response: Response = {
             "id": self.newest_request["id"],

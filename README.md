@@ -15,12 +15,12 @@ Salve is an IPC library that can be used by code editors to get autocomplete and
 
 ### `IPC` Class
 
-| Method           | Description                                                                                                                                              | Arguments                                                                             |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `.ping()`        | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way | None                                                                                  |
-| `.request()`     | Makes a request to the server                                                                                                                            | `command`: str, `expected_keywords`: list[str], `full_text`: str, `current_word`: str |
-| `.update_file()` | Updates files stored on the server that will be used critically later. If a file doesn't exist in the name given, it will be created.                    | `filename`: str, `current_state`: str (just the text of the file)                     |
-| `.remove_file()` | Removes a file of the name given if any exists                                                                                                           | `filename`: str                                                                       |
+| Method           | Description                                                                                                                                              | Arguments                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `.ping()`        | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way | None                                                                             |
+| `.request()`     | Makes a request to the server                                                                                                                            | `command`: str, `expected_keywords`: list[str], `file`: str, `current_word`: str |
+| `.update_file()` | Updates files stored on the server that are used to get responses                                                                                        | `filename`: str, `current_state`: str (just the text of the file)                |
+| `.remove_file()` | Removes a file of the name given if any exists                                                                                                           | `filename`: str                                                                  |
 
 ### Basic Usage:
 

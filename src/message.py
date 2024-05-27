@@ -9,7 +9,7 @@ class Message(TypedDict):
 class Request(Message):
     command: str  # Currently can only be "autocopmlete"
     expected_keywords: list[str]
-    full_text: str
+    file: str
     current_word: str
 
 

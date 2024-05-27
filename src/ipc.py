@@ -10,7 +10,7 @@ from .message import Request, Message, Notification, Ping, Response
 
 
 class IPC:
-    def __init__(self, id_max: int = 5_000) -> None:
+    def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []
         self.current_id = 0
         self.id_max = id_max
@@ -29,8 +29,9 @@ class IPC:
         set_blocking(server.stdin.fileno(), False)  # type: ignore
         self.main_server = server
 
-        for filename in self.files.keys():
-            data: str = self.files.pop(filename)
+        files_copy = self.files.copy()
+        self.files = {}
+        for filename, data in files_copy.items():
             self.add_file(filename, data)
 
     def check_server(self) -> None:
@@ -51,9 +52,9 @@ class IPC:
         server_stdin.flush()
 
     def create_message(self, type: str, **kwargs) -> None:
-        id = randint(0, self.id_max)
+        id = randint(1, self.id_max)  # 0 is reserved for the empty case
         while id in self.used_ids:
-            id = randint(0, self.id_max)
+            id = randint(1, self.id_max)
 
         self.used_ids.append(id)
         match type:
@@ -67,7 +68,7 @@ class IPC:
                     "type": type,
                     "command": kwargs.get("command", ""),
                     "expected_keywords": kwargs.get("expected_keywords", []),
-                    "full_text": kwargs.get("full_text", ""),
+                    "file": kwargs.get("file", ""),
                     "current_word": kwargs.get("current_word", ""),
                 }
                 self.send_message(request)
@@ -92,7 +93,7 @@ class IPC:
             type="request",
             command=command,
             expected_keywords=kwargs.get("expected_keywords", []),
-            full_text=kwargs.get("full_text", ""),
+            file=kwargs.get("file", ""),
             current_word=kwargs.get("current_word", ""),
         )
 
