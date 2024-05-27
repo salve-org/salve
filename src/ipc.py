@@ -77,7 +77,7 @@ class IPC:
                     "type": type,
                     "remove": kwargs.get("remove", False),
                     "filename": kwargs.get("filename", ""),
-                    "diff": kwargs.get("diff", "")
+                    "diff": kwargs.get("diff", ""),
                 }
                 self.send_message(notification)
             case _:
@@ -143,8 +143,4 @@ class IPC:
         self.create_message("notification", filename=filename, diff=diff)
 
     def remove_file(self, filename: str) -> None:
-        if filename not in self.files.keys():
-            raise Exception(
-                f"Cannot remove file {filename} when file not in self.files!"
-            )
         self.create_message("notification", remove=True, filename=filename)

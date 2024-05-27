@@ -15,19 +15,21 @@ Salve is an IPC library that can be used by code editors to get autocomplete and
 
 ### `IPC` Class
 
-| Method | Description | Arguments |
-| - | - | - |
-| `.ping()`    | Pings the server. If the server is not pinged before five seconds consistently it will close. | None                                                                               |
-| `.request()` | Makes a request to the server | `type`: str, `expected_keywords`: list[str], `full_text`: str, `current_word`: str |
+| Method           | Description                                                                                                                                              | Arguments                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `.ping()`        | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way | None                                                                                  |
+| `.request()`     | Makes a request to the server                                                                                                                            | `command`: str, `expected_keywords`: list[str], `full_text`: str, `current_word`: str |
+| `.update_file()` | Updates files stored on the server that will be used critically later. If a file doesn't exist in the name given, it will be created.                    | `filename`: str, `current_state`: str (just the text of the file)                     |
+| `.remove_file()` | Removes a file of the name given if any exists                                                                                                           | `filename`: str                                                                       |
 
 ### Basic Usage:
 
 ```python
-from salve_ipc import IPC, Response
-from selectors import EVENT_READ, DefaultSelector
 from os import set_blocking
+from selectors import EVENT_READ, DefaultSelector
 from sys import stdin, stdout
 
+from salve_ipc import IPC, Response
 
 autocompleter = IPC()
 
@@ -40,14 +42,18 @@ stdout.write("Code: \n")
 stdout.flush()
 
 while True:
-    # Keep application alive
+    # Keep IPC alive
     autocompleter.ping()
+
+    # Add file
+    autocompleter.add_file("test", "")
 
     # Check input
     events = selector.select(0.025)
     if events:
         # Make requests
         for line in stdin:
+            autocompleter.update_file("test", line)
             autocompleter.request(
                 "autocomplete",
                 expected_keywords=[],
@@ -56,9 +62,9 @@ while True:
             )
 
     # Check output
-    if not autocompleter.has_response():
-        continue
     output: Response | None = autocompleter.get_response()
+    if not output:
+        continue
     stdout.write(str(output) + "\n")
     stdout.flush()
 ```

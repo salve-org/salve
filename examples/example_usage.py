@@ -18,11 +18,15 @@ while True:
     # Keep IPC alive
     autocompleter.ping()
 
+    # Add file
+    autocompleter.add_file("test", "")
+
     # Check input
     events = selector.select(0.025)
     if events:
         # Make requests
         for line in stdin:
+            autocompleter.update_file("test", line)
             autocompleter.request(
                 "autocomplete",
                 expected_keywords=[],
