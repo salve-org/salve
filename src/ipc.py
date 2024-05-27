@@ -15,7 +15,7 @@ class IPC:
         self.current_id = 0
         self.id_max = id_max
 
-        self.newest_response: dict[str, None | Response] = {"autocomplete": None}
+        self.newest_response: Response | None = None
 
         self.files: dict[str, str] = {}
 
@@ -105,7 +105,7 @@ class IPC:
             return
 
         self.current_id = 0
-        self.newest_response["autocomplete"] = response_json
+        self.newest_response = response_json
 
     def check_responses(self, type: str = "autocomplete") -> None:
         server_stdout: IO = self.get_server_file("stdout")
@@ -115,8 +115,8 @@ class IPC:
 
     def get_response(self, type: str = "autocomplete") -> Response | None:
         self.check_responses()
-        response: Response | None = self.newest_response["autocomplete"]
-        self.newest_response["autocomplete"] = None
+        response: Response | None = self.newest_response
+        self.newest_response = None
         return response
 
     def add_file(self, filename: str, current_state: str) -> None:
