@@ -1,12 +1,12 @@
-from typing import TypedDict, NotRequired
+from typing import NotRequired, TypedDict
 
 
 class Message(TypedDict):
     id: int
-    type: str  # Can be "ping", "request", "response", "cancelled"
+    type: str  # Can be "ping", "request", "response", "cancelled", "notification"
 
 
-class Request(Message):
+class AutocompleteRequest(Message):
     form: str  # Currently can only be "autocopmlete"
     expected_keywords: list[str]
     full_text: str
@@ -14,6 +14,12 @@ class Request(Message):
 
 
 class Ping(Message): ...
+
+
+class Notification(Message):
+    filename: str
+    remove: bool
+    diff: NotRequired[str]
 
 
 class Response(Message):

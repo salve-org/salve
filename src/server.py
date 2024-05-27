@@ -1,11 +1,12 @@
-from json import loads, dumps
-from sys import exit
-from unicodedata import category
+from difflib import restore
+from json import dumps, loads
 from os import set_blocking
-from sys import stdin, stdout
-from message import Message, Request, Response
 from selectors import EVENT_READ, DefaultSelector
+from sys import exit, stdin, stdout
 from time import time
+from unicodedata import category
+
+from message import AutocompleteRequest, Message, Response
 
 
 def find_words(full_text: str) -> list[str]:
@@ -67,8 +68,10 @@ class Handler:
         self.selector.register(stdin, EVENT_READ)
 
         self.id_list: list[int] = []
-        self.newest_request: Request | None = None
+        self.newest_request: AutocompleteRequest | None = None
         self.newest_id: int = 0
+
+        self.files: dict[str, str] = {}
 
         self.old_time = time()
 
@@ -83,12 +86,20 @@ class Handler:
     def parse_line(self, line: str) -> None:
         json_input: Message = loads(line)
         id: int = json_input["id"]
-        if json_input["type"] == "ping":
-            self.cancel_id(id)
-            return
-        self.id_list.append(id)
-        self.newest_id = id
-        self.newest_request = json_input  # type: ignore
+        match json_input["type"]:
+            case "ping":
+                self.cancel_id(id)
+            case "notification":
+                filename: str = json_input["filename"]  # type: ignore
+                if json_input["remove"]:  # type: ignore
+                    self.files.pop(filename)
+                    return
+                diff: list[str] = json_input["diff"].splitlines()  # type: ignore
+                self.files[filename] = restore(diff, 2)  # type: ignore
+            case _:
+                self.id_list.append(id)
+                self.newest_id = id
+                self.newest_request = json_input  # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
         for id in self.id_list:

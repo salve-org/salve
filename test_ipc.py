@@ -1,6 +1,6 @@
 from time import sleep
 
-from salve_ipc import IPC, Response
+from src import IPC, Response
 
 
 def test_IPC():

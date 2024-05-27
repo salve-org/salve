@@ -1,18 +1,24 @@
+from difflib import ndiff
 from json import dumps, loads
 from os import set_blocking
+from pathlib import Path
 from random import randint
 from subprocess import PIPE, Popen
 from typing import IO
-from .message import Message, Ping, Request, Response
-from pathlib import Path
+
+from .message import AutocompleteRequest, Message, Notification, Ping, Response
 
 
 class IPC:
     def __init__(self, id_max: int = 5_000) -> None:
         self.used_ids: list[int] = []
         self.current_id = 0
-        self.newest_response: dict[str, None | Response] = {"autocomplete": None}
         self.id_max = id_max
+
+        self.newest_response: dict[str, None | Response] = {"autocomplete": None}
+
+        self.files: dict[str, str] = {}
+
         self.main_server: Popen
         self.create_server()
 
@@ -22,6 +28,10 @@ class IPC:
         set_blocking(server.stdout.fileno(), False)  # type: ignore
         set_blocking(server.stdin.fileno(), False)  # type: ignore
         self.main_server = server
+
+        # for filename in self.files.keys():
+        #     data: str = self.files.pop(filename)
+        #     self.add_file(filename, data)
 
     def check_server(self) -> None:
         if self.main_server.poll():
@@ -46,28 +56,41 @@ class IPC:
             id = randint(0, self.id_max)
 
         self.used_ids.append(id)
-        if type == "ping":
-            ping: Ping = {"id": id, "type": "ping"}
-            self.send_message(ping)
-            return
+        match type:
+            case "ping":
+                ping: Ping = {"id": id, "type": "ping"}
+                self.send_message(ping)
+            case "request":
+                self.current_id = id
+                request: AutocompleteRequest = {
+                    "id": id,
+                    "type": type,
+                    "form": kwargs.get("type", "autocomplete"),
+                    "expected_keywords": kwargs.get("expected_keywords", []),
+                    "full_text": kwargs.get("full_text", ""),
+                    "current_word": kwargs.get("current_word", ""),
+                }
+                self.send_message(request)
+            case "notify":
+                notification: Notification = {
+                    "id": id,
+                    "type": type,
+                    "remove": True,
+                    "filename": kwargs.get("filename", ""),
+                }
 
-        self.current_id = id  # We don't care for ping responses
-        request: Request = {
-            "id": id,
-            "type": type,
-            "form": kwargs.get("type", "autocomplete"),
-            "expected_keywords": kwargs.get("expected_keywords", []),
-            "full_text": kwargs.get("full_text", ""),
-            "current_word": kwargs.get("current_word", ""),
-        }
-        self.send_message(request)
+                if kwargs.get("remove", False):
+                    notification["remove"] = False
+                    notification["diff"] = kwargs.get("diff", "")
+
+                self.send_message(notification)
 
     def ping(self) -> None:
         self.create_message("ping")
 
     def request(self, type: str = "autocomplete", **kwargs) -> None:
         self.create_message(
-            type=type,
+            form=type,
             expected_keywords=kwargs.get("expected_keywords", []),
             full_text=kwargs.get("full_text", ""),
             current_word=kwargs.get("current_word", ""),
@@ -95,3 +118,33 @@ class IPC:
         response: Response | None = self.newest_response["autocomplete"]
         self.newest_response["autocomplete"] = None
         return response
+
+    def add_file(self, filename: str, current_state: str) -> None:
+        if filename in self.files.keys():
+            return
+
+        self.files[filename] = current_state
+
+        diff = "".join(ndiff([""], current_state.splitlines(keepends=True)))
+
+        self.create_message("notification", filename=filename, diff=diff)
+
+    def update_file(self, filename: str, current_state: str) -> None:
+        self.add_file(filename, current_state)
+
+        self.files[filename] = current_state
+
+        diff = "".join(
+            ndiff(
+                self.files[filename].splitlines(keepends=True),
+                current_state.splitlines(keepends=True),
+            )
+        )
+        self.create_message("notification", filename=filename, diff=diff)
+
+    def remove_file(self, filename: str) -> None:
+        if filename not in self.files.keys():
+            raise Exception(
+                f"Cannot remove file {filename} when file not in self.files!"
+            )
+        self.create_message("notification", remove=True, filename=filename)

@@ -1,5 +1,6 @@
-from salve import IPC, Response
 from time import sleep
+
+from salve_ipc import IPC, Response
 
 autocompleter = IPC()
 
