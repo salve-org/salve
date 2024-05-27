@@ -29,12 +29,12 @@ class IPC:
         set_blocking(server.stdin.fileno(), False)  # type: ignore
         self.main_server = server
 
-        # for filename in self.files.keys():
-        #     data: str = self.files.pop(filename)
-        #     self.add_file(filename, data)
+        for filename in self.files.keys():
+            data: str = self.files.pop(filename)
+            self.add_file(filename, data)
 
     def check_server(self) -> None:
-        if self.main_server.poll():
+        if self.main_server.poll() is not None:
             self.create_server()
 
     def get_server_file(self, file: str) -> IO:

@@ -1,4 +1,4 @@
-from difflib import restore
+from difflib import restore, get_close_matches
 from json import dumps, loads
 from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
@@ -60,6 +60,43 @@ def find_autocompletions(
     return autocomplete_matches
 
 
+def get_replacements(
+    full_text: str, expected_keywords: list[str], replaceable_word: str
+) -> list[str]:
+    # Get all words in file
+    starter_words = find_words(full_text)
+
+    # Get average occurences of any given keyword to use as multiplier
+    no_duplicates = set(starter_words)
+    counts: list[float] = []
+    for word in no_duplicates:
+        counts.append(starter_words.count(word))
+    average = int(sum(counts) / len(counts))
+    if not average:
+        average = 1
+    print(average)
+    starter_words += expected_keywords * average
+
+    # Get close matches
+    starters_no_duplicates = set(starter_words)
+    similar_words = get_close_matches(
+        replaceable_word,
+        starters_no_duplicates,
+        n=len(starters_no_duplicates),
+        cutoff=0.6,
+    )
+
+    # Reintroduce duplicates
+    similar_with_duplicates = [word for word in starter_words if word in similar_words]
+
+    ranked_matches = sorted(
+        set(similar_with_duplicates),
+        key=(lambda s: (-similar_with_duplicates.count(s), len(s), s)),
+    )
+
+    return ranked_matches
+
+
 class Handler:
     def __init__(self) -> None:
         set_blocking(stdin.fileno(), False)
@@ -95,7 +132,7 @@ class Handler:
                     self.files.pop(filename)
                     return
                 diff: list[str] = json_input["diff"].splitlines()  # type: ignore
-                self.files[filename] = restore(diff, 2)  # type: ignore
+                self.files[filename] = "".join(restore(diff, 2))  # type: ignore
             case _:
                 self.id_list.append(id)
                 self.newest_id = id
@@ -136,7 +173,7 @@ class Handler:
             "id": self.newest_request["id"],
             "type": "response",
             "cancelled": False,
-            "autocomplete": autocomplete,
+            "result": autocomplete,
         }
         self.write_response(response)
 

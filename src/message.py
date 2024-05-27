@@ -24,4 +24,4 @@ class Notification(Message):
 
 class Response(Message):
     cancelled: bool
-    autocomplete: NotRequired[list[str]]
+    result: NotRequired[list[str]]
