@@ -6,7 +6,7 @@ from random import randint
 from subprocess import PIPE, Popen
 from typing import IO
 
-from .misc import Request, Message, Notification, Ping, Response, COMMANDS
+from .misc import COMMANDS, Message, Notification, Ping, Request, Response
 
 
 class IPC:
@@ -15,7 +15,7 @@ class IPC:
         self.id_max = id_max
         self.current_ids: dict[str, int] = {}
 
-        self.newest_responses: dict[str, Response | None ] = {}
+        self.newest_responses: dict[str, Response | None] = {}
         for command in COMMANDS:
             self.current_ids[command] = 0
             self.newest_responses[command] = None
@@ -95,7 +95,9 @@ class IPC:
     def ping(self) -> None:
         self.create_message("ping")
 
-    def request(self, command: str, file: str, expected_keywords: list[str], current_word: str) -> None:
+    def request(
+        self, command: str, file: str, expected_keywords: list[str], current_word: str
+    ) -> None:
         self.create_message(
             type="request",
             command=command,

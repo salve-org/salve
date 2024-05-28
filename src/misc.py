@@ -2,6 +2,7 @@ from typing import NotRequired, TypedDict
 
 COMMANDS: list[str] = ["autocomplete"]
 
+
 class Message(TypedDict):
     id: int
     type: str  # Can be "ping", "request", "response", "cancelled", "notification"

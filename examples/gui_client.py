@@ -1,4 +1,4 @@
-from tkinter import Tk, Entry, Label
+from tkinter import Entry, Label, Tk
 
 from salve_ipc import IPC, Response
 

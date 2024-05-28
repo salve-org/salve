@@ -1,12 +1,12 @@
-from difflib import restore, get_close_matches
+from difflib import get_close_matches, restore
 from json import dumps, loads
 from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
-from sys import exit, stderr, stdin, stdout
+from sys import exit, stdin, stdout
 from time import time
 from unicodedata import category
 
-from misc import Request, Message, Response, COMMANDS
+from misc import COMMANDS, Message, Request, Response
 
 
 def find_words(full_text: str) -> list[str]:
@@ -132,9 +132,9 @@ class Handler:
                 self.files[filename] = "".join(restore(diff, 2))  # type: ignore
             case _:
                 self.id_list.append(id)
-                command: str = json_input["command"] # type: ignore
+                command: str = json_input["command"]  # type: ignore
                 self.newest_ids[command] = id
-                self.newest_requests[command] = json_input # type: ignore
+                self.newest_requests[command] = json_input  # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
         for id in self.id_list:
@@ -191,7 +191,9 @@ class Handler:
 
         self.cancel_all_ids_except_newest()
 
-        if not list(self.newest_requests.values()): # There may have only been refreshes
+        if not list(
+            self.newest_requests.values()
+        ):  # There may have only been refreshes
             return
 
         # Actual work
