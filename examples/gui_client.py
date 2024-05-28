@@ -10,22 +10,22 @@ root = Tk()
 
 
 def create_request(_) -> None:
-    context.update_file("test", e.get())
+    context.update_file("test", entry.get())
     context.request(
         "autocomplete",
         expected_keywords=[],
         file="test",
-        current_word=e.get()[-1],
+        current_word=entry.get()[-1],
     )
 
 
 # Create entry and label
-e = Entry(root)
-e.pack()
-e.bind("<Return>", create_request)
+entry = Entry(root)
+entry.pack()
+entry.bind("<Return>", create_request)
 
-l = Label(root, text="")
-l.pack()
+label = Label(root, text="")
+label.pack()
 
 
 def ping_loop() -> None:
@@ -36,7 +36,7 @@ def ping_loop() -> None:
         data: list[str] = output["result"]  # type: ignore
         if not data:
             data = [""]
-        l.configure(text=str(data))
+        label.configure(text=str(data))
     root.after(50, ping_loop)
 
 
