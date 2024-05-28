@@ -14,7 +14,6 @@ class IPC:
         self.used_ids: list[int] = []
         self.id_max = id_max
         self.current_ids: dict[str, int] = {}
-
         self.newest_responses: dict[str, Response | None] = {}
         for command in COMMANDS:
             self.current_ids[command] = 0
@@ -128,6 +127,8 @@ class IPC:
             self.parse_line(line)
 
     def get_response(self, command: str) -> Response | None:
+        if command not in COMMANDS:
+            raise Exception(f"Command {command} not in COMMANDS")
         self.check_responses()
         response: Response | None = self.newest_responses[command]
         if response is None:

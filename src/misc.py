@@ -1,6 +1,6 @@
 from typing import NotRequired, TypedDict
 
-COMMANDS: list[str] = ["autocomplete"]
+COMMANDS: list[str] = ["autocomplete", "replacements"]
 
 
 class Message(TypedDict):
@@ -9,7 +9,7 @@ class Message(TypedDict):
 
 
 class Request(Message):
-    command: str  # Currently can only be "autocopmlete"
+    command: str  # Can only be commands in COMMANDS
     expected_keywords: list[str]
     file: str
     current_word: str
