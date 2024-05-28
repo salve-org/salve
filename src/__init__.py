@@ -1,2 +1,2 @@
 from .ipc import IPC  # type: ignore
-from .message import Request, Response  # type: ignore
+from .misc import Request, Response, COMMANDS  # type: ignore

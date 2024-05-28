@@ -1,5 +1,6 @@
 from typing import NotRequired, TypedDict
 
+COMMANDS: list[str] = ["autocomplete"]
 
 class Message(TypedDict):
     id: int

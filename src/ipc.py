@@ -6,18 +6,17 @@ from random import randint
 from subprocess import PIPE, Popen
 from typing import IO
 
-from .message import Request, Message, Notification, Ping, Response
+from .misc import Request, Message, Notification, Ping, Response, COMMANDS
 
 
 class IPC:
     def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []
         self.id_max = id_max
-        self.commands: list[str] = ["autocomplete"]
         self.current_ids: dict[str, int] = {}
 
         self.newest_responses: dict[str, Response | None ] = {}
-        for command in self.commands:
+        for command in COMMANDS:
             self.current_ids[command] = 0
             self.newest_responses[command] = None
 
@@ -67,7 +66,7 @@ class IPC:
                 self.send_message(ping)
             case "request":
                 command = kwargs.get("command", "")
-                if command not in self.commands:
+                if command not in COMMANDS:
                     raise Exception(f"Cannot execute command {command}")
                     return
                 self.current_ids[command] = id

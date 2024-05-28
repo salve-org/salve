@@ -6,7 +6,7 @@ from sys import exit, stderr, stdin, stdout
 from time import time
 from unicodedata import category
 
-from message import Request, Message, Response
+from misc import Request, Message, Response, COMMANDS
 
 
 def find_words(full_text: str) -> list[str]:
@@ -99,10 +99,9 @@ class Handler:
         self.selector.register(stdin, EVENT_READ)
 
         self.id_list: list[int] = []
-        self.commands: list[str] = ["autocomplete"]
         self.newest_ids: dict[str, int] = {}
         self.newest_requests: dict[str, Request | None] = {}
-        for command in self.commands:
+        for command in COMMANDS:
             self.newest_ids[command] = 0
             self.newest_requests[command] = None
 
