@@ -21,6 +21,7 @@ Salve is an IPC library that can be used by code editors to get autocomplete and
 | `.request()`     | Makes a request to the server                                                                                                                            | `command`: str, `expected_keywords`: list[str], `file`: str, `current_word`: str |
 | `.update_file()` | Updates files stored on the server that are used to get responses                                                                                        | `filename`: str, `current_state`: str (just the text of the file)                |
 | `.remove_file()` | Removes a file of the name given if any exists                                                                                                           | `filename`: str                                                                  |
+| `.kill_IPC()`    | This kills the IPC process and acts as a precaution against wasted CPU when the main thread no longver needs the IPC                                     | None                                                                             |
 
 ### Basic Usage:
 

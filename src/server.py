@@ -153,8 +153,11 @@ class Handler:
         if not events:
             return
 
-        self.old_time = current_time
         for line in stdin:
+            # Prevent zombie process
+            if self.old_time != current_time:
+                self.old_time = current_time
+
             self.parse_line(line)
 
         self.cancel_all_ids_except_newest()

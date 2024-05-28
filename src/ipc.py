@@ -145,3 +145,6 @@ class IPC:
 
     def remove_file(self, filename: str) -> None:
         self.create_message("notification", remove=True, filename=filename)
+
+    def kill_IPC(self) -> None:
+        self.main_server.kill()
