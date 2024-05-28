@@ -12,11 +12,11 @@ from .message import Request, Message, Notification, Ping, Response
 class IPC:
     def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []
-        self.commands: list[str] = ["autocomplete"]
-        self.current_ids: dict[str, int] = {
-            "autocomplete": 0
-        }
         self.id_max = id_max
+        self.commands: list[str] = ["autocomplete"]
+        self.current_ids: dict[str, int] = {}
+        for command in self.commands:
+            self.current_ids[command] = 0
 
         self.newest_response: Response | None = None
 

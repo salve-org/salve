@@ -100,7 +100,10 @@ class Handler:
 
         self.id_list: list[int] = []
         self.newest_request: Request | None = None
-        self.newest_id: int = 0
+        self.commands: list[str] = ["autocomplete"]
+        self.newest_ids: dict[str, int] = {}
+        for command in self.commands:
+            self.newest_ids[command] = 0
 
         self.files: dict[str, str] = {}
 
@@ -129,12 +132,13 @@ class Handler:
                 self.files[filename] = "".join(restore(diff, 2))  # type: ignore
             case _:
                 self.id_list.append(id)
-                self.newest_id = id
+                command: str = json_input["command"] # type: ignore
+                self.newest_ids[command] = id
                 self.newest_request = json_input  # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
         for id in self.id_list:
-            if id == self.newest_id:
+            if id in list(self.newest_ids.values()):
                 continue
             self.cancel_id(id)
 
@@ -180,18 +184,19 @@ class Handler:
                         replaceable_word=request["current_word"],
                     )
 
+        command: str = request["command"]
         response: Response = {
             "id": self.newest_request["id"],
             "type": "response",
             "cancelled": False,
-            "command": request["command"],
+            "command": command,
             "result": result,
         }
         self.write_response(response)
 
         self.id_list = []
         self.newest_request = None
-        self.newest_id = 0
+        self.newest_ids[command] = 0
 
 
 if __name__ == "__main__":
