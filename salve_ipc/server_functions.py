@@ -1,6 +1,8 @@
 from difflib import get_close_matches
 from unicodedata import category
 
+def is_unicode_letter(char: str) -> bool:
+    return char == "_" or category(char).startswith("L")
 
 def find_words(full_text: str) -> list[str]:
     words_list = []
@@ -8,8 +10,7 @@ def find_words(full_text: str) -> list[str]:
 
     for char in full_text:
 
-        is_unicode_letter: bool = char == "_" or category(char).startswith("L")
-        if is_unicode_letter:
+        if is_unicode_letter(char):
             current_word += char
             continue
 

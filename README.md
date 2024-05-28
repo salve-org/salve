@@ -20,6 +20,14 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 - "autocomplete"
 - "replacements"
 
+### `Request` and `Response` TypedDict classes
+
+The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
+
+### `is_unicode_letter(char: str) -> bool`
+
+The `is_unicode_letter()` function returns a boolean if a given word is a unicode letter (includes "\_" as special case) which can be useful when trying to find the current word being typed to hand to the IPC for autocompletion.
+
 ### `IPC` Class
 
 | Method    | Description                                                                                                                                              | Arguments |
