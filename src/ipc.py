@@ -12,7 +12,6 @@ from .message import Request, Message, Notification, Ping, Response
 class IPC:
     def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []
-        self.current_id = 0
         self.commands: list[str] = ["autocomplete"]
         self.current_ids: dict[str, int] = {
             "autocomplete": 0
@@ -66,7 +65,6 @@ class IPC:
                 ping: Ping = {"id": id, "type": "ping"}
                 self.send_message(ping)
             case "request":
-                self.current_id = id
                 command = kwargs.get("command", "")
                 if command not in self.commands:
                     raise Exception(f"Cannot execute command {command}")
@@ -111,9 +109,6 @@ class IPC:
         id = response_json["id"]
         self.used_ids.remove(id)
 
-        if id != self.current_id:
-            return
-
         if "command" not in response_json:
             return
 
@@ -121,7 +116,6 @@ class IPC:
         if id != self.current_ids[command]:
             return
 
-        self.current_id = 0
         self.current_ids[command] = 0
         self.newest_response = response_json
 
