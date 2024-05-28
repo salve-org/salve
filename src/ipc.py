@@ -16,7 +16,6 @@ class IPC:
         self.commands: list[str] = ["autocomplete"]
         self.current_ids: dict[str, int] = {}
 
-        self.newest_response: Response | None = None
         self.newest_responses: dict[str, Response | None ] = {}
         for command in self.commands:
             self.current_ids[command] = 0
@@ -119,7 +118,6 @@ class IPC:
             return
 
         self.current_ids[command] = 0
-        self.newest_response = response_json
         self.newest_responses[command] = response_json
 
     def check_responses(self) -> None:
@@ -128,13 +126,11 @@ class IPC:
         for line in server_stdout:  # type: ignore
             self.parse_line(line)
 
-    def get_response(self) -> Response | None:
+    def get_response(self, command: str) -> Response | None:
         self.check_responses()
-        response: Response | None = self.newest_response
+        response: Response | None = self.newest_responses[command]
         if response is None:
             return None
-        command: str = response["command"] # type: ignore
-        self.newest_response = None
         self.newest_responses[command] = None
         return response
 
