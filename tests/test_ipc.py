@@ -10,25 +10,26 @@ def test_IPC():
 
     autocompleter.add_file("test.py", "test\n")
     autocompleter.update_file("test.py", "testy\n")
-    autocompleter.remove_file("test.py")
 
     autocompleter.request(
         "autocomplete",
         expected_keywords=[],
-        full_text="test",
+        file="test.py",
         current_word="t",
     )
+    autocompleter.remove_file("test.py")
 
     sleep(1)
 
     # Check output
-    output: Response = autocompleter.get_response()  # type: ignore
+    output: Response = autocompleter.get_response("autocomplete")  # type: ignore
     output["id"] = 0
     assert output == {
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "autocomplete": ["test"],
+        "command": "autocomplete",
+        "result": [],
     }
 
 

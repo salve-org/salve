@@ -1,26 +1,10 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+[tool.black]
+line-length = 88
 
-[project]
-name = "salve_ipc"
-version = "0.1.0"
-authors = [{ name = "Moosems", email = "moosems.j@gmail.com" }]
-description = "A lightweight python ipc package for code editors"
-readme = "README.md"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+[tool.isort]
+line_length = 88
+profile = "black"
+multi_line_output = 3
 
-[project.urls]
-Homepage = "https://github.com/Moosems/salve"
-Issues = "https://github.com/Moosems/salve/issues"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["src*"]
-exclude = ["tests*"]
-namespaces = false
+[tool.ruff]
+line-length = 125
