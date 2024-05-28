@@ -99,7 +99,6 @@ class Handler:
         self.selector.register(stdin, EVENT_READ)
 
         self.id_list: list[int] = []
-        self.newest_request: Request | None = None
         self.commands: list[str] = ["autocomplete"]
         self.newest_ids: dict[str, int] = {}
         self.newest_requests: dict[str, Request | None] = {}
@@ -136,7 +135,6 @@ class Handler:
                 self.id_list.append(id)
                 command: str = json_input["command"] # type: ignore
                 self.newest_ids[command] = id
-                self.newest_request = json_input  # type: ignore
                 self.newest_requests[command] = json_input # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
@@ -194,23 +192,18 @@ class Handler:
 
         self.cancel_all_ids_except_newest()
 
-        if not self.newest_request:  # There may have only been refreshes
-            return
-
         if not list(self.newest_requests.values()): # There may have only been refreshes
             return
 
         # Actual work
-        request = self.newest_request
-        for requesty in list(self.newest_requests.values()):
-            print(requesty, file=stderr)
-            pass
-        self.handle_request(request)
+        for request in list(self.newest_requests.values()):
+            if request is None:
+                continue
+            self.handle_request(request)
+            command: str = request["command"]
+            self.newest_requests[command] = None
 
         self.id_list = []
-        self.newest_request = None
-        command: str = request["command"]
-        self.newest_requests[command] = None
 
 
 if __name__ == "__main__":
