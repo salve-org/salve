@@ -1,3 +1,4 @@
+# pip install . --break-system-packages --no-build-isolation
 from setuptools import setup
 
 with open("README.md", "r") as file:
@@ -21,6 +22,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Typing :: Typed",
     ],
-    packages=["src"],
-    package_data={"src": ["./*"]},
+    packages=["salve_ipc"],
+    package_data={"salve_ipc": ["./*"]},
 )
