@@ -24,4 +24,5 @@ class Notification(Message):
 
 class Response(Message):
     cancelled: bool
+    command: NotRequired[str]
     result: NotRequired[list[str]]

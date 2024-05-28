@@ -13,6 +13,10 @@ class IPC:
     def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []
         self.current_id = 0
+        self.commands: list[str] = ["autocomplete"]
+        self.current_ids: dict[str, int] = {
+            "autocomplete": 0
+        }
         self.id_max = id_max
 
         self.newest_response: Response | None = None
@@ -63,12 +67,17 @@ class IPC:
                 self.send_message(ping)
             case "request":
                 self.current_id = id
+                command = kwargs.get("command", "")
+                if command not in self.commands:
+                    raise Exception(f"Cannot execute command {command}")
+                    return
+                self.current_ids[command] = id
                 request: Request = {
                     "id": id,
                     "type": type,
-                    "command": kwargs.get("command", ""),
-                    "expected_keywords": kwargs.get("expected_keywords", []),
+                    "command": command,
                     "file": kwargs.get("file", ""),
+                    "expected_keywords": kwargs.get("expected_keywords", []),
                     "current_word": kwargs.get("current_word", ""),
                 }
                 self.send_message(request)
@@ -88,13 +97,13 @@ class IPC:
     def ping(self) -> None:
         self.create_message("ping")
 
-    def request(self, command: str, **kwargs) -> None:
+    def request(self, command: str, file: str, expected_keywords: list[str], current_word: str) -> None:
         self.create_message(
             type="request",
             command=command,
-            expected_keywords=kwargs.get("expected_keywords", []),
-            file=kwargs.get("file", ""),
-            current_word=kwargs.get("current_word", ""),
+            file=file,
+            expected_keywords=expected_keywords,
+            current_word=current_word,
         )
 
     def parse_line(self, line: str) -> None:
@@ -105,7 +114,15 @@ class IPC:
         if id != self.current_id:
             return
 
+        if "command" not in response_json:
+            return
+
+        command = response_json["command"]
+        if id != self.current_ids[command]:
+            return
+
         self.current_id = 0
+        self.current_ids[command] = 0
         self.newest_response = response_json
 
     def check_responses(self) -> None:

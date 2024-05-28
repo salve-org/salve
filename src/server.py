@@ -184,6 +184,7 @@ class Handler:
             "id": self.newest_request["id"],
             "type": "response",
             "cancelled": False,
+            "command": request["command"],
             "result": result,
         }
         self.write_response(response)
