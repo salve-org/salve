@@ -17,5 +17,5 @@ context.request(
 
 sleep(1)
 
-output: Response = context.get_response()  # type: ignore
+output: Response | None = context.get_response("autocomplete")
 print(output)

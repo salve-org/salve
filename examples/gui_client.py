@@ -30,7 +30,7 @@ l.pack()
 
 def ping_loop() -> None:
     context.ping()
-    output: Response | None = context.get_response()
+    output: Response | None = context.get_response("autocomplete")
     data: list[str] = [""]
     if output is not None:
         data: list[str] = output["result"]  # type: ignore

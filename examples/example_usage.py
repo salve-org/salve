@@ -38,7 +38,7 @@ while True:
             )
 
     # Check output
-    output: Response | None = context.get_response()
+    output: Response | None = context.get_response("autocomplete")
     if not output:
         continue
     # Write response
