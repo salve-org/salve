@@ -15,10 +15,12 @@ class IPC:
         self.id_max = id_max
         self.commands: list[str] = ["autocomplete"]
         self.current_ids: dict[str, int] = {}
-        for command in self.commands:
-            self.current_ids[command] = 0
 
         self.newest_response: Response | None = None
+        self.newest_responses: dict[str, Response | None ] = {}
+        for command in self.commands:
+            self.current_ids[command] = 0
+            self.newest_responses[command] = None
 
         self.files: dict[str, str] = {}
 
@@ -118,6 +120,7 @@ class IPC:
 
         self.current_ids[command] = 0
         self.newest_response = response_json
+        self.newest_responses[command] = response_json
 
     def check_responses(self) -> None:
         server_stdout: IO = self.get_server_file("stdout")
@@ -128,7 +131,11 @@ class IPC:
     def get_response(self) -> Response | None:
         self.check_responses()
         response: Response | None = self.newest_response
+        if response is None:
+            return None
+        command: str = response["command"] # type: ignore
         self.newest_response = None
+        self.newest_responses[command] = None
         return response
 
     def add_file(self, filename: str, current_state: str) -> None:
