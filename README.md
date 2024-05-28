@@ -13,6 +13,13 @@ Salve is an IPC library that can be used by code editors to get autocomplete and
 
 ## Documentation
 
+### `COMMANDS`
+
+The `COMMANDS` list contains all valid commands to request server output from. If multiple requests of different commands are made they will be kept and held seperately and can be retrieved seperately. Current commands are as follows:
+
+- "autocomplete"
+- "replacements"
+
 ### `IPC` Class
 
 | Method    | Description                                                                                                                                              | Arguments |

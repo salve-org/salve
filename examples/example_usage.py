@@ -41,6 +41,7 @@ while True:
     output: Response | None = context.get_response("autocomplete")
     if not output:
         continue
+
     # Write response
     stdout.write(str(output) + "\n")
     stdout.flush()
