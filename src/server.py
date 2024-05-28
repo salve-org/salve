@@ -2,7 +2,7 @@ from difflib import restore, get_close_matches
 from json import dumps, loads
 from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
-from sys import exit, stdin, stdout
+from sys import exit, stderr, stdin, stdout
 from time import time
 from unicodedata import category
 
@@ -102,8 +102,10 @@ class Handler:
         self.newest_request: Request | None = None
         self.commands: list[str] = ["autocomplete"]
         self.newest_ids: dict[str, int] = {}
+        self.newest_requests: dict[str, Request | None] = {}
         for command in self.commands:
             self.newest_ids[command] = 0
+            self.newest_requests[command] = None
 
         self.files: dict[str, str] = {}
 
@@ -135,12 +137,44 @@ class Handler:
                 command: str = json_input["command"] # type: ignore
                 self.newest_ids[command] = id
                 self.newest_request = json_input  # type: ignore
+                self.newest_requests[command] = json_input # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
         for id in self.id_list:
             if id in list(self.newest_ids.values()):
                 continue
             self.cancel_id(id)
+
+    def handle_request(self, request: Request) -> None:
+        file: str = request["file"]
+        result: list[str] = [""]
+        match request["command"]:
+            case "autocomplete":
+                result: list[str] = []
+                if file in self.files:
+                    result = find_autocompletions(
+                        full_text=self.files[file],
+                        expected_keywords=["expected_keywords"],
+                        current_word=request["current_word"],
+                    )
+            case "replacements":
+                if file in self.files:
+                    result = get_replacements(
+                        full_text=self.files[file],
+                        expected_keywords=["expected_keywords"],
+                        replaceable_word=request["current_word"],
+                    )
+
+        command: str = request["command"]
+        response: Response = {
+            "id": request["id"],
+            "type": "response",
+            "cancelled": False,
+            "command": command,
+            "result": result,
+        }
+        self.write_response(response)
+        self.newest_ids[command] = 0
 
     def run_tasks(self) -> None:
         current_time = time()
@@ -163,40 +197,20 @@ class Handler:
         if not self.newest_request:  # There may have only been refreshes
             return
 
+        if not list(self.newest_requests.values()): # There may have only been refreshes
+            return
+
         # Actual work
         request = self.newest_request
-        file: str = request["file"]
-        result: list[str] = [""]
-        match request["command"]:
-            case "autocomplete":
-                result: list[str] = []
-                if file in self.files:
-                    result = find_autocompletions(
-                        full_text=self.files[file],
-                        expected_keywords=["expected_keywords"],
-                        current_word=request["current_word"],
-                    )
-            case "replacements":
-                if file in self.files:
-                    result = get_replacements(
-                        full_text=self.files[file],
-                        expected_keywords=["expected_keywords"],
-                        replaceable_word=request["current_word"],
-                    )
-
-        command: str = request["command"]
-        response: Response = {
-            "id": self.newest_request["id"],
-            "type": "response",
-            "cancelled": False,
-            "command": command,
-            "result": result,
-        }
-        self.write_response(response)
+        for requesty in list(self.newest_requests.values()):
+            print(requesty, file=stderr)
+            pass
+        self.handle_request(request)
 
         self.id_list = []
         self.newest_request = None
-        self.newest_ids[command] = 0
+        command: str = request["command"]
+        self.newest_requests[command] = None
 
 
 if __name__ == "__main__":
