@@ -65,17 +65,11 @@ def get_replacements(
 ) -> list[str]:
     # Get all words in file
     starter_words = find_words(full_text)
-
-    # Get average occurences of any given keyword to use as multiplier
-    no_duplicates = set(starter_words)
-    counts: list[float] = []
-    for word in no_duplicates:
-        counts.append(starter_words.count(word))
-    average = int(sum(counts) / len(counts))
-    if not average:
-        average = 1
-    print(average)
-    starter_words += expected_keywords * average
+    starter_words += (
+        expected_keywords * 3
+    )  # We add a multiplier of three to boost the score of keywords
+    while replaceable_word in starter_words:
+        starter_words.remove(replaceable_word)
 
     # Get close matches
     starters_no_duplicates = set(starter_words)
@@ -167,15 +161,23 @@ class Handler:
 
         # Actual work
         request = self.newest_request
+        file: str = request["file"]
+        result: list[str] = [""]
         match request["command"]:
-            case _:
-                file: str = request["file"]
+            case "autocomplete":
                 result: list[str] = []
                 if file in self.files:
                     result = find_autocompletions(
                         full_text=self.files[file],
                         expected_keywords=["expected_keywords"],
                         current_word=request["current_word"],
+                    )
+            case "replacements":
+                if file in self.files:
+                    result = get_replacements(
+                        full_text=self.files[file],
+                        expected_keywords=["expected_keywords"],
+                        replaceable_word=request["current_word"],
                     )
 
         response: Response = {

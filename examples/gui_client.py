@@ -18,6 +18,7 @@ def create_request(_) -> None:
         current_word=e.get()[-1],
     )
 
+
 # Create entry and label
 e = Entry(root)
 e.pack()
