@@ -8,7 +8,6 @@ def test_IPC():
 
     autocompleter.ping()
 
-    autocompleter.add_file("test.py", "test\n")
     autocompleter.update_file("test.py", "testy\n")
 
     autocompleter.request(
@@ -17,7 +16,6 @@ def test_IPC():
         file="test.py",
         current_word="t",
     )
-    autocompleter.remove_file("test.py")
 
     sleep(1)
 
@@ -29,8 +27,10 @@ def test_IPC():
         "type": "response",
         "cancelled": False,
         "command": "autocomplete",
-        "result": [],
+        "result": ["testy"],
     }
+
+    autocompleter.remove_file("test.py")
 
 
 test_IPC()
