@@ -5,7 +5,7 @@
 
 # Installation
 
-In the Command Line, paste the following: `pip install salve_ipc` (NOT YET WORKING).
+In the Command Line, paste the following: `pip install salve_ipc`
 
 ## Description
 
@@ -25,9 +25,17 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 
 The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
 
+### `Token` dataclass
+
+The `Token` dataclass gives easy type checking for tokens returned from the highlight command.
+
 ### `is_unicode_letter(char: str) -> bool`
 
 The `is_unicode_letter()` function returns a boolean if a given word is a unicode letter (includes "\_" as special case) which can be useful when trying to find the current word being typed to hand to the IPC for autocompletion.
+
+### `tokens_from_result(result: list[str]) -> list[Token]`
+
+The `tokens_from_result()` function takes the results from a `highlight` commands results output and returns a list `Token` types from it to be used for highlighting.
 
 ### `IPC` Class
 

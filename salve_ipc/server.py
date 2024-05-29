@@ -5,13 +5,9 @@ from selectors import EVENT_READ, DefaultSelector
 from sys import exit, stdin, stdout
 from time import time
 
+from highlight import Token, get_highlights
 from misc import COMMANDS, Message, Request, Response
-from server_functions import (
-    Token,
-    find_autocompletions,
-    get_highlights,
-    get_replacements,
-)
+from server_functions import find_autocompletions, get_replacements
 
 
 class Handler:
@@ -71,7 +67,7 @@ class Handler:
         command: str = request["command"]
         cancelled: bool = False
 
-        if not file in self.files:
+        if file not in self.files:
             response: Response = {
                 "id": request["id"],
                 "type": "response",
