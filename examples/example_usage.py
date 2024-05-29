@@ -38,6 +38,7 @@ while True:
             )
 
     # Check output
+    # context.cancel_request("autocomplete") # Uncommenting this line will cause the request to always be cancelled
     output: Response | None = context.get_response("autocomplete")
     if not output:
         continue

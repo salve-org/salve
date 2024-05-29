@@ -67,7 +67,6 @@ class IPC:
                 command = kwargs.get("command", "")
                 if command not in COMMANDS:
                     raise Exception(f"Cannot execute command {command}")
-                    return
                 self.current_ids[command] = id
                 request: Request = {
                     "id": id,
@@ -104,6 +103,12 @@ class IPC:
             expected_keywords=expected_keywords,
             current_word=current_word,
         )
+
+    def cancel_request(self, command: str):
+        if command not in COMMANDS:
+            raise Exception(f"Cannot execute command {command}")
+
+        self.current_ids[command] = 0
 
     def parse_line(self, line: str) -> None:
         response_json: Response = loads(line)

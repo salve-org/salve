@@ -30,15 +30,15 @@ The `is_unicode_letter()` function returns a boolean if a given word is a unicod
 
 ### `IPC` Class
 
-| Method    | Description                                                                                                                                              | Arguments |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `.ping()` | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way | None      |
-
-| `.get_response()` | Gets a response of the requested command | `command`: str |
-| `.request()` | Makes a request to the server |`command`: str, `expected_keywords`: list[str], `file`: str, `current_word`: str |
-| `.update_file()`| Updates files stored on the server that are used to get responses |`filename`: str, `current_state`: str (just the text of the file) |
-| `.remove_file()`| Removes a file of the name given if any exists |`filename`: str |
-| `.kill_IPC()` | This kills the IPC process and acts as a precaution against wasted CPU when the main thread no longer needs the IPC | None |
+| Method              | Description                                                                                                                                              | Arguments                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `.ping()`           | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way | None                                                                             |
+| `.get_response()`   | Gets a response of the requested command                                                                                                                 | `command`: str                                                                   |
+| `.request()`        | Makes a request to the server                                                                                                                            | `command`: str, `expected_keywords`: list[str], `file`: str, `current_word`: str |
+| `.cancel_request()` | Cancels request of command type and removes reponse if it was recieved. Must be called before `.get_response()` to work                                  | `command`: str                                                                   |
+| `.update_file()`    | Updates files stored on the server that are used to get responses                                                                                        | `filename`: str, `current_state`: str (just the text of the file)                |
+| `.remove_file()`    | Removes a file of the name given if any exists                                                                                                           | `filename`: str                                                                  |
+| `.kill_IPC()`       | This kills the IPC process and acts as a precaution against wasted CPU when the main thread no longer needs the IPC                                      | None                                                                             |
 
 ### Basic Usage:
 
