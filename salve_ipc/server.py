@@ -2,7 +2,7 @@ from difflib import restore
 from json import dumps, loads
 from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
-from sys import exit, stdin, stdout
+from sys import exit, stderr, stdin, stdout
 from time import time
 
 from highlight import Token, get_highlights
@@ -29,8 +29,10 @@ class Handler:
         self.old_time = time()
 
     def write_response(self, response: Response) -> None:
+        # TODO: Check if stdout pipe is still alive!
         stdout.write(dumps(response) + "\n")
         stdout.flush()
+
 
     def cancel_id(self, id: int) -> None:
         response: Response = {"id": id, "type": "response", "cancelled": True}

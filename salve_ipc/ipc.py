@@ -65,8 +65,6 @@ class IPC:
                 self.send_message(ping)
             case "request":
                 command = kwargs.get("command", "")
-                if command not in COMMANDS:
-                    raise Exception(f"Cannot execute command {command}")
                 self.current_ids[command] = id
                 request: Request = {
                     "id": id,
@@ -102,6 +100,9 @@ class IPC:
         current_word: str = "",
         language: str = "Text",
     ) -> None:
+        if command not in COMMANDS:
+            raise Exception(f"Command {command} not in builtin commands. Those are {COMMANDS}!")
+
         self.create_message(
             type="request",
             command=command,
@@ -113,7 +114,7 @@ class IPC:
 
     def cancel_request(self, command: str):
         if command not in COMMANDS:
-            raise Exception(f"Cannot execute command {command}")
+            raise Exception(f"Cannot cancel command {command}, valid commands are {COMMANDS}")
 
         self.current_ids[command] = 0
 
@@ -140,7 +141,8 @@ class IPC:
 
     def get_response(self, command: str) -> Response | None:
         if command not in COMMANDS:
-            raise Exception(f"Command {command} not in COMMANDS")
+            raise Exception(f"Cannot get response of command {command}, valid commands are {COMMANDS}")
+
         self.check_responses()
         response: Response | None = self.newest_responses[command]
         if response is None:
@@ -172,6 +174,9 @@ class IPC:
         self.create_message("notification", filename=filename, diff=diff)
 
     def remove_file(self, filename: str) -> None:
+        if filename not in list(self.files.keys()):
+            raise Exception(f"Cannot remove file {filename} as file is not in file database!")
+
         self.create_message("notification", remove=True, filename=filename)
 
     def kill_IPC(self) -> None:
