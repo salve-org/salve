@@ -7,8 +7,8 @@ with open("README.md", "r") as file:
 
 setup(
     name="salve_ipc",
-    version="0.1.0",
-    description="A module that makes IPC for your code editor easy providing autocompletion and replacement suggestions",
+    version="0.2.0",
+    description="A module that makes easily provides autocompletions, replacement suggestions, and syntax highlighting to your code editor",
     author="Moosems",
     author_email="moosems.j@gmail.com",
     url="https://github.com/Moosems/salve",
