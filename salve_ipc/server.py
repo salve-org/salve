@@ -6,7 +6,12 @@ from sys import exit, stdin, stdout
 from time import time
 
 from misc import COMMANDS, Message, Request, Response
-from server_functions import find_autocompletions, get_replacements
+from server_functions import (
+    Token,
+    find_autocompletions,
+    get_highlights,
+    get_replacements,
+)
 
 
 class Handler:
@@ -62,29 +67,46 @@ class Handler:
 
     def handle_request(self, request: Request) -> None:
         file: str = request["file"]
-        result: list[str] = [""]
+        result: list[str] = []
+        command: str = request["command"]
+        cancelled: bool = False
+
+        if not file in self.files:
+            response: Response = {
+                "id": request["id"],
+                "type": "response",
+                "cancelled": True,
+                "command": command,
+                "result": result,
+            }
+
         match request["command"]:
             case "autocomplete":
                 result: list[str] = []
-                if file in self.files:
-                    result = find_autocompletions(
-                        full_text=self.files[file],
-                        expected_keywords=["expected_keywords"],
-                        current_word=request["current_word"],
-                    )
+                result = find_autocompletions(
+                    full_text=self.files[file],
+                    expected_keywords=request["expected_keywords"],  # type: ignore
+                    current_word=request["current_word"],  # type: ignore
+                )
             case "replacements":
-                if file in self.files:
-                    result = get_replacements(
-                        full_text=self.files[file],
-                        expected_keywords=["expected_keywords"],
-                        replaceable_word=request["current_word"],
-                    )
+                result = get_replacements(
+                    full_text=self.files[file],
+                    expected_keywords=request["expected_keywords"],  # type: ignore
+                    replaceable_word=request["current_word"],  # type: ignore
+                )
+            case "highlight":
+                pre_refined_result: list[Token] = get_highlights(
+                    full_text=self.files[file], language=request["language"]  # type: ignore
+                )
+                result = []
+                result += [str(token) for token in pre_refined_result]
+            case _:
+                cancelled = True
 
-        command: str = request["command"]
         response: Response = {
             "id": request["id"],
             "type": "response",
-            "cancelled": False,
+            "cancelled": cancelled,
             "command": command,
             "result": result,
         }

@@ -72,10 +72,11 @@ class IPC:
                     "id": id,
                     "type": type,
                     "command": command,
-                    "file": kwargs.get("file", ""),
-                    "expected_keywords": kwargs.get("expected_keywords", []),
-                    "current_word": kwargs.get("current_word", ""),
-                }
+                    "file": kwargs.get("file"),
+                    "expected_keywords": kwargs.get("expected_keywords"),
+                    "current_word": kwargs.get("current_word"),
+                    "language": kwargs.get("language")
+                } # type: ignore
                 self.send_message(request)
             case "notification":
                 notification: Notification = {
@@ -94,7 +95,12 @@ class IPC:
         self.create_message("ping")
 
     def request(
-        self, command: str, file: str, expected_keywords: list[str], current_word: str
+        self,
+        command: str,
+        file: str,
+        expected_keywords: list[str] = [""],
+        current_word: str = "",
+        language: str = "Text"
     ) -> None:
         self.create_message(
             type="request",
@@ -102,6 +108,7 @@ class IPC:
             file=file,
             expected_keywords=expected_keywords,
             current_word=current_word,
+            language = language
         )
 
     def cancel_request(self, command: str):

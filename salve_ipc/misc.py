@@ -1,6 +1,6 @@
 from typing import NotRequired, TypedDict
 
-COMMANDS: list[str] = ["autocomplete", "replacements"]
+COMMANDS: list[str] = ["autocomplete", "replacements", "highlight"]
 
 
 class Message(TypedDict):
@@ -10,9 +10,10 @@ class Message(TypedDict):
 
 class Request(Message):
     command: str  # Can only be commands in COMMANDS
-    expected_keywords: list[str]
     file: str
-    current_word: str
+    expected_keywords: NotRequired[list[str]]
+    current_word: NotRequired[str]
+    language: NotRequired[str]
 
 
 class Ping(Message): ...
