@@ -113,13 +113,15 @@ def find_autocompletions(
         word for word in words_in_text if word != current_word
     ]
 
-    no_usable_words_in_text: bool = not words_after_original_removal
-    if no_usable_words_in_text:
-        words_after_original_removal += expected_keywords
-
     relevant_words = [
         word for word in words_after_original_removal if word.startswith(current_word)
     ]
+
+    no_usable_words_in_text: bool = not relevant_words
+    if no_usable_words_in_text:
+        relevant_words += expected_keywords
+
+    relevant_words = [word for word in relevant_words if word.startswith(current_word)]
 
     autocomplete_matches = sorted(
         set(relevant_words), key=(lambda s: (-relevant_words.count(s), len(s), s))

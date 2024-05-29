@@ -75,8 +75,8 @@ class IPC:
                     "file": kwargs.get("file"),
                     "expected_keywords": kwargs.get("expected_keywords"),
                     "current_word": kwargs.get("current_word"),
-                    "language": kwargs.get("language")
-                } # type: ignore
+                    "language": kwargs.get("language"),
+                }  # type: ignore
                 self.send_message(request)
             case "notification":
                 notification: Notification = {
@@ -100,7 +100,7 @@ class IPC:
         file: str,
         expected_keywords: list[str] = [""],
         current_word: str = "",
-        language: str = "Text"
+        language: str = "Text",
     ) -> None:
         self.create_message(
             type="request",
@@ -108,7 +108,7 @@ class IPC:
             file=file,
             expected_keywords=expected_keywords,
             current_word=current_word,
-            language = language
+            language=language,
         )
 
     def cancel_request(self, command: str):
