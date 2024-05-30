@@ -100,13 +100,13 @@ while True:
 
 ### Running
 
-To run the example, move `examples/example_usage.py` to the root directory and run with python. The project uses only standard library modules, so there are no external dependencies.
+To run the example, move `examples/example_usage.py` to the root directory and run with python.
 
 To test newer features or test code in a Pull Review, do the same but move it back after if you plan to make a PR.
 
 ### Contributing
 
-To contribute, fork the repository, make your changes, and then make a pull request. If you want to add a feature, please open an issue first so we can discuss it.
+To contribute, fork the repository, make your changes, and then make a pull request. If you want to add a feature, please open an issue first so it can be discussed. Note that whenever and wherever possible you should try to use stdlib modules rather than external ones.
 
 ## License
 
