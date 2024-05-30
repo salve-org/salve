@@ -25,13 +25,17 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 
 The `generic_tokens` list is a list of strings that define all of the generic token types returned by the server which can be mapped to colors for syntax highlighting.
 
-### `Request` and `Response` TypedDict classes
-
-The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
-
 ### `Token` dataclass
 
 The `Token` dataclass gives easy type checking for tokens returned from the highlight command.
+
+### `hidden_chars`
+
+The `hidden_chars` (`dict[str, str]`) dictionary holds a bunch of hidden (zero width) characters as keys and then names for them as values. Token's of type "Hidden_Char" give the index to hidden characters and allow the user to display hidden characters to them that they may not see. These characters appear in code posted on forums or blogs by those hoping to prevent others from simply copy-pasting their code along with many other places.
+
+### `Request` and `Response` TypedDict classes
+
+The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
 
 ### `is_unicode_letter(char: str) -> bool`
 

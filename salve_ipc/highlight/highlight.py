@@ -33,6 +33,7 @@ generic_tokens: list[str] = [
     "Comment",
     "Generic",
     "Link",  # Website link (Not given by pygments)
+    "Hidden_Char",  # Hidden chars (no width space kind of stuff)
 ]
 
 
@@ -81,9 +82,8 @@ def get_new_token_type(old_token: str) -> str:
 url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
 
 
-def get_urls(full_text: str) -> list[Token]:
+def get_urls(lines: list[str]) -> list[Token]:
     start_pos: tuple[int, int] = (1, 0)
-    lines: list[str] = full_text.splitlines()
     url_toks: list[Token] = []
     while True:
         line: str = lines[start_pos[0] - 1][start_pos[1] :]
@@ -113,6 +113,58 @@ def get_urls(full_text: str) -> list[Token]:
     return url_toks
 
 
+hidden_chars: dict[str, str] = {
+    "\u00a0": "Non-breaking space",
+    "\u180e": "Control char (Mongolian vowel separator)",
+    "\u2000": "Control char (en quad)",
+    "\u2001": "Control char (em quad)",
+    "\u2002": "Control char (en space)",
+    "\u2003": "Control char (em space)",
+    "\u2004": "Control char (three-per-em space)",
+    "\u2005": "Control char (four-per-em space)",
+    "\u2006": "Control char (six-per-em space)",
+    "\u2007": "Control char (figure space)",
+    "\u2008": "Control char (punctuation space)",
+    "\u2009": "Control char (thin space)",
+    "\u200a": "Control char (hair space)",
+    "\u200b": "Control char (zero-width space)",
+    "\u202f": "Control char (narrow no-break space)",
+    "\u205f": "Control char (medium mathematical space)",
+    "\u3000": "Control char (ideographic space)",
+    "\ufeff": "Control char (byte order mark)",
+    "\u2800": "Braille pattern blank",
+    # "\u000a": "Line feed", # "\n" char
+    "\u061c": "Arabic letter mark",
+    "\u1160": "Hangul Jungseong Filler",
+    "\u115f": "Hangul Choseong Filler",
+    "\u17b4": "Khmer Vowel Inherent Aq",
+    "\u17b5": "Khmer Vowel Inherent Aa",
+    "\U0001d173": "Musical symbol begin beam",
+    "\U0001d174": "Musical symbol end beam",
+    "\U0001d175": "Musical symbol begin tie",
+    "\U0001d176": "Musical symbol end tie",
+    "\U0001d177": "Musical symbol begin slur",
+    "\U0001d178": "Musical symbol end slur",
+    "\U0001d179": "Musical symbol begin phrase",
+    "\U0001d17a": "Musical symbol end phrase",
+    "\u3164": "Hangul filler",
+}
+
+
+def find_hidden_chars(lines: list[str]) -> list[Token]:
+    hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
+        ((line_index + 1, char_index), char)
+        for line_index, line in enumerate(lines)
+        for char_index, char in enumerate(line)
+        if char in list(hidden_chars.keys())
+    ]
+    tok_list: list[Token] = [
+        Token(char[0], len(char[1]), "Hidden_Char")
+        for char in hidden_char_indexes
+    ]
+    return tok_list
+
+
 def get_highlights(full_text: str, language: str = "text") -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
@@ -133,8 +185,9 @@ def get_highlights(full_text: str, language: str = "text") -> list[Token]:
 
         start_index = (start_index[0], start_index[1] + token_len)
 
-    new_tokens += get_urls(
-        full_text
-    )  # Links can be useful for editors and they can always choose to discard them
+    # Add extra token types
+    split_text: list[str] = full_text.splitlines()
+    new_tokens += get_urls(split_text)
+    new_tokens += find_hidden_chars(split_text)
 
     return new_tokens
