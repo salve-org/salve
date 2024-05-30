@@ -14,7 +14,7 @@ setup(
     url="https://github.com/Moosems/salve",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=["pygments"],
+    install_requires=[line for line in open("requirements.txt").readlines()],
     python_requires=">=3.9",
     license="MIT license",
     classifiers=[
@@ -23,5 +23,5 @@ setup(
         "Typing :: Typed",
     ],
     packages=["salve_ipc"],
-    package_data={"salve_ipc": ["./*", "./highlight/*"]},
+    package_data={"salve_ipc": ["./*", "./highlight/*"], "./": ["requirements.txt"]},
 )
