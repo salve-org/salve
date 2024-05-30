@@ -63,7 +63,7 @@ def tokens_from_result(result: list[str]) -> list[Token]:
     return tokens
 
 
-def get_new_token(old_token: str) -> str:
+def get_new_token_type(old_token: str) -> str:
     new_type: str = generic_tokens[0]
     for index, token in enumerate(default_tokens):
         if token.startswith(old_token):
@@ -79,7 +79,7 @@ def get_highlights(full_text: str, language: str = "text") -> list:
     start_index: tuple[int, int] = (1, 0)
 
     for token in og_tokens:
-        new_type: str = get_new_token(str(token[0]))
+        new_type: str = get_new_token_type(str(token[0]))
         token_str: str = token[1]
         token_len: int = len(token_str)
         new_token = Token(start_index, token_len, new_type)

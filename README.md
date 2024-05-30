@@ -1,4 +1,4 @@
-<h1 align="center">Salve</h1>
+<h1 align="center">Salve v0.2.0</h1>
 
 > **Note**
 > This package does not work on Windows machines as `Selector.select()` does not work on them.
@@ -9,7 +9,7 @@ In the Command Line, paste the following: `pip install salve_ipc`
 
 ## Description
 
-Salve is an IPC library that can be used by code editors to get autocomplete and, in the future, syntax highlighting.
+Salve is an IPC library that can be used by code editors to get autocompletions, replacements, and syntax highlighting.
 
 ## Documentation
 
