@@ -48,7 +48,7 @@ class Handler:
                 if json_input["remove"]:  # type: ignore
                     self.files.pop(filename)
                     return
-                contents: str = json_input["contents"] # type: ignore
+                contents: str = json_input["contents"]  # type: ignore
                 self.files[filename] = contents
             case _:
                 self.id_list.append(id)

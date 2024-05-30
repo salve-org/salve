@@ -183,7 +183,9 @@ class IPC:
 
         self.files[filename] = current_state
 
-        self.create_message("notification", filename=filename, contents=current_state)
+        self.create_message(
+            "notification", filename=filename, contents=current_state
+        )
 
     def remove_file(self, filename: str) -> None:
         """Removes a file from the main_server - external API"""

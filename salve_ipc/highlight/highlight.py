@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from re import Match, Pattern, compile
-from typing import AnyStr
 
 from pygments import lex
 from pygments.lexer import Lexer

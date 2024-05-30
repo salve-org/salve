@@ -23,5 +23,8 @@ setup(
         "Typing :: Typed",
     ],
     packages=["salve_ipc"],
-    package_data={"salve_ipc": ["./*", "./highlight/*"], "./": ["requirements.txt"]},
+    package_data={
+        "salve_ipc": ["./*", "./highlight/*"],
+        "./": ["requirements.txt"],
+    },
 )
