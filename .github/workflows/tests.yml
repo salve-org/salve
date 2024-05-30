@@ -13,6 +13,7 @@ jobs:
 
       - name: Code Formatting (App)
         run: |
+          pip install salve_ipc
           pip install pytest
           pip install -r requirements.txt
           pytest .
