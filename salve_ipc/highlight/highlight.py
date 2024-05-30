@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from re import Match, Pattern, compile
+from typing import AnyStr
 
 from pygments import lex
 from pygments.lexer import Lexer
@@ -31,6 +33,7 @@ generic_tokens: list[str] = [
     "Punctuation",
     "Comment",
     "Generic",
+    "Link",  # Website link (Not given by pygments)
 ]
 
 
@@ -76,7 +79,42 @@ def get_new_token_type(old_token: str) -> str:
     return new_type
 
 
-def get_highlights(full_text: str, language: str = "text") -> list:
+url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
+
+
+def get_urls(full_text: str) -> list[Token]:
+    start_pos: tuple[int, int] = (1, 0)
+    lines: list[str] = full_text.splitlines()
+    url_toks: list[Token] = []
+    while True:
+        line: str = lines[start_pos[0] - 1][start_pos[1] :]
+        match_start: Match[str] | None = url_regex.match(line)
+        if not match_start:
+            if len(lines) >= start_pos[0]:
+                break
+            start_pos = (start_pos[0] + 1, 0)
+        token_start_col = match_start.span()[0]  # type: ignore
+        url: str = line[token_start_col:]
+
+        # Narrow down the url
+        url = url.strip()
+        url = url.split()[0]
+        url = url.split("'")[0]
+        url = url.split("`")[0]
+        url = url.split('"')[0]
+        url = url.rstrip(".,?!")
+        if "(" not in url:  # urls can contain spaces (e.g. wikipedia)
+            url = url.rstrip(")")
+        url = url.rstrip(".,?!")
+
+        url_len: int = len(url)
+        token: Token = Token((start_pos[0], token_start_col), url_len, "Link")
+        url_toks.append(token)
+        start_pos = (start_pos[0], start_pos[1] + url_len)
+    return url_toks
+
+
+def get_highlights(full_text: str, language: str = "text") -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
     new_tokens: list[Token] = []
@@ -95,5 +133,9 @@ def get_highlights(full_text: str, language: str = "text") -> list:
             continue
 
         start_index = (start_index[0], start_index[1] + token_len)
+
+    new_tokens += get_urls(
+        full_text
+    )  # Links can be useful for editors and they can always choose to discard them
 
     return new_tokens
