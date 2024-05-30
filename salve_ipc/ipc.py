@@ -11,13 +11,13 @@ from .misc import COMMANDS, Message, Notification, Ping, Request, Response
 
 class IPC:
     """The IPC class is used to talk to the server and run commands ("autocomplete", "replacements", and "highlight"). The public API includes the following methods:
-        - IPC.ping()
-        - IPC.request()
-        - IPC.cancel_request()
-        - IPC.update_file()
-        - IPC.remove_file()
-        - IPC.kill_IPC()
-        """
+    - IPC.ping()
+    - IPC.request()
+    - IPC.cancel_request()
+    - IPC.update_file()
+    - IPC.remove_file()
+    - IPC.kill_IPC()
+    """
 
     def __init__(self, id_max: int = 15_000) -> None:
         self.used_ids: list[int] = []

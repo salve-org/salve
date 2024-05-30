@@ -12,6 +12,7 @@ from server_functions import find_autocompletions, get_replacements
 
 class Handler:
     """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
+
     def __init__(self) -> None:
         set_blocking(stdin.fileno(), False)
         set_blocking(stdout.fileno(), False)

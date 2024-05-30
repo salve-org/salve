@@ -37,6 +37,7 @@ generic_tokens: list[str] = [
 @dataclass
 class Token:
     """Generic Token class that makes highlighting files simple and easy"""
+
     start_index: tuple[int, int]  # line, column
     token_length: int
     highlight_type: str
