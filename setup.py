@@ -7,14 +7,14 @@ with open("README.md", "r") as file:
 
 setup(
     name="salve_ipc",
-    version="0.2.1",
+    version="0.2.2",
     description="A module that makes easily provides autocompletions, replacement suggestions, and syntax highlighting to your code editor",
     author="Moosems",
     author_email="moosems.j@gmail.com",
     url="https://github.com/Moosems/salve",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=[line for line in open("requirements.txt").readlines()],
+    install_requires=["pygments"],
     python_requires=">=3.9",
     license="MIT license",
     classifiers=[
