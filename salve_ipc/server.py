@@ -1,4 +1,3 @@
-from difflib import restore
 from json import dumps, loads
 from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
@@ -49,8 +48,8 @@ class Handler:
                 if json_input["remove"]:  # type: ignore
                     self.files.pop(filename)
                     return
-                diff: list[str] = json_input["diff"].splitlines()  # type: ignore
-                self.files[filename] = "".join(restore(diff, 2))  # type: ignore
+                contents: str = json_input["contents"] # type: ignore
+                self.files[filename] = contents
             case _:
                 self.id_list.append(id)
                 command: str = json_input["command"]  # type: ignore

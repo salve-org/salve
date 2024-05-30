@@ -1,4 +1,3 @@
-from difflib import ndiff
 from json import dumps, loads
 from os import set_blocking
 from pathlib import Path
@@ -44,7 +43,7 @@ class IPC:
         files_copy = self.files.copy()
         self.files = {}
         for filename, data in files_copy.items():
-            self.add_file(filename, data)
+            self.update_file(filename, data)
 
     def check_server(self) -> None:
         """Checks that the main_server is alive - internal API"""
@@ -96,7 +95,7 @@ class IPC:
                     "type": type,
                     "remove": kwargs.get("remove", False),
                     "filename": kwargs.get("filename", ""),
-                    "diff": kwargs.get("diff", ""),
+                    "contents": kwargs.get("contents", ""),
                 }
                 self.send_message(notification)
             case _:
@@ -179,30 +178,12 @@ class IPC:
         self.newest_responses[command] = None
         return response
 
-    def add_file(self, filename: str, current_state: str) -> None:
-        """Adds a file to the main_server's file list - internal API"""
-        if filename in self.files.keys():
-            return
-
-        self.files[filename] = current_state
-
-        diff = "".join(ndiff([""], current_state.splitlines(keepends=True)))
-
-        self.create_message("notification", filename=filename, diff=diff)
-
     def update_file(self, filename: str, current_state: str) -> None:
-        """Updates files if they are already in the system or adds them if not - external API"""
-        self.add_file(filename, current_state)
+        """Updates files in the system - external API"""
 
         self.files[filename] = current_state
 
-        diff = "".join(
-            ndiff(
-                self.files[filename].splitlines(keepends=True),
-                current_state.splitlines(keepends=True),
-            )
-        )
-        self.create_message("notification", filename=filename, diff=diff)
+        self.create_message("notification", filename=filename, contents=current_state)
 
     def remove_file(self, filename: str) -> None:
         """Removes a file from the main_server - external API"""

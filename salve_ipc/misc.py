@@ -31,7 +31,7 @@ class Notification(Message):
 
     filename: str
     remove: bool
-    diff: NotRequired[str]
+    contents: NotRequired[str]
 
 
 class Response(Message):
