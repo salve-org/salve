@@ -3,10 +3,12 @@ from unicodedata import category
 
 
 def is_unicode_letter(char: str) -> bool:
+    """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
     return char == "_" or category(char).startswith("L")
 
 
 def find_words(full_text: str) -> list[str]:
+    """Returns a list of all words in a given piece of text"""
     words_list = []
     current_word = ""
 
@@ -33,7 +35,7 @@ def find_words(full_text: str) -> list[str]:
 def find_autocompletions(
     full_text: str, expected_keywords: list[str], current_word: str
 ) -> list[str]:
-    """Returns a list of autocompletions based on the word"""
+    """Returns a list of autocompletions based on the word, text, and language keywords"""
 
     words_in_text: list[str] = find_words(full_text)
 
@@ -61,6 +63,7 @@ def find_autocompletions(
 def get_replacements(
     full_text: str, expected_keywords: list[str], replaceable_word: str
 ) -> list[str]:
+    """Returns a list of possible and plausible replacements for a given word"""
     # Get all words in file
     starter_words = find_words(full_text)
     starter_words += (

@@ -36,12 +36,14 @@ generic_tokens: list[str] = [
 
 @dataclass
 class Token:
+    """Generic Token class that makes highlighting files simple and easy"""
     start_index: tuple[int, int]  # line, column
     token_length: int
     highlight_type: str
 
 
 def tokens_from_result(result: list[str]) -> list[Token]:
+    """Returns a list of Token's given as a result (converted to str) that can be used for highlighting"""
     tokens: list[Token] = []
     for token in result:
         try:
@@ -64,6 +66,7 @@ def tokens_from_result(result: list[str]) -> list[Token]:
 
 
 def get_new_token_type(old_token: str) -> str:
+    """Turns pygments token types into a generic predefined Token"""
     new_type: str = generic_tokens[0]
     for index, token in enumerate(default_tokens):
         if token.startswith(old_token):
@@ -73,6 +76,7 @@ def get_new_token_type(old_token: str) -> str:
 
 
 def get_highlights(full_text: str, language: str = "text") -> list:
+    """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
     new_tokens: list[Token] = []
     og_tokens: list[tuple[_TokenType, str]] = list(lex(full_text, lexer))

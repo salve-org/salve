@@ -4,7 +4,7 @@ from salve_ipc import IPC, Response
 
 context = IPC()
 
-context.add_file(
+context.update_file(
     "test", "test file with testing words which should return test then testing"
 )
 

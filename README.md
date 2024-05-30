@@ -21,6 +21,10 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 - "replacements"
 - "highlight"
 
+### `generic_tokens`
+
+The `generic_tokens` list is a list of strings that define all of the generic token types returned by the server which can be mapped to colors for syntax highlighting.
+
 ### `Request` and `Response` TypedDict classes
 
 The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
