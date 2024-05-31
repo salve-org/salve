@@ -74,7 +74,7 @@ class Handler:
                 "type": "response",
                 "cancelled": True,
                 "command": command,
-                "result": result, # type: ignore
+                "result": result,  # type: ignore
             }
 
         match request["command"]:
@@ -104,7 +104,7 @@ class Handler:
             "type": "response",
             "cancelled": cancelled,
             "command": command,
-            "result": result, # type: ignore
+            "result": result,  # type: ignore
         }
         self.write_response(response)
         self.newest_ids[command] = 0

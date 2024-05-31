@@ -49,7 +49,9 @@ class Token:
         return (self.start_index, self.token_length, self.highlight_type)
 
 
-def tokens_from_result(result: list[tuple[tuple[int, int], int, str]]) -> list[Token]:
+def tokens_from_result(
+    result: list[tuple[tuple[int, int], int, str]]
+) -> list[Token]:
     """Returns a list of Token's given as a result (converted to tuples) that can be used for highlighting"""
     tokens: list[Token] = []
     for token in result:
