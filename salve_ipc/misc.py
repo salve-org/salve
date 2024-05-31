@@ -39,4 +39,4 @@ class Response(Message):
 
     cancelled: bool
     command: NotRequired[str]
-    result: NotRequired[list[str]]
+    result: NotRequired[list[str] | tuple[tuple[int, int], int, str]]

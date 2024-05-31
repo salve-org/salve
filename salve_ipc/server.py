@@ -64,7 +64,7 @@ class Handler:
 
     def handle_request(self, request: Request) -> None:
         file: str = request["file"]
-        result: list[str] = []
+        result: list[str | tuple[tuple[int, int], int, str]] = []
         command: str = request["command"]
         cancelled: bool = False
 
@@ -74,12 +74,11 @@ class Handler:
                 "type": "response",
                 "cancelled": True,
                 "command": command,
-                "result": result,
+                "result": result, # type: ignore
             }
 
         match request["command"]:
             case "autocomplete":
-                result: list[str] = []
                 result = find_autocompletions(
                     full_text=self.files[file],
                     expected_keywords=request["expected_keywords"],  # type: ignore
@@ -96,7 +95,7 @@ class Handler:
                     full_text=self.files[file], language=request["language"]  # type: ignore
                 )
                 result = []
-                result += [str(token) for token in pre_refined_result]
+                result += [token.to_tuple() for token in pre_refined_result]
             case _:
                 cancelled = True
 
@@ -105,7 +104,7 @@ class Handler:
             "type": "response",
             "cancelled": cancelled,
             "command": command,
-            "result": result,
+            "result": result, # type: ignore
         }
         self.write_response(response)
         self.newest_ids[command] = 0

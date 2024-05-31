@@ -31,7 +31,7 @@ The `Token` dataclass gives easy type checking for tokens returned from the high
 
 ### `hidden_chars`
 
-The `hidden_chars` (`dict[str, str]`) dictionary holds a bunch of hidden (zero width) characters as keys and then names for them as values. Token's of type "Hidden_Char" give the index to hidden characters and allow the user to display hidden characters to them that they may not see. These characters appear in code posted on forums or blogs by those hoping to prevent others from simply copy-pasting their code along with many other places.
+The `hidden_chars` (`dict[str, str]`) dictionary holds a bunch of hidden (zero width) characters as keys and then names for them as values. `Token`'s of type "Hidden_Char" give the index to hidden characters and allow the user to display hidden characters to them that they may not see. These characters appear in code posted on forums or blogs by those hoping to prevent others from simply copy-pasting their code along with many other places.
 
 ### `Request` and `Response` TypedDict classes
 
@@ -41,9 +41,9 @@ The `Request` and `Response` TypedDict classes allow for type checking when hand
 
 The `is_unicode_letter()` function returns a boolean if a given word is a unicode letter (includes "\_" as special case) which can be useful when trying to find the current word being typed to hand to the IPC for autocompletion.
 
-### `tokens_from_result(result: list[str]) -> list[Token]`
+### `tokens_from_result(result: list[tuple[tuple[int, int], int, str]) -> list[Token]`
 
-The `tokens_from_result()` function takes the results from a `highlight` commands results output and returns a list `Token` types from it to be used for highlighting.
+The `tokens_from_result()` function takes the results from a `highlight` commands output and returns a list `Token` types from it to be used for highlighting. The mapping of the result to `Token` is very simple however and this step can be skipped if one understands how to read the return values.
 
 ### `IPC` Class
 

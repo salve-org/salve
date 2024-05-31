@@ -45,24 +45,16 @@ class Token:
     token_length: int
     highlight_type: str
 
+    def to_tuple(self) -> tuple[tuple[int, int], int, str]:
+        return (self.start_index, self.token_length, self.highlight_type)
 
-def tokens_from_result(result: list[str]) -> list[Token]:
-    """Returns a list of Token's given as a result (converted to str) that can be used for highlighting"""
+
+def tokens_from_result(result: list[tuple[tuple[int, int], int, str]]) -> list[Token]:
+    """Returns a list of Token's given as a result (converted to tuples) that can be used for highlighting"""
     tokens: list[Token] = []
     for token in result:
         try:
-            split_token = token.split("=")[1:4]
-
-            start_index_parens = split_token[0].split(",")[0:2]
-            line: int = int(start_index_parens[0].split("(")[1])
-            column: int = int(start_index_parens[1].split(")")[0])
-            start_index: tuple[int, int] = (line, column)
-
-            token_length: int = int(split_token[1].split(",")[0])
-
-            highlight_type: str = split_token[2].split("'")[1]
-
-            real_token = Token(start_index, token_length, highlight_type)
+            real_token = Token(token[0], token[1], token[2])
             tokens.append(real_token)
         except IndexError:
             raise Exception("Could not parse results! Not highlight tokens!")
