@@ -1,4 +1,4 @@
-name: Code Formatting
+name: Isort Formatting
 
 on: push
 

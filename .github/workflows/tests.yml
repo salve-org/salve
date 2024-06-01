@@ -1,4 +1,4 @@
-name: Code Formatting
+name: Code Tests
 
 on: push
 
