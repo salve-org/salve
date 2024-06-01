@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.2.0</h1>
+<h1 align="center">Salve v0.3.2</h1>
 
 > **Note**
 > This package does not work on Windows machines as `Selector.select()` does not work on them.
