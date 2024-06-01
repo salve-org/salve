@@ -7,4 +7,3 @@ dist/
 build/
 .ruff_cache/
 salve_ipc.egg-info/
-/example_usage.py

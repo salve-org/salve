@@ -43,6 +43,11 @@ def test_IPC():
     }
 
     highlight_output: Response | None = context.get_response("highlight")
+    # from json import dumps
+
+    # print(
+    #     dumps(highlight_output), file=open("tests/highlight_output.json", "r+")
+    # )
     assert highlight_output == loads(
         open("tests/highlight_output.json").read()
     )

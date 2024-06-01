@@ -172,6 +172,8 @@ def get_highlights(full_text: str, language: str = "text") -> list[Token]:
         for token in og_tokens:
             new_type: str = get_new_token_type(str(token[0]))
             token_str: str = token[1]
+            if token_str == "\n":  # Lexer adds the newline back
+                continue
 
             token_len: int = len(token_str)
             new_token = Token(start_index, token_len, new_type)
