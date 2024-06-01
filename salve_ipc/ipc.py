@@ -44,7 +44,9 @@ class IPC:
     def create_server(self) -> None:
         """Creates the main_server through a subprocess - internal API"""
         server_file: Path = Path(__file__).parent / "server.py"
-        server = Popen(["python3", str(server_file)], stdin=PIPE, stdout=PIPE)
+        server = Popen(
+            ["python3", str(server_file)], stdin=PIPE, stdout=PIPE, stderr=PIPE
+        )
         set_blocking(server.stdout.fileno(), False)  # type: ignore
         set_blocking(server.stdin.fileno(), False)  # type: ignore
         self.main_server = server
@@ -53,6 +55,12 @@ class IPC:
         self.files = {}
         for filename, data in files_copy.items():
             self.update_file(filename, data)
+
+    def check_server_error(self) -> tuple[bool, str]:
+        """Returns whether the server is dead or not and, if it is, returns the error as well for logging - external API"""
+        dead: bool = False if not self.main_server.poll() else True  # type: ignore
+        err: str = self.main_server.stderr.read().decode()  # type: ignore
+        return (dead, err)
 
     def check_server(self) -> None:
         """Checks that the main_server is alive - internal API"""

@@ -51,6 +51,9 @@ def test_IPC():
     assert highlight_output == loads(
         open("tests/highlight_output.json").read()
     )
+
+    assert context.check_server_error() == (False, "")
+
     context.remove_file("test")
     context.kill_IPC()
 
