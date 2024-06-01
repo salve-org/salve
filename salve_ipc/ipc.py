@@ -1,11 +1,20 @@
 from json import dumps, loads
-from os import set_blocking
+from os import remove, set_blocking
 from pathlib import Path
 from random import randint
 from subprocess import PIPE, Popen
+from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
 from typing import IO
 
-from .misc import COMMANDS, Message, Notification, Ping, Request, Response
+from .misc import (
+    COMMANDS,
+    Details,
+    Message,
+    Notification,
+    Ping,
+    Request,
+    Response,
+)
 
 
 class IPC:
@@ -19,7 +28,7 @@ class IPC:
     """
 
     def __init__(self, id_max: int = 15_000) -> None:
-        self.used_ids: list[int] = []
+        self.all_ids: dict[int, str] = {}  # id, tempfile path
         self.id_max = id_max
         self.current_ids: dict[str, int] = {}
         self.newest_responses: dict[str, Response | None] = {}
@@ -57,6 +66,10 @@ class IPC:
             return self.main_server.stdout  # type: ignore
         return self.main_server.stdin  # type: ignore
 
+    def write_tmp_file(self, details: Details, tmp_path: str) -> None:
+        with open(tmp_path, "r+") as file:
+            file.write(dumps(details))
+
     def send_message(self, message: Message) -> None:
         """Sends a Message to the main_server as provided by the argument message - internal API"""
         json_request: str = dumps(message)
@@ -68,38 +81,49 @@ class IPC:
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
         id = randint(1, self.id_max)  # 0 is reserved for the empty case
-        while id in self.used_ids:
+        while id in list(self.all_ids.keys()):
             id = randint(1, self.id_max)
 
-        self.used_ids.append(id)
+        tmp: _TemporaryFileWrapper[str] = NamedTemporaryFile(
+            prefix="salve_ipc", suffix=".tmp", delete=False, mode="r+"
+        )
+        self.all_ids[id] = tmp.name
         match type:
             case "ping":
-                ping: Ping = {"id": id, "type": "ping"}
+                ping: Ping = {"id": id, "type": "ping", "tmp_file": tmp.name}
                 self.send_message(ping)
             case "request":
                 command = kwargs.get("command", "")
                 self.current_ids[command] = id
-                request: Request = {
-                    "id": id,
-                    "type": type,
+                request_details: Request = {
                     "command": command,
                     "file": kwargs.get("file"),
                     "expected_keywords": kwargs.get("expected_keywords"),
                     "current_word": kwargs.get("current_word"),
                     "language": kwargs.get("language"),
                 }  # type: ignore
-                self.send_message(request)
-            case "notification":
-                notification: Notification = {
+                request: Message = {
                     "id": id,
                     "type": type,
+                    "tmp_file": tmp.name,
+                }
+                self.write_tmp_file(request_details, tmp.name)
+                self.send_message(request)
+            case "notification":
+                notification_details: Notification = {
                     "remove": kwargs.get("remove", False),
-                    "filename": kwargs.get("filename", ""),
+                    "file": kwargs.get("filename", ""),
                     "contents": kwargs.get("contents", ""),
                 }
+                notification: Message = {
+                    "id": id,
+                    "type": type,
+                    "tmp_file": tmp.name,
+                }
+                self.write_tmp_file(notification_details, tmp.name)
                 self.send_message(notification)
             case _:
-                ping: Ping = {"id": id, "type": "ping"}
+                ping: Ping = {"id": id, "type": "ping", "tmp_file": tmp.name}
                 self.send_message(ping)
 
     def ping(self) -> None:
@@ -120,6 +144,10 @@ class IPC:
             raise Exception(
                 f"Command {command} not in builtin commands. Those are {COMMANDS}!"
             )
+
+        if file not in self.files:
+            self.kill_IPC()
+            raise Exception(f"File {file} does not exist in system!")
 
         self.create_message(
             type="request",
@@ -142,19 +170,21 @@ class IPC:
 
     def parse_line(self, line: str) -> None:
         """Parses main_server output line and discards useless responses - internal API"""
-        response_json: Response = loads(line)
+        response_json: Message = loads(line)
+        details: Response = loads(open(response_json["tmp_file"], "r+").read())
         id = response_json["id"]
-        self.used_ids.remove(id)
+        self.all_ids.pop(id)
+        remove(response_json["tmp_file"])
 
-        if "command" not in response_json:
+        if "command" not in details:
             return
 
-        command = response_json["command"]
+        command = details["command"]
         if id != self.current_ids[command]:
             return
 
         self.current_ids[command] = 0
-        self.newest_responses[command] = response_json
+        self.newest_responses[command] = details
 
     def check_responses(self) -> None:
         """Checks all main_server output by calling IPC.parse_line() on each response - internal API"""

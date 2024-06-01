@@ -46,3 +46,5 @@ while True:
     # Write response
     stdout.write(str(output) + "\n")
     stdout.flush()
+
+context.kill_IPC()

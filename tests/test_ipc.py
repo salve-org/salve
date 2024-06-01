@@ -1,36 +1,53 @@
+from json import loads
 from time import sleep
 
 from salve_ipc import IPC, Response
 
 
 def test_IPC():
-    autocompleter = IPC()
+    context = IPC()
 
-    autocompleter.ping()
+    context.ping()
 
-    autocompleter.update_file("test.py", "testy\n")
+    context.update_file("test", open("tests/test_file.py", "r+").read())
 
-    autocompleter.request(
+    context.request(
         "autocomplete",
+        file="test",
         expected_keywords=[],
-        file="test.py",
         current_word="t",
     )
+    context.request(
+        "replacements",
+        file="test",
+        expected_keywords=[],
+        current_word="thid",
+    )
+    context.request("highlight", file="test", language="python")
 
     sleep(1)
 
     # Check output
-    output: Response = autocompleter.get_response("autocomplete")  # type: ignore
-    output["id"] = 0
-    assert output == {
-        "id": 0,
-        "type": "response",
+    autocomplete_output: Response | None = context.get_response("autocomplete")
+    assert autocomplete_output == {
         "cancelled": False,
         "command": "autocomplete",
-        "result": ["testy"],
+        "result": ["this"],
     }
 
-    autocompleter.remove_file("test.py")
+    replacements_output: Response | None = context.get_response("replacements")
+    assert replacements_output == {
+        "cancelled": False,
+        "command": "replacements",
+        "result": ["this"],
+    }
+
+    highlight_output: Response | None = context.get_response("highlight")
+    assert highlight_output == loads(
+        open("tests/highlight_output.json").read()
+    )
+    context.remove_file("test")
+    context.kill_IPC()
 
 
 test_IPC()

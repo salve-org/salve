@@ -9,7 +9,10 @@ In the Command Line, paste the following: `pip install salve_ipc`
 
 ## Description
 
-Salve is an IPC library that can be used by code editors to get autocompletions, replacements, and syntax highlighting.
+Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, and syntax highlighting.
+
+> **Note**
+> The first time that the system is loaded or a new server needs to be started it will take a fair bit longer than if it is simply kept alive by pinging regularly.
 
 ## Documentation
 
@@ -33,7 +36,7 @@ The `Token` dataclass gives easy type checking for tokens returned from the high
 
 The `hidden_chars` (`dict[str, str]`) dictionary holds a bunch of hidden (zero width) characters as keys and then names for them as values. `Token`'s of type "Hidden_Char" give the index to hidden characters and allow the user to display hidden characters to them that they may not see. These characters appear in code posted on forums or blogs by those hoping to prevent others from simply copy-pasting their code along with many other places.
 
-### `Request` and `Response` TypedDict classes
+### `Response` TypedDict classes
 
 The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
 
@@ -47,61 +50,42 @@ The `tokens_from_result()` function takes the results from a `highlight` command
 
 ### `IPC` Class
 
-| Method              | Description                                                                                                                                                                                                                                                                                          | Arguments                                                                                                                                                                         |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.ping()`           | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way                                                                                                                                             | None                                                                                                                                                                              |
-| `.get_response()`   | Gets a response of the requested command                                                                                                                                                                                                                                                             | `command`: str                                                                                                                                                                    |
-| `.request()`        | Makes a request to the server                                                                                                                                                                                                                                                                        | `command`: str, `file`: str, `expected_keywords`: list[str] ("autocomple" or "replacements"), `current_word`: str ("autocomple" or "replacements"), `language`: str ("highlight") |
-| `.cancel_request()` | Cancels request of command type and removes reponse if it was recieved. Must be called before `.get_response()` to work                                                                                                                                                                              | `command`: str                                                                                                                                                                    |
-| `.update_file()`    | Updates files stored on the server that are used to get responses                                                                                                                                                                                                                                    | `filename`: str, `current_state`: str (just the text of the file)                                                                                                                 |
-| `.remove_file()`    | Removes a file of the name given if any exists. Note that a file should only be removed when sure that all other requests using the file are completed. If you delete a file right after a request you run the risk of it removing the file before the task could be run and causing a server crash. | `filename`: str                                                                                                                                                                   |
-| `.kill_IPC()`       | This kills the IPC process and acts as a precaution against wasted CPU when the main thread no longer needs the IPC                                                                                                                                                                                  | None                                                                                                                                                                              |
+| Method              | Description                                                                                                                                                                                                                                                                                                                                               | Arguments                                                                                                                                                                         |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.ping()`           | Pings the server. After five seconds the server closes if not pinged so it is better for performance to keep it alive but it will be reopened either way                                                                                                                                                                                                  | None                                                                                                                                                                              |
+| `.get_response()`   | Gets a response of the requested command                                                                                                                                                                                                                                                                                                                  | `command`: str                                                                                                                                                                    |
+| `.request()`        | Makes a request to the server                                                                                                                                                                                                                                                                                                                             | `command`: str, `file`: str, `expected_keywords`: list[str] ("autocomple" or "replacements"), `current_word`: str ("autocomple" or "replacements"), `language`: str ("highlight") |
+| `.cancel_request()` | Cancels request of command type and removes reponse if it was recieved. Must be called before `.get_response()` to work                                                                                                                                                                                                                                   | `command`: str                                                                                                                                                                    |
+| `.update_file()`    | Updates files stored on the server that are used to get responses                                                                                                                                                                                                                                                                                         | `filename`: str, `current_state`: str (just the text of the file)                                                                                                                 |
+| `.remove_file()`    | Removes a file of the name given if any exists. Note that a file should only be removed when sure that all other requests using the file are completed. If you delete a file right after a request you run the risk of it removing the file before the task could be run and causing a server crash (`Request`'s go after `Notification`'s and `Ping`'s). | `filename`: str                                                                                                                                                                   |
+| `.kill_IPC()`       | This kills the IPC process and acts as a precaution against wasted CPU when the main thread no longer needs the IPC                                                                                                                                                                                                                                       | None                                                                                                                                                                              |
 
 ### Basic Usage:
 
 ```python
-from os import set_blocking
-from selectors import EVENT_READ, DefaultSelector
-from sys import stdin, stdout
+from time import sleep
 
-from salve_ipc import IPC, Response
+from salve_ipc import IPC, Response, tokens_from_result
 
-autocompleter = IPC()
+context = IPC()
 
-set_blocking(stdin.fileno(), False)
-set_blocking(stdin.fileno(), False)
-selector = DefaultSelector()
-selector.register(stdin, EVENT_READ)
+context.update_file(
+    "test",
+    open(__file__, "r+").read(),
+)
 
-stdout.write("Code: \n")
-stdout.flush()
+context.request(
+    "autocomplete",
+    file="test",
+    expected_keywords=[],
+    current_word="t",
+)
 
-while True:
-    # Keep IPC alive
-    autocompleter.ping()
+sleep(1)
 
-    # Add file
-    autocompleter.add_file("test", "")
-
-    # Check input
-    events = selector.select(0.025)
-    if events:
-        # Make requests
-        for line in stdin:
-            autocompleter.update_file("test", line)
-            autocompleter.request(
-                "autocomplete",
-                expected_keywords=[],
-                full_text=line,
-                current_word=line[-2],
-            )
-
-    # Check output
-    output: Response | None = autocompleter.get_response()
-    if not output:
-        continue
-    stdout.write(str(output) + "\n")
-    stdout.flush()
+output: Response = context.get_response("autocomplete")  # type: ignore
+print(tokens_from_result(output["result"]))  # type: ignore
+context.kill_IPC()
 ```
 
 ## How to run and contribute

@@ -42,3 +42,4 @@ def ping_loop() -> None:
 
 root.after_idle(ping_loop)
 root.mainloop()
+context.kill_IPC()

@@ -7,7 +7,8 @@ from pygments.lexers import get_lexer_by_name
 from pygments.token import _TokenType
 
 default_tokens: list[str] = [
-    "Token.Text" "Token.Text.Whitespace",
+    "Token.Text.Whitespace",
+    "Token.Text",
     "Token.Error",
     "Token.Keyword",
     "Token.Name",
@@ -20,8 +21,8 @@ default_tokens: list[str] = [
     "Token.Generic",
 ]
 generic_tokens: list[str] = [
-    "Text",
     "Whitespace",
+    "Text",
     "Error",
     "Keyword",
     "Name",
@@ -67,7 +68,7 @@ def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
     new_type: str = generic_tokens[0]
     for index, token in enumerate(default_tokens):
-        if token.startswith(old_token):
+        if old_token.startswith(token):
             new_type = generic_tokens[index]
             break
     return new_type
@@ -162,25 +163,24 @@ def find_hidden_chars(lines: list[str]) -> list[Token]:
 def get_highlights(full_text: str, language: str = "text") -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
+    split_text: list[str] = full_text.splitlines()
     new_tokens: list[Token] = []
-    og_tokens: list[tuple[_TokenType, str]] = list(lex(full_text, lexer))
     start_index: tuple[int, int] = (1, 0)
 
-    for token in og_tokens:
-        new_type: str = get_new_token_type(str(token[0]))
-        token_str: str = token[1]
-        token_len: int = len(token_str)
-        new_token = Token(start_index, token_len, new_type)
-        new_tokens.append(new_token)
+    for line in split_text:
+        og_tokens: list[tuple[_TokenType, str]] = list(lex(line, lexer))
+        for token in og_tokens:
+            new_type: str = get_new_token_type(str(token[0]))
+            token_str: str = token[1]
 
-        if token_str == "\n":
-            start_index = (start_index[0] + 1, 0)
-            continue
+            token_len: int = len(token_str)
+            new_token = Token(start_index, token_len, new_type)
+            new_tokens.append(new_token)
 
-        start_index = (start_index[0], start_index[1] + token_len)
+            start_index = (start_index[0], start_index[1] + token_len)
+        start_index = (start_index[0] + 1, 0)
 
     # Add extra token types
-    split_text: list[str] = full_text.splitlines()
     new_tokens += get_urls(split_text)
     new_tokens += find_hidden_chars(split_text)
 
