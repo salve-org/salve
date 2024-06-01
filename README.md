@@ -36,9 +36,9 @@ The `Token` dataclass gives easy type checking for tokens returned from the high
 
 The `hidden_chars` (`dict[str, str]`) dictionary holds a bunch of hidden (zero width) characters as keys and then names for them as values. `Token`'s of type "Hidden_Char" give the index to hidden characters and allow the user to display hidden characters to them that they may not see. These characters appear in code posted on forums or blogs by those hoping to prevent others from simply copy-pasting their code along with many other places.
 
-### `Response` TypedDict classes
+### `Response` TypedDict class
 
-The `Request` and `Response` TypedDict classes allow for type checking when handling output from salve_ipc.
+The `Response` TypedDict classs allows for type checking when handling output from salve_ipc.
 
 ### `is_unicode_letter(char: str) -> bool`
 
