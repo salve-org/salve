@@ -51,7 +51,9 @@ class Token:
 
 
 def tokens_from_result(
-    result: list[tuple[tuple[int, int], int, str]]
+    result: list[
+        tuple[tuple[int, int], int, str]
+    ]  # Technically JSON converts it to list[list[int], int, str] but we get the same result
 ) -> list[Token]:
     """Returns a list of Token's given as a result (converted to tuples) that can be used for highlighting"""
     tokens: list[Token] = []
