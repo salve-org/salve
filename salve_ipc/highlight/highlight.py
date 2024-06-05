@@ -186,6 +186,7 @@ def get_highlights(full_text: str, language: str = "text") -> list[Token]:
 
     # Add extra token types
     new_tokens += get_urls(split_text)
-    new_tokens += find_hidden_chars(split_text)
+    if [char for char in hidden_chars if char in full_text]:
+        new_tokens += find_hidden_chars(split_text)
 
     return new_tokens
