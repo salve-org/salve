@@ -1,4 +1,4 @@
-# pip uninstall salve_ipc -y --break-system-packages; pip install . --break-system-packages --no-build-isolation
+# pip uninstall salve_ipc -y --break-system-packages; pip install . --break-system-packages --no-build-isolation; python tests/test_ipc.py
 from setuptools import setup
 
 with open("README.md", "r") as file:

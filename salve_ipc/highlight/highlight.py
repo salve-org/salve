@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from re import Match, Pattern, compile
 
 from pygments import lex
@@ -37,34 +36,7 @@ generic_tokens: list[str] = [
     "Hidden_Char",  # Hidden chars (no width space kind of stuff)
 ]
 
-
-@dataclass
-class Token:
-    """Generic Token class that makes highlighting files simple and easy"""
-
-    start_index: tuple[int, int]  # line, column
-    token_length: int
-    highlight_type: str
-
-    def to_tuple(self) -> tuple[tuple[int, int], int, str]:
-        return (self.start_index, self.token_length, self.highlight_type)
-
-
-def tokens_from_result(
-    result: list[
-        tuple[tuple[int, int], int, str]
-    ]  # Technically JSON converts it to list[list[int], int, str] but we get the same result
-) -> list[Token]:
-    """Returns a list of Token's given as a result (converted to tuples) that can be used for highlighting"""
-    tokens: list[Token] = []
-    for token in result:
-        try:
-            real_token = Token(token[0], token[1], token[2])
-            tokens.append(real_token)
-        except IndexError:
-            raise Exception("Could not parse results! Not highlight tokens!")
-    return tokens
-
+Token = tuple[tuple[int, int], int, str]
 
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
@@ -104,7 +76,7 @@ def get_urls(lines: list[str]) -> list[Token]:
         url = url.rstrip(".,?!")
 
         url_len: int = len(url)
-        token: Token = Token((start_pos[0], token_start_col), url_len, "Link")
+        token: Token = ((start_pos[0], token_start_col), url_len, "Link")
         url_toks.append(token)
         start_pos = (start_pos[0], start_pos[1] + url_len)
     return url_toks
@@ -156,7 +128,7 @@ def find_hidden_chars(lines: list[str]) -> list[Token]:
         if char in list(hidden_chars.keys())
     ]
     tok_list: list[Token] = [
-        Token(char[0], len(char[1]), "Hidden_Char")
+        (char[0], len(char[1]), "Hidden_Char")
         for char in hidden_char_indexes
     ]
     return tok_list
@@ -178,7 +150,7 @@ def get_highlights(full_text: str, language: str = "text") -> list[Token]:
                 continue
 
             token_len: int = len(token_str)
-            new_token = Token(start_index, token_len, new_type)
+            new_token = (start_index, token_len, new_type)
             new_tokens.append(new_token)
 
             start_index = (start_index[0], start_index[1] + token_len)

@@ -110,7 +110,7 @@ class Handler:
                 pre_refined_result: list[Token] = get_highlights(
                     full_text=self.files[file], language=request["language"]  # type: ignore
                 )
-                result += [token.to_tuple() for token in pre_refined_result]  # type: ignore
+                result += [token for token in pre_refined_result]  # type: ignore
             case _:
                 cancelled = True
 
