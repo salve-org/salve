@@ -59,8 +59,10 @@ class IPC:
     def check_server_error(self) -> tuple[bool, str]:
         """Returns whether the server is dead or not and, if it is, returns the error as well for logging - external API"""
         dead: bool = False if not self.main_server.poll() else True  # type: ignore
-        err: str = self.main_server.stderr.read().decode()  # type: ignore
-        return (dead, err)
+        if dead:
+            err: str = self.main_server.stderr.read().decode()  # type: ignore
+            return (True, err)
+        return (False, "")
 
     def check_server(self) -> None:
         """Checks that the main_server is alive - internal API"""
