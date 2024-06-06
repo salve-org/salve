@@ -55,12 +55,13 @@ def get_urls(lines: list[str]) -> list[Token]:
     start_pos: tuple[int, int] = (1, 0)
     url_toks: list[Token] = []
     while True:
-        line: str = lines[start_pos[0] - 1][start_pos[1] :]
-        match_start: Match[str] | None = url_regex.match(line)
-        if not match_start:
-            if len(lines) >= start_pos[0]:
+        line: str = lines[start_pos[0] - 1][start_pos[1]:]
+        match_start: Match[str] | None = url_regex.search(line)
+        if match_start is None:
+            if len(lines) <= start_pos[0]:
                 break
             start_pos = (start_pos[0] + 1, 0)
+            continue
         token_start_col = match_start.span()[0]  # type: ignore
         url: str = line[token_start_col:]
 
@@ -78,7 +79,8 @@ def get_urls(lines: list[str]) -> list[Token]:
         url_len: int = len(url)
         token: Token = ((start_pos[0], token_start_col), url_len, "Link")
         url_toks.append(token)
-        start_pos = (start_pos[0], start_pos[1] + url_len)
+        start_pos = (start_pos[0], start_pos[1] + url_len + token_start_col)
+
     return url_toks
 
 
@@ -102,7 +104,6 @@ hidden_chars: dict[str, str] = {
     "\u3000": "Control char (ideographic space)",
     "\ufeff": "Control char (byte order mark)",
     "\u2800": "Braille pattern blank",
-    # "\u000a": "Line feed", # "\n" char
     "\u061c": "Arabic letter mark",
     "\u1160": "Hangul Jungseong Filler",
     "\u115f": "Hangul Choseong Filler",
