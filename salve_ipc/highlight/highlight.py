@@ -38,6 +38,7 @@ generic_tokens: list[str] = [
 
 Token = tuple[tuple[int, int], int, str]
 
+
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
     new_type: str = generic_tokens[0]
@@ -55,7 +56,7 @@ def get_urls(lines: list[str]) -> list[Token]:
     start_pos: tuple[int, int] = (1, 0)
     url_toks: list[Token] = []
     while True:
-        line: str = lines[start_pos[0] - 1][start_pos[1]:]
+        line: str = lines[start_pos[0] - 1][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
         if match_start is None:
             if len(lines) <= start_pos[0]:
@@ -129,8 +130,7 @@ def find_hidden_chars(lines: list[str]) -> list[Token]:
         if char in list(hidden_chars.keys())
     ]
     tok_list: list[Token] = [
-        (char[0], len(char[1]), "Hidden_Char")
-        for char in hidden_char_indexes
+        (char[0], len(char[1]), "Hidden_Char") for char in hidden_char_indexes
     ]
     return tok_list
 
