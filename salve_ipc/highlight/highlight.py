@@ -1,5 +1,4 @@
 from re import Match, Pattern, compile
-from sys import stderr
 
 from pygments import lex
 from pygments.lexer import Lexer
@@ -53,14 +52,15 @@ def get_new_token_type(old_token: str) -> str:
 url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
 
 
-def get_urls(lines: list[str]) -> list[Token]:
-    start_pos: tuple[int, int] = (1, 0)
+def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
+    start_pos: tuple[int, int] = (start_line, 0)
+
     url_toks: list[Token] = []
     while True:
-        line: str = lines[start_pos[0] - 1][start_pos[1] :]
+        line: str = lines[start_pos[0] - 1 - start_line][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
         if match_start is None:
-            if len(lines) <= start_pos[0]:
+            if start_pos[0] >= len(lines) + start_line:
                 break
             start_pos = (start_pos[0] + 1, 0)
             continue
@@ -123,9 +123,9 @@ hidden_chars: dict[str, str] = {
 }
 
 
-def find_hidden_chars(lines: list[str]) -> list[Token]:
+def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
-        ((line_index + 1, char_index), char)
+        ((line_index + 1 + start_line, char_index), char)
         for line_index, line in enumerate(lines)
         for char_index, char in enumerate(line)
         if char in list(hidden_chars.keys())
@@ -170,7 +170,7 @@ def get_highlights(
         start_index = (start_index[0] + 1, 0)
 
     # Add extra token types
-    new_tokens += get_urls(split_text)
+    new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
         new_tokens += find_hidden_chars(split_text)
 

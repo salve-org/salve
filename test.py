@@ -8,10 +8,10 @@ context.update_file(
     "test",
     open(__file__, "r+").read(),
 )
-
 context.request(
     "highlight", file="test", language="python", text_range=(7, 14)
 )
+# https://www.google.com "​"
 
 sleep(1)
 output: Response | None = context.get_response("highlight")
