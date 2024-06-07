@@ -1,5 +1,4 @@
 from re import Match, Pattern, compile
-from sys import stderr
 
 from pygments import lex
 from pygments.lexer import Lexer
@@ -61,7 +60,6 @@ def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
             break
         line: str = lines[start_pos[0] - start_line][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
-        # print(line, start_pos, start_pos[0] - start_line, match_start, file=stderr)
         if match_start is None:
             if start_pos[0] >= len(lines) + start_line:
                 break
