@@ -9,7 +9,9 @@ context.update_file(
     open(__file__, "r+").read(),
 )
 
-context.request("highlight", file="test", language="python", text_range=(1, 5))
+context.request(
+    "highlight", file="test", language="python", text_range=(7, 14)
+)
 
 sleep(1)
 output: Response | None = context.get_response("highlight")

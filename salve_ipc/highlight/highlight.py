@@ -136,7 +136,11 @@ def find_hidden_chars(lines: list[str]) -> list[Token]:
     return tok_list
 
 
-def get_highlights(full_text: str, language: str = "text", text_range: tuple[int, int] = (0, -1)) -> list[Token]:
+def get_highlights(
+    full_text: str,
+    language: str = "text",
+    text_range: tuple[int, int] = (0, -1),
+) -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
     split_text: list[str] = full_text.splitlines()
@@ -144,17 +148,21 @@ def get_highlights(full_text: str, language: str = "text", text_range: tuple[int
     if text_range[1] == -1:
         text_range = (text_range[0], len(split_text))
     start_index: tuple[int, int] = (text_range[0], 0)
-    print(start_index, file=stderr)
+    split_text = split_text[text_range[0] - 1 : text_range[1]]
 
-    for line in split_text[text_range[0]-1:text_range[1]]:
+    for line in split_text:
         og_tokens: list[tuple[_TokenType, str]] = list(lex(line, lexer))
         for token in og_tokens:
             new_type: str = get_new_token_type(str(token[0]))
             token_str: str = token[1]
+            token_len: int = len(token_str)
+
             if token_str == "\n":  # Lexer adds the newline back
                 continue
+            if not token_str.strip() and new_type == "Text":
+                start_index = (start_index[0], start_index[1] + token_len)
+                continue
 
-            token_len: int = len(token_str)
             new_token = (start_index, token_len, new_type)
             new_tokens.append(new_token)
 
