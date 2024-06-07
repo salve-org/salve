@@ -1,4 +1,5 @@
 from re import Match, Pattern, compile
+from sys import stderr
 
 from pygments import lex
 from pygments.lexer import Lexer
@@ -54,11 +55,13 @@ url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
 
 def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
     start_pos: tuple[int, int] = (start_line, 0)
-
     url_toks: list[Token] = []
     while True:
-        line: str = lines[start_pos[0] - 1 - start_line][start_pos[1] :]
+        if start_pos[0] >= len(lines) + start_line:
+            break
+        line: str = lines[start_pos[0] - start_line][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
+        # print(line, start_pos, start_pos[0] - start_line, match_start, file=stderr)
         if match_start is None:
             if start_pos[0] >= len(lines) + start_line:
                 break
@@ -125,7 +128,7 @@ hidden_chars: dict[str, str] = {
 
 def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
-        ((line_index + 1 + start_line, char_index), char)
+        ((line_index + start_line, char_index), char)
         for line_index, line in enumerate(lines)
         for char_index, char in enumerate(line)
         if char in list(hidden_chars.keys())
@@ -139,7 +142,7 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
 def get_highlights(
     full_text: str,
     language: str = "text",
-    text_range: tuple[int, int] = (0, -1),
+    text_range: tuple[int, int] = (1, -1),
 ) -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
@@ -172,6 +175,6 @@ def get_highlights(
     # Add extra token types
     new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
-        new_tokens += find_hidden_chars(split_text)
+        new_tokens += find_hidden_chars(split_text, text_range[0])
 
     return new_tokens

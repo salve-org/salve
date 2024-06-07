@@ -44,6 +44,9 @@ def test_IPC():
 
     highlight_output: Response | None = context.get_response("highlight")
     # from json import dumps
+    # json_file = "tests/highlight_output.json"
+    # with open(json_file, "r+") as file:
+    #     file.truncate()
 
     # print(
     #     dumps(highlight_output), file=open("tests/highlight_output.json", "r+")
