@@ -1,6 +1,6 @@
 from time import sleep
 
-from salve_ipc import IPC, Response, tokens_from_result
+from salve_ipc import IPC, Response
 
 context = IPC()
 
@@ -13,5 +13,5 @@ context.request("highlight", file="test", language="python")
 
 sleep(1)
 output: Response | None = context.get_response("highlight")
-print(tokens_from_result(output["result"]))  # type: ignore
+print(output["result"])  # type: ignore
 context.kill_IPC()
