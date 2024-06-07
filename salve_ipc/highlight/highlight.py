@@ -1,4 +1,5 @@
 from re import Match, Pattern, compile
+from sys import stderr
 
 from pygments import lex
 from pygments.lexer import Lexer
@@ -135,14 +136,17 @@ def find_hidden_chars(lines: list[str]) -> list[Token]:
     return tok_list
 
 
-def get_highlights(full_text: str, language: str = "text") -> list[Token]:
+def get_highlights(full_text: str, language: str = "text", text_range: tuple[int, int] = (0, -1)) -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
     lexer: Lexer = get_lexer_by_name(language)
     split_text: list[str] = full_text.splitlines()
     new_tokens: list[Token] = []
-    start_index: tuple[int, int] = (1, 0)
+    if text_range[1] == -1:
+        text_range = (text_range[0], len(split_text))
+    start_index: tuple[int, int] = (text_range[0], 0)
+    print(start_index, file=stderr)
 
-    for line in split_text:
+    for line in split_text[text_range[0]-1:text_range[1]]:
         og_tokens: list[tuple[_TokenType, str]] = list(lex(line, lexer))
         for token in og_tokens:
             new_type: str = get_new_token_type(str(token[0]))

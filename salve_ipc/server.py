@@ -108,7 +108,7 @@ class Handler:
                 )
             case "highlight":
                 pre_refined_result: list[Token] = get_highlights(
-                    full_text=self.files[file], language=request["language"]  # type: ignore
+                    full_text=self.files[file], language=request["language"], text_range=request["text_range"]  # type: ignore
                 )
                 result += [token for token in pre_refined_result]  # type: ignore
             case _:

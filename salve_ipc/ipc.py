@@ -111,6 +111,7 @@ class IPC:
                     "expected_keywords": kwargs.get("expected_keywords"),
                     "current_word": kwargs.get("current_word"),
                     "language": kwargs.get("language"),
+                    "text_range": kwargs.get("text_range")
                 }  # type: ignore
                 request: Message = {
                     "id": id,
@@ -147,6 +148,7 @@ class IPC:
         expected_keywords: list[str] = [""],
         current_word: str = "",
         language: str = "Text",
+        text_range: tuple[int, int] = (0, -1)
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
@@ -166,6 +168,7 @@ class IPC:
             expected_keywords=expected_keywords,
             current_word=current_word,
             language=language,
+            text_range=text_range
         )
 
     def cancel_request(self, command: str):

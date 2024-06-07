@@ -31,6 +31,7 @@ class Request(Details):
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
     current_word: NotRequired[str]  # autocomplete, replacements
     language: NotRequired[str]  # highlight
+    text_range: NotRequired[tuple[int, int]]
 
 
 class Notification(Details):
