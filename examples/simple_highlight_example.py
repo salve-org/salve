@@ -6,10 +6,12 @@ context = IPC()
 
 context.update_file(
     "test",
-    open(__file__, "r+").read(),
+    open(__file__, "r+").read() * 20,
 )
 
-context.request("highlight", file="test", language="python")
+context.request(
+    "highlight", file="test", language="python", text_range=(1, 30)
+)
 
 sleep(1)
 output: Response | None = context.get_response("highlight")
