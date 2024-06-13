@@ -1,4 +1,3 @@
-from json import loads
 from time import sleep
 
 from salve_ipc import IPC, Response
