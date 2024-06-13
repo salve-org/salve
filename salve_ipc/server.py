@@ -2,7 +2,6 @@ from multiprocessing import Queue
 from multiprocessing.connection import Connection
 from time import sleep
 from pyeditorconfig import get_config
-from pathlib import Path
 
 from .misc import COMMANDS, Message, Request, Response
 from .server_functions import (
