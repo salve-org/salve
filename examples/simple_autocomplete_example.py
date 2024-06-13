@@ -2,6 +2,7 @@ from time import sleep
 
 from salve_ipc import IPC, Response
 
+
 def main():
     context = IPC()
 
@@ -22,6 +23,7 @@ def main():
     output: Response = context.get_response("autocomplete")  # type: ignore
     print(output["result"])  # type: ignore
     context.kill_IPC()
+
 
 if __name__ == "__main__":
     main()

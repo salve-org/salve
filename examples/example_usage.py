@@ -4,6 +4,7 @@ from sys import stdin, stdout
 
 from salve_ipc import IPC, Response
 
+
 def main():
     # Create context for IPC
     context = IPC()
@@ -46,6 +47,7 @@ def main():
         stdout.flush()
 
     context.kill_IPC()
+
 
 if __name__ == "__main__":
     main()
