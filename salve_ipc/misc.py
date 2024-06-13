@@ -1,6 +1,12 @@
+from pathlib import Path
 from typing import NotRequired, TypedDict
 
-COMMANDS: list[str] = ["autocomplete", "replacements", "highlight"]
+COMMANDS: list[str] = [
+    "autocomplete",
+    "replacements",
+    "highlight",
+    "editorconfig",
+]
 
 
 class Message(TypedDict):
@@ -19,6 +25,7 @@ class Request(Message):
     current_word: NotRequired[str]  # autocomplete, replacements
     language: NotRequired[str]  # highlight
     text_range: NotRequired[tuple[int, int]]
+    file_path: NotRequired[Path]  # editorconfig
 
 
 class Notification(Message):

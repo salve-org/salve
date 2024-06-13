@@ -21,6 +21,7 @@ def test_IPC():
         current_word="thid",
     )
     context.request("highlight", file="test", language="python")
+    context.request("editorconfig", file="test", file_path=__file__)
 
     sleep(1)
 
@@ -95,6 +96,24 @@ def test_IPC():
             ((14, 2), 22, "Link"),
             ((5, 7), 1, "Hidden_Char"),
         ],
+    }
+
+    editorconfig_response = context.get_response("editorconfig")
+    if editorconfig_response is None:
+        raise AssertionError("Editorconfig output is None")
+    editorconfig_response["id"] = 0
+    assert editorconfig_response == {
+        "id": 0,
+        "type": "response",
+        "cancelled": False,
+        "command": "editorconfig",
+        "result": {
+            "end_of_line": "lf",
+            "insert_final_newline": "true",
+            "charset": "utf-8",
+            "indent_style": "space",
+            "indent_size": "4",
+        },
     }
 
     context.remove_file("test")
