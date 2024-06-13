@@ -8,7 +8,6 @@ class Message(TypedDict):
 
     id: int
     type: str  # Can be "ping", "request", "response", "notification"
-    tmp_file: str  # Not checked on pings
 
 
 class Ping(Message):
@@ -17,13 +16,7 @@ class Ping(Message):
     ...
 
 
-class Details(TypedDict):
-    """These are the details held by the tmp_file"""
-
-    ...
-
-
-class Request(Details):
+class Request(Message):
     """Request results/output from the server with command specific input"""
 
     command: str  # Can only be commands in COMMANDS
@@ -34,7 +27,7 @@ class Request(Details):
     text_range: NotRequired[tuple[int, int]]
 
 
-class Notification(Details):
+class Notification(Message):
     """Notifies the server to add/update/remove a file for usage in fulfilling commands"""
 
     file: str
@@ -42,7 +35,7 @@ class Notification(Details):
     contents: NotRequired[str]
 
 
-class Response(Details):
+class Response(Message):
     """Server responses to requests, notifications, and pings"""
 
     cancelled: bool
