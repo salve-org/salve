@@ -11,14 +11,14 @@ if __name__ == "__main__":
     )
 
     context.request(
-        "autocomplete",
+        "highlight",
         file="test",
-        expected_keywords=[],
-        current_word="t",
+        language="python",
+        text_range=(1, 21)
     )
 
     st = time()
-    while not (output := context.get_response("autocomplete")):
+    while not (output := context.get_response("highlight")):
         continue
     print(output)  # type: ignore
     print(time()-st)
