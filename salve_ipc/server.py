@@ -1,24 +1,29 @@
-from json import dumps, loads
-from os import set_blocking
-from selectors import EVENT_READ, DefaultSelector
-from sys import exit, stdin, stdout
-from time import time
+from multiprocessing import Queue
+from multiprocessing.connection import Connection
+from time import sleep
 
-from highlight import Token, get_highlights
-from misc import COMMANDS, Details, Message, Notification, Request, Response
-from server_functions import find_autocompletions, get_replacements
+from .misc import COMMANDS, Message, Request, Response
+from .server_functions import (
+    Token,
+    find_autocompletions,
+    get_highlights,
+    get_replacements,
+)
 
 
-class Handler:
+class Server:
     """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
 
-    def __init__(self) -> None:
-        set_blocking(stdin.fileno(), False)
-        set_blocking(stdout.fileno(), False)
-        self.selector = DefaultSelector()
-        self.selector.register(stdin, EVENT_READ)
-
-        self.all_ids: dict[int, str] = {}  # id, tmp path
+    def __init__(
+        self,
+        server_end: Connection,
+        response_queue: Queue,
+        requests_queue: Queue,
+    ) -> None:
+        self.server_end: Connection = server_end
+        self.response_queue: Queue[Response] = response_queue
+        self.requests_queue: Queue[Request] = requests_queue
+        self.all_ids: list[int] = []
         self.newest_ids: dict[str, int] = {}
         self.newest_requests: dict[str, Request | None] = {}
         for command in COMMANDS:
@@ -27,63 +32,52 @@ class Handler:
 
         self.files: dict[str, str] = {}
 
-        self.old_time = time()
-
-    def write_tmp_file(self, details: Details, tmp_path: str) -> None:
-        with open(tmp_path, "r+") as file:
-            file.truncate()
-            file.write(dumps(details))
-            file.flush()
+        while True:
+            self.run_tasks()
+            sleep(0.0025)
 
     def write_message(self, message: Message) -> None:
-        stdout.write(dumps(message) + "\n")
-        stdout.flush()
+        self.response_queue.put(message)  # type: ignore
 
-    def simple_id_response(
-        self, id: int, tmp_path: str, cancelled: bool = True
-    ) -> None:
-        response_details: Response = {
-            "cancelled": cancelled,
-        }
-        response: Message = {
+    def simple_id_response(self, id: int, cancelled: bool = True) -> None:
+        response: Response = {
             "id": id,
             "type": "response",
-            "tmp_file": tmp_path,
+            "cancelled": cancelled,
         }
-        self.write_tmp_file(response_details, tmp_path)
         self.write_message(response)
 
-    def parse_line(self, line: str) -> None:
-        json_input: Message = loads(line)
-        id: int = json_input["id"]
-        match json_input["type"]:
-            case "ping":
-                self.simple_id_response(id, json_input["tmp_file"], False)
+    def parse_line(self, message: Message) -> None:
+        id: int = message["id"]
+        match message["type"]:
             case "notification":
-                notification_details: Notification = loads(
-                    open(json_input["tmp_file"], "r+").read()
-                )
-                filename: str = notification_details["file"]
-                if notification_details["remove"]:
+                filename: str = message["file"]  # type: ignore
+                if message["remove"]:  # type: ignore
                     self.files.pop(filename)
                     return
-                contents: str = notification_details["contents"]  # type: ignore
+                contents: str = message["contents"]  # type: ignore
                 self.files[filename] = contents
-                self.simple_id_response(id, json_input["tmp_file"], False)
-            case _:
-                request_details: Request = loads(
-                    open(json_input["tmp_file"], "r+").read()
-                )
-                self.all_ids[id] = json_input["tmp_file"]
-                command: str = request_details["command"]  # type: ignore
+                self.simple_id_response(id, False)
+            case "request":
+                self.all_ids.append(id)
+                command: str = message["command"]  # type: ignore
                 self.newest_ids[command] = id
-                self.newest_requests[command] = request_details  # type: ignore
+                self.newest_requests[command] = message  # type: ignore
+            case _:
+                self.simple_id_response(id)
 
     def cancel_all_ids_except_newest(self) -> None:
-        for id in list(self.all_ids.keys()):
-            if id in list(self.newest_ids.values()):
+        ids = [
+            id["id"]
+            for id in list(self.newest_requests.values())
+            if id is not None
+        ]
+        for id in self.all_ids:
+            if id in ids:
                 continue
-            self.simple_id_response(id, self.all_ids.pop(id))
+            self.simple_id_response(id)
+
+        self.all_ids = []
 
     def handle_request(self, request: Request) -> None:
         command: str = request["command"]
@@ -91,7 +85,6 @@ class Handler:
         file: str = request["file"]
         result: list[str | tuple[tuple[int, int], int, str]] = []
         cancelled: bool = False
-        tmp_file: str = self.all_ids.pop(id)
 
         match request["command"]:
             case "autocomplete":
@@ -114,35 +107,19 @@ class Handler:
             case _:
                 cancelled = True
 
-        response_details: Response = {
+        response: Response = {
+            "id": id,
+            "type": "response",
             "cancelled": cancelled,
             "command": command,
             "result": result,  # type: ignore
         }
-        response_message: Message = {
-            "id": id,
-            "type": "response",
-            "tmp_file": tmp_file,
-        }
-        self.write_tmp_file(response_details, response_message["tmp_file"])
-        self.write_message(response_message)
+        self.write_message(response)
         self.newest_ids[command] = 0
 
     def run_tasks(self) -> None:
-        current_time = time()
-        if current_time - self.old_time > 5:
-            exit(0)
-
-        events = self.selector.select(0.025)
-        if not events:
-            return
-
-        for line in stdin:
-            # Prevent zombie process
-            if self.old_time != current_time:
-                self.old_time = current_time
-
-            self.parse_line(line)
+        while not self.requests_queue.empty():
+            self.parse_line(self.requests_queue.get())
 
         self.cancel_all_ids_except_newest()
 
@@ -158,9 +135,3 @@ class Handler:
             self.handle_request(request)
             command: str = request["command"]
             self.newest_requests[command] = None
-
-
-if __name__ == "__main__":
-    handler = Handler()
-    while True:
-        handler.run_tasks()

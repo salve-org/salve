@@ -2,18 +2,27 @@ from time import sleep
 
 from salve_ipc import IPC, Response
 
-context = IPC()
 
-context.update_file(
-    "test",
-    open(__file__, "r+").read(),
-)
+def main():
+    context = IPC()
 
-context.request(
-    "replacements", file="test", expected_keywords=[], current_word="contest"
-)
+    context.update_file(
+        "test",
+        open(__file__, "r+").read(),
+    )
 
-sleep(1)
-output: Response | None = context.get_response("replacements")
-print(output["result"])  # type: ignore
-context.kill_IPC()
+    context.request(
+        "replacements",
+        file="test",
+        expected_keywords=[],
+        current_word="contest",
+    )
+
+    sleep(1)
+    output: Response | None = context.get_response("replacements")
+    print(output["result"])  # type: ignore
+    context.kill_IPC()
+
+
+if __name__ == "__main__":
+    main()
