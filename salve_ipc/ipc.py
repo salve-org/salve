@@ -1,5 +1,6 @@
 from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
+from pathlib import Path
 from random import randint
 
 from .misc import COMMANDS, Message, Notification, Request, Response
@@ -78,6 +79,7 @@ class IPC:
                     "current_word": kwargs.get("current_word", ""),
                     "language": kwargs.get("language", ""),
                     "text_range": kwargs.get("text_range", (1, -1)),
+                    "file_path": kwargs.get("file_path", __file__),
                 }
                 self.send_message(request)
             case "notification":
@@ -98,6 +100,7 @@ class IPC:
         current_word: str = "",
         language: str = "Text",
         text_range: tuple[int, int] = (1, -1),
+        file_path: Path | str = Path(__file__),
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
@@ -118,6 +121,7 @@ class IPC:
             current_word=current_word,
             language=language,
             text_range=text_range,
+            file_path=file_path,
         )
 
     def cancel_request(self, command: str):

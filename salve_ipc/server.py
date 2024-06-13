@@ -2,6 +2,8 @@ from multiprocessing import Queue
 from multiprocessing.connection import Connection
 from time import sleep
 
+from pyeditorconfig import get_config
+
 from .misc import COMMANDS, Message, Request, Response
 from .server_functions import (
     Token,
@@ -83,7 +85,9 @@ class Server:
         command: str = request["command"]
         id: int = self.newest_ids[command]
         file: str = request["file"]
-        result: list[str | tuple[tuple[int, int], int, str]] = []
+        result: (
+            list[str | tuple[tuple[int, int], int, str]] | dict[str, str]
+        ) = []
         cancelled: bool = False
 
         match request["command"]:
@@ -104,6 +108,8 @@ class Server:
                     full_text=self.files[file], language=request["language"], text_range=request["text_range"]  # type: ignore
                 )
                 result += [token for token in pre_refined_result]  # type: ignore
+            case "editorconfig":
+                result = get_config(request["file_path"])  # type: ignore
             case _:
                 cancelled = True
 
