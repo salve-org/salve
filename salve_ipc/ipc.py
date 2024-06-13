@@ -1,15 +1,9 @@
-from random import randint
 from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
+from random import randint
+
+from .misc import COMMANDS, Message, Notification, Ping, Request, Response
 from .server import Server
-from .misc import (
-    COMMANDS,
-    Message,
-    Notification,
-    Ping,
-    Request,
-    Response,
-)
 
 
 class IPC:

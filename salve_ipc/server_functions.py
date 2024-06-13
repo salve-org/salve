@@ -1,6 +1,6 @@
 from difflib import get_close_matches
-from unicodedata import category
 from re import Match, Pattern, compile
+from unicodedata import category
 
 from pygments import lex
 from pygments.lexer import Lexer

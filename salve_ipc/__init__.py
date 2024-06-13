@@ -1,7 +1,7 @@
 from .ipc import IPC  # noqa: F401
 from .misc import COMMANDS, Request, Response  # noqa: F401
-from .server_functions import (
-    is_unicode_letter,
+from .server_functions import (  # noqa: F401
     Token,
     generic_tokens,
-)  # noqa: F401
+    is_unicode_letter,
+)

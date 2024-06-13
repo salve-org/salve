@@ -1,12 +1,13 @@
-from time import sleep
 from multiprocessing import Queue
 from multiprocessing.connection import Connection
-from .misc import COMMANDS, Message, Notification, Request, Response
+from time import sleep
+
+from .misc import COMMANDS, Message, Request, Response
 from .server_functions import (
-    find_autocompletions,
-    get_replacements,
-    get_highlights,
     Token,
+    find_autocompletions,
+    get_highlights,
+    get_replacements,
 )
 
 
@@ -66,7 +67,11 @@ class Server:
                 self.newest_requests[command] = message  # type: ignore
 
     def cancel_all_ids_except_newest(self) -> None:
-        ids = [id["id"] for id in list(self.newest_requests.values()) if id is not None]
+        ids = [
+            id["id"]
+            for id in list(self.newest_requests.values())
+            if id is not None
+        ]
         for id in self.all_ids:
             if id in ids:
                 continue
