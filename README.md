@@ -1,8 +1,5 @@
 <h1 align="center">Salve v0.4.0</h1>
 
-> **Note**
-> This package does not work on Windows machines as `Selector.select()` does not work on them.
-
 # Installation
 
 In the Command Line, paste the following: `pip install salve_ipc`
