@@ -7,13 +7,7 @@ class Message(TypedDict):
     """Base class for messages in and out of the server"""
 
     id: int
-    type: str  # Can be "ping", "request", "response", "notification"
-
-
-class Ping(Message):
-    """Not really different from a standard Message but the Ping type allows for nice differentiation"""
-
-    ...
+    type: str  # Can be "request", "response", "notification"
 
 
 class Request(Message):
@@ -36,7 +30,7 @@ class Notification(Message):
 
 
 class Response(Message):
-    """Server responses to requests, notifications, and pings"""
+    """Server responses to requests and notifications"""
 
     cancelled: bool
     command: NotRequired[str]

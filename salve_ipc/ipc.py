@@ -2,13 +2,12 @@ from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
 from random import randint
 
-from .misc import COMMANDS, Message, Notification, Ping, Request, Response
+from .misc import COMMANDS, Message, Notification, Request, Response
 from .server import Server
 
 
 class IPC:
     """The IPC class is used to talk to the server and run commands ("autocomplete", "replacements", and "highlight"). The public API includes the following methods:
-    - IPC.ping()
     - IPC.request()
     - IPC.cancel_request()
     - IPC.update_file()
@@ -67,9 +66,6 @@ class IPC:
         self.all_ids.append(id)
 
         match type:
-            case "ping":
-                ping: Ping = {"id": id, "type": "ping"}
-                self.send_message(ping)
             case "request":
                 command = kwargs.get("command", "")
                 self.current_ids[command] = id
@@ -93,13 +89,6 @@ class IPC:
                     "contents": kwargs.get("contents", ""),
                 }
                 self.send_message(notification)
-            case _:
-                ping: Ping = {"id": id, "type": "ping"}
-                self.send_message(ping)
-
-    def ping(self) -> None:
-        """Pings the main_server to keep it alive - external API"""
-        self.create_message("ping")
 
     def request(
         self,

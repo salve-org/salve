@@ -50,8 +50,6 @@ class Server:
     def parse_line(self, message: Message) -> None:
         id: int = message["id"]
         match message["type"]:
-            case "ping":
-                self.simple_id_response(id, False)
             case "notification":
                 filename: str = message["file"]  # type: ignore
                 if message["remove"]:  # type: ignore
@@ -60,11 +58,13 @@ class Server:
                 contents: str = message["contents"]  # type: ignore
                 self.files[filename] = contents
                 self.simple_id_response(id, False)
-            case _:
+            case "request":
                 self.all_ids.append(id)
                 command: str = message["command"]  # type: ignore
                 self.newest_ids[command] = id
                 self.newest_requests[command] = message  # type: ignore
+            case _:
+                self.simple_id_response(id)
 
     def cancel_all_ids_except_newest(self) -> None:
         ids = [

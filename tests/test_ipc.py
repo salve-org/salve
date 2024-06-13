@@ -6,8 +6,6 @@ from salve_ipc import IPC, Response
 def test_IPC():
     context = IPC()
 
-    context.ping()
-
     context.update_file("test", open("tests/test_file.py", "r+").read())
 
     context.request(
