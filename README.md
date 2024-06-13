@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.4.0</h1>
+<h1 align="center">Salve v0.4.1</h1>
 
 # Installation
 
