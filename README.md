@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.4.1</h1>
+<h1 align="center">Salve v0.4.2</h1>
 
 # Installation
 
@@ -6,7 +6,7 @@ In the Command Line, paste the following: `pip install salve_ipc`
 
 ## Description
 
-Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, and syntax highlighting.
+Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, and syntax highlighting.
 
 > **Note**
 > The first time that the system is loaded or a new server needs to be started it will take a fair bit longer
