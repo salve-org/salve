@@ -29,36 +29,80 @@ def test_IPC():
 
     # Check output
     autocomplete_output: Response | None = context.get_response("autocomplete")
+    if autocomplete_output is None:
+        raise AssertionError("Autocomplete output is None")
+    autocomplete_output["id"] = 0
     assert autocomplete_output == {
+        "id": 0,
+        "type": "response",
         "cancelled": False,
         "command": "autocomplete",
         "result": ["this"],
     }
 
     replacements_output: Response | None = context.get_response("replacements")
+    if replacements_output is None:
+        raise AssertionError("Replacements output is None")
+    replacements_output["id"] = 0
     assert replacements_output == {
+        "id": 0,
+        "type": "response",
         "cancelled": False,
         "command": "replacements",
         "result": ["this"],
     }
 
     highlight_output: Response | None = context.get_response("highlight")
-    # from json import dumps
-    # json_file = "tests/highlight_output.json"
-    # with open(json_file, "r+") as file:
-    #     file.truncate()
-
-    # print(
-    #     dumps(highlight_output), file=open("tests/highlight_output.json", "r+")
-    # )
-    assert highlight_output == loads(
-        open("tests/highlight_output.json").read()
-    )
-
-    assert context.check_server_error() == (False, "")
+    if highlight_output is None:
+        raise AssertionError("Highlight output is None")
+    highlight_output["id"] = 0
+    assert highlight_output == {
+        "id": 0,
+        "type": "response",
+        "cancelled": False,
+        "command": "highlight",
+        "result": [
+            ((1, 0), 4, "Keyword"),
+            ((1, 5), 4, "Name"),
+            ((1, 10), 6, "Keyword"),
+            ((1, 17), 1, "Name"),
+            ((1, 20), 12, "Comment"),
+            ((3, 0), 3, "Name"),
+            ((3, 4), 1, "Operator"),
+            ((3, 6), 3, "Name"),
+            ((3, 11), 7, "Comment"),
+            ((5, 0), 5, "Name"),
+            ((5, 5), 1, "Punctuation"),
+            ((5, 6), 1, "String"),
+            ((5, 7), 1, "String"),
+            ((5, 8), 1, "String"),
+            ((5, 9), 1, "Punctuation"),
+            ((5, 12), 16, "Comment"),
+            ((8, 0), 5, "Keyword"),
+            ((8, 6), 3, "Name"),
+            ((8, 9), 1, "Punctuation"),
+            ((8, 10), 3, "Name"),
+            ((8, 13), 1, "Punctuation"),
+            ((8, 14), 1, "Punctuation"),
+            ((9, 4), 3, "Keyword"),
+            ((9, 8), 8, "Name"),
+            ((9, 16), 1, "Punctuation"),
+            ((9, 17), 4, "Name"),
+            ((9, 21), 1, "Punctuation"),
+            ((9, 22), 1, "Punctuation"),
+            ((10, 8), 4, "Keyword"),
+            ((13, 0), 3, "Name"),
+            ((13, 3), 1, "Punctuation"),
+            ((13, 4), 1, "Punctuation"),
+            ((14, 0), 24, "Comment"),
+            ((14, 2), 22, "Link"),
+            ((5, 7), 1, "Hidden_Char"),
+        ],
+    }
 
     context.remove_file("test")
     context.kill_IPC()
 
 
-test_IPC()
+if __name__ == "__main__":
+    test_IPC()

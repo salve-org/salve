@@ -40,6 +40,7 @@ class IPC:
         self.main_server = Process(
             target=Server,
             args=(server_end, self.response_queue, self.requests_queue),
+            daemon=True,
         )
         self.main_server.start()
 
