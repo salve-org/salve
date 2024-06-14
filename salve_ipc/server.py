@@ -4,7 +4,7 @@ from time import sleep
 
 from pyeditorconfig import get_config
 
-from .misc import COMMANDS, Message, Request, Response
+from .misc import COMMANDS, Notification, Request, Response
 from .server_functions import (
     Token,
     find_autocompletions,
@@ -46,7 +46,7 @@ class Server:
         }
         self.response_queue.put(response)
 
-    def parse_line(self, message: Message) -> None:
+    def parse_line(self, message: Request | Notification) -> None:
         id: int = message["id"]
         match message["type"]:
             case "notification":
