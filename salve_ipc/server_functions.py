@@ -66,8 +66,6 @@ def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
         line: str = lines[start_pos[0] - start_line][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
         if match_start is None:
-            if start_pos[0] >= len(lines) + start_line:
-                break
             start_pos = (start_pos[0] + 1, 0)
             continue
         token_start_col = match_start.span()[0]  # type: ignore
