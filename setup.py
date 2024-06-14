@@ -19,7 +19,7 @@ setup(
     license="MIT license",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Operating System :: OS Independent", # I believe it can be classified as such, cannot test Windows
+        "Operating System :: OS Independent",  # I believe it can be classified as such, cannot test Windows
         "Programming Language :: Python :: Implementation",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",

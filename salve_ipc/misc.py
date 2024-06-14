@@ -24,7 +24,7 @@ class Request(Message):
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
     current_word: NotRequired[str]  # autocomplete, replacements
     language: NotRequired[str]  # highlight
-    text_range: NotRequired[tuple[int, int]] # highlight
+    text_range: NotRequired[tuple[int, int]]  # highlight
     file_path: NotRequired[Path | str]  # editorconfig
 
 
