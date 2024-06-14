@@ -4,7 +4,7 @@ from time import sleep
 
 from pyeditorconfig import get_config
 
-from .misc import COMMANDS, Message, Request, Response
+from .misc import COMMANDS, Notification, Request, Response
 from .server_functions import (
     Token,
     find_autocompletions,
@@ -38,18 +38,15 @@ class Server:
             self.run_tasks()
             sleep(0.0025)
 
-    def write_message(self, message: Message) -> None:
-        self.response_queue.put(message)  # type: ignore
-
     def simple_id_response(self, id: int, cancelled: bool = True) -> None:
         response: Response = {
             "id": id,
             "type": "response",
             "cancelled": cancelled,
         }
-        self.write_message(response)
+        self.response_queue.put(response)
 
-    def parse_line(self, message: Message) -> None:
+    def parse_line(self, message: Request | Notification) -> None:
         id: int = message["id"]
         match message["type"]:
             case "notification":
@@ -118,9 +115,9 @@ class Server:
             "type": "response",
             "cancelled": cancelled,
             "command": command,
-            "result": result,  # type: ignore
+            "result": result,
         }
-        self.write_message(response)
+        self.response_queue.put(response)
         self.newest_ids[command] = 0
 
     def run_tasks(self) -> None:

@@ -3,7 +3,7 @@ from multiprocessing.connection import Connection
 from pathlib import Path
 from random import randint
 
-from .misc import COMMANDS, Message, Notification, Request, Response
+from .misc import COMMANDS, Notification, Request, Response
 from .server import Server
 
 
@@ -28,7 +28,7 @@ class IPC:
         self.files: dict[str, str] = {}
 
         self.response_queue: Queue[Response] = Queue()
-        self.requests_queue: Queue[Request] = Queue()
+        self.requests_queue: Queue[Request | Notification] = Queue()
         self.client_end: Connection
         self.main_server: Process
         self.create_server()
@@ -49,22 +49,15 @@ class IPC:
         for filename, data in files_copy.items():
             self.update_file(filename, data)
 
-    def check_server(self) -> None:
-        """Checks that the main_server is alive - internal API"""
-        if not self.main_server.is_alive():
-            self.create_server()
-
-    def send_message(self, message: Message) -> None:
-        """Sends a Message to the main_server as provided by the argument message - internal API"""
-
-        self.requests_queue.put(message)  # type: ignore
-
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
         id = randint(1, self.id_max)  # 0 is reserved for the empty case
         while id in self.all_ids:
             id = randint(1, self.id_max)
         self.all_ids.append(id)
+
+        if not self.main_server.is_alive():
+            self.create_server()
 
         match type:
             case "request":
@@ -81,7 +74,7 @@ class IPC:
                     "text_range": kwargs.get("text_range", (1, -1)),
                     "file_path": kwargs.get("file_path", __file__),
                 }
-                self.send_message(request)
+                self.requests_queue.put(request)
             case "notification":
                 notification: Notification = {
                     "id": id,
@@ -90,7 +83,7 @@ class IPC:
                     "file": kwargs.get("filename", ""),
                     "contents": kwargs.get("contents", ""),
                 }
-                self.send_message(notification)
+                self.requests_queue.put(notification)
 
     def request(
         self,

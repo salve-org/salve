@@ -22,6 +22,10 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 - "highlight"
 - "editorconfig"
 
+### `Token` type alias
+
+The `Token` type alias helps your type checker when you work with `Token`'s from salve.
+
 ### `generic_tokens`
 
 The `generic_tokens` list is a list of strings that define all of the generic token types returned by the server which can be mapped to colors for syntax highlighting.
