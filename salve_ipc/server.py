@@ -38,16 +38,13 @@ class Server:
             self.run_tasks()
             sleep(0.0025)
 
-    def write_message(self, message: Message) -> None:
-        self.response_queue.put(message)  # type: ignore
-
     def simple_id_response(self, id: int, cancelled: bool = True) -> None:
         response: Response = {
             "id": id,
             "type": "response",
             "cancelled": cancelled,
         }
-        self.write_message(response)
+        self.response_queue.put(response)
 
     def parse_line(self, message: Message) -> None:
         id: int = message["id"]
@@ -118,9 +115,9 @@ class Server:
             "type": "response",
             "cancelled": cancelled,
             "command": command,
-            "result": result,  # type: ignore
+            "result": result,
         }
-        self.write_message(response)
+        self.response_queue.put(response)
         self.newest_ids[command] = 0
 
     def run_tasks(self) -> None:

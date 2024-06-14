@@ -41,4 +41,6 @@ class Response(Message):
 
     cancelled: bool
     command: NotRequired[str]
-    result: NotRequired[list[str | tuple[tuple[int, int], int, str]]]
+    result: NotRequired[
+        list[str | tuple[tuple[int, int], int, str]] | dict[str, str]
+    ]
