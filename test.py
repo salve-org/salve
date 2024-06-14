@@ -50,7 +50,7 @@ python_regexes: list[tuple[str, str]] = [
     (r"import .*,? ", "after"),
     (r"from ", "after"),
     (r"class ", "after"),
-    (r":.*=.*", "ahead"),
+    (r":?.*=.*", "ahead"),
 ]
 file = open("test2.py").read()
 
