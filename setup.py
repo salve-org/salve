@@ -14,7 +14,7 @@ setup(
     url="https://github.com/Moosems/salve",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=["pygments", "pyeditorconfig"],
+    install_requires=["pygments", "pyeditorconfig", "beartype"],
     python_requires=">=3.9",
     license="MIT license",
     classifiers=[

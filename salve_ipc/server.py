@@ -2,6 +2,7 @@ from multiprocessing import Queue
 from multiprocessing.connection import Connection
 from time import sleep
 
+from beartype import beartype
 from pyeditorconfig import get_config
 
 from .misc import COMMANDS, Notification, Request, Response
@@ -16,6 +17,8 @@ from .server_functions import (
 class Server:
     """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
 
+    # @beartype
+    # Does not support the additional context in line 29 yet
     def __init__(
         self,
         server_end: Connection,
@@ -38,6 +41,7 @@ class Server:
             self.run_tasks()
             sleep(0.0025)
 
+    @beartype
     def simple_id_response(self, id: int, cancelled: bool = True) -> None:
         response: Response = {
             "id": id,
@@ -46,6 +50,7 @@ class Server:
         }
         self.response_queue.put(response)
 
+    @beartype
     def parse_line(self, message: Request | Notification) -> None:
         id: int = message["id"]
         match message["type"]:
@@ -78,6 +83,7 @@ class Server:
 
         self.all_ids = []
 
+    @beartype
     def handle_request(self, request: Request) -> None:
         command: str = request["command"]
         id: int = self.newest_ids[command]
