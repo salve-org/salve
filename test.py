@@ -1,5 +1,6 @@
 from re import Match, Pattern, compile
 
+
 def get_definition(
     full_text: str,
     definition_starters: list[tuple[str, str]],
@@ -57,7 +58,7 @@ assert get_definition(
     file,
     python_regexes,
     "test",
-) == (5, 6, 4)
+) == (6, 6, 4)
 
 assert get_definition(
     file,
