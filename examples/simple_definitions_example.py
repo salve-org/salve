@@ -18,7 +18,7 @@ def main():
             (r"from ", "after"),
             (r"class ", "after"),
             (r":?.*=.*", "ahead"),
-        ],
+        ], # Every way to define a variable, class, namespace, etc in Python (regex)
     )
 
     sleep(1)
