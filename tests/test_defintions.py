@@ -9,7 +9,7 @@ def test_get_definition():
         (r"class ", "after"),
         (r":?.*=.*", "ahead"),
     ]
-    file = open("tests/testing_file2.py").read()
+    file = open("tests/testing_file2.py", "r+").read()
 
     assert get_definition(
         file,
