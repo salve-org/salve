@@ -304,6 +304,7 @@ def get_replacements(
 
     return ranked_matches
 
+
 @beartype
 def get_definition(
     full_text: str,

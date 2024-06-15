@@ -5,6 +5,7 @@ example: str = "example"
 if x := 5:
     pass
 
-test() # noqa: F821 # type: ignore
+test()  # noqa: F821 # type: ignore
+
 
 class test: ...

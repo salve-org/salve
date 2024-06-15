@@ -1,6 +1,7 @@
 from re import Match, Pattern, compile
 from salve_ipc.server_functions import get_definition
 
+
 def test_get_definition():
     python_regexes: list[tuple[str, str]] = [
         (r"def ", "after"),
@@ -15,7 +16,7 @@ def test_get_definition():
         file,
         python_regexes,
         "test",
-    ) == (10, 6, 4)
+    ) == (11, 6, 4)
 
     assert get_definition(
         file,
