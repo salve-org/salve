@@ -1,6 +1,5 @@
-from multiprocessing import Queue
-from multiprocessing.queues import Queue as GenericClassQueue
 from multiprocessing.connection import Connection
+from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
 from beartype import beartype
