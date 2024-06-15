@@ -1,35 +1,5 @@
 from re import Match, Pattern, compile
-from unicodedata import category
-
-
-def is_unicode_letter(char: str) -> bool:
-    """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
-    return char == "_" or category(char).startswith("L")
-
-
-def find_words(full_text: str) -> list[str]:
-    """Returns a list of all words in a given piece of text"""
-    words_list = []
-    current_word = ""
-
-    for char in full_text:
-
-        if is_unicode_letter(char):
-            current_word += char
-            continue
-
-        word_is_empty: bool = not current_word
-        if word_is_empty:
-            continue
-
-        words_list.append(current_word)
-        current_word = ""
-
-    word_left = bool(current_word)
-    if word_left:
-        words_list.append(current_word)
-
-    return words_list
+from salve_ipc.server_functions import find_words
 
 
 def get_definition(
@@ -96,50 +66,48 @@ def get_definition(
 
     return default_pos
 
+def test_get_definition():
+    python_regexes: list[tuple[str, str]] = [
+        (r"def ", "after"),
+        (r"import .*,? ", "after"),
+        (r"from ", "after"),
+        (r"class ", "after"),
+        (r":?.*=.*", "ahead"),
+    ]
+    file = open("tests/testing_file2.py").read()
 
-# TESTS:
+    assert get_definition(
+        file,
+        python_regexes,
+        "test",
+    ) == (10, 6, 4)
 
-python_regexes: list[tuple[str, str]] = [
-    (r"def ", "after"),
-    (r"import .*,? ", "after"),
-    (r"from ", "after"),
-    (r"class ", "after"),
-    (r":?.*=.*", "ahead"),
-]
-file = open("test2.py").read()
+    assert get_definition(
+        file,
+        python_regexes,
+        "example",
+    ) == (3, 0, 7)
 
-assert get_definition(
-    file,
-    python_regexes,
-    "test",
-) == (10, 6, 4)
+    assert get_definition(
+        file,
+        python_regexes,
+        "re",
+    ) == (1, 5, 2)
 
-assert get_definition(
-    file,
-    python_regexes,
-    "example",
-) == (3, 0, 7)
+    assert get_definition(
+        file,
+        python_regexes,
+        "x",
+    ) == (5, 3, 1)
 
-assert get_definition(
-    file,
-    python_regexes,
-    "re",
-) == (1, 5, 2)
+    assert get_definition(
+        file,
+        [("", "ahead")],
+        "x",
+    ) == (5, 3, 1)
 
-assert get_definition(
-    file,
-    python_regexes,
-    "x",
-) == (5, 3, 1)
-
-assert get_definition(
-    file,
-    [("", "ahead")],
-    "x",
-) == (5, 3, 1)
-
-assert get_definition(
-    file,
-    [("", "ahead")],
-    "test",
-) == (8, 0, 4)
+    assert get_definition(
+        file,
+        [("", "ahead")],
+        "test",
+    ) == (8, 0, 4)
