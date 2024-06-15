@@ -22,6 +22,18 @@ def test_IPC():
     )
     context.request("highlight", file="test", language="python")
     context.request("editorconfig", file="test", file_path=__file__)
+    context.request(
+        "definition",
+        file="test",
+        current_word="Bar",
+        definition_starters=[
+            (r"def ", "after"),
+            (r"import .*,? ", "after"),
+            (r"from ", "after"),
+            (r"class ", "after"),
+            (r":?.*=.*", "ahead"),
+        ],
+    )
 
     sleep(1)
 
@@ -98,7 +110,9 @@ def test_IPC():
         ],
     }
 
-    editorconfig_response = context.get_response("editorconfig")
+    editorconfig_response: Response | None = context.get_response(
+        "editorconfig"
+    )
     if editorconfig_response is None:
         raise AssertionError("Editorconfig output is None")
     editorconfig_response["id"] = 0
@@ -114,6 +128,18 @@ def test_IPC():
             "indent_style": "space",
             "indent_size": "4",
         },
+    }
+
+    definition_response: Response | None = context.get_response("definition")
+    if definition_response is None:
+        raise AssertionError("Definition output is None")
+    definition_response["id"] = 0
+    assert definition_response == {
+        "id": 0,
+        "type": "response",
+        "cancelled": False,
+        "command": "definition",
+        "result": ((3, 0), 3, "Definition"),
     }
 
     context.remove_file("test")

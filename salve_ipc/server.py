@@ -11,6 +11,7 @@ from .server_functions import (
     find_autocompletions,
     get_highlights,
     get_replacements,
+    get_definition,
 )
 
 
@@ -114,7 +115,9 @@ class Server:
             case "editorconfig":
                 result = get_config(request["file_path"])  # type: ignore
             case "definition":
-                pass
+                result = get_definition(
+                    self.files[file], request["definition_starters"], request["current_word"]  # type: ignore
+                )
             case _:
                 cancelled = True
 

@@ -37,7 +37,7 @@ generic_tokens: list[str] = [
     "Generic",
     "Link",  # Website link (Not given by pygments)
     "Hidden_Char",  # Hidden chars (no width space kind of stuff)
-    "Definition" # Definitions
+    "Definition",  # Definitions
 ]
 
 Token = tuple[tuple[int, int], int, str]
@@ -367,6 +367,10 @@ def get_definition(
         word_found: str = str(best_match[0].string)[true_start:true_end]
 
         if word_found == word_to_find:
-            return ((best_match[2][0], true_start), len(word_to_find), "Definition")
+            return (
+                (best_match[2][0], true_start),
+                len(word_to_find),
+                "Definition",
+            )
 
     return default_pos
