@@ -37,6 +37,7 @@ generic_tokens: list[str] = [
     "Generic",
     "Link",  # Website link (Not given by pygments)
     "Hidden_Char",  # Hidden chars (no width space kind of stuff)
+    "Definition" # Definitions
 ]
 
 Token = tuple[tuple[int, int], int, str]
@@ -310,9 +311,9 @@ def get_definition(
     full_text: str,
     definition_starters: list[tuple[str, str]],
     word_to_find: str,
-) -> tuple[int, int, int]:
+) -> Token:
     """Finds all definitions of a given word in text using language definition starters"""
-    default_pos = (0, 0, 0)  # line, column, length
+    default_pos = ((0, 0), 0, "Definition")
     split_text: list[str] = full_text.splitlines()
 
     regex_possibilities: list[tuple[Pattern, str]] = [
@@ -366,6 +367,6 @@ def get_definition(
         word_found: str = str(best_match[0].string)[true_start:true_end]
 
         if word_found == word_to_find:
-            return (best_match[2][0], true_start, len(word_to_find))
+            return ((best_match[2][0], true_start), len(word_to_find), "Definition")
 
     return default_pos

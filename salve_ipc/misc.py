@@ -6,6 +6,7 @@ COMMANDS: list[str] = [
     "replacements",
     "highlight",
     "editorconfig",
+    "definition"
 ]
 
 

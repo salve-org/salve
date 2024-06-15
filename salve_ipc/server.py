@@ -113,6 +113,8 @@ class Server:
                 result += [token for token in pre_refined_result]  # type: ignore
             case "editorconfig":
                 result = get_config(request["file_path"])  # type: ignore
+            case "definition":
+                pass
             case _:
                 cancelled = True
 
