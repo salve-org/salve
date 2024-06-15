@@ -6,6 +6,7 @@ COMMANDS: list[str] = [
     "replacements",
     "highlight",
     "editorconfig",
+    "definition",
 ]
 
 
@@ -22,10 +23,13 @@ class Request(Message):
     command: str  # Can only be commands in COMMANDS
     file: str
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
-    current_word: NotRequired[str]  # autocomplete, replacements
+    current_word: NotRequired[str]  # autocomplete, replacements, definition
     language: NotRequired[str]  # highlight
     text_range: NotRequired[tuple[int, int]]  # highlight
     file_path: NotRequired[Path | str]  # editorconfig
+    definition_starters: NotRequired[
+        list[tuple[str, str]]
+    ]  # definition (list of regexes)
 
 
 class Notification(Message):

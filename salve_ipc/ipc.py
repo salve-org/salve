@@ -1,5 +1,6 @@
 from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
+from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
@@ -30,8 +31,10 @@ class IPC:
 
         self.files: dict[str, str] = {}
 
-        self.response_queue: Queue[Response] = Queue()
-        self.requests_queue: Queue[Request | Notification] = Queue()
+        self.response_queue: GenericClassQueue[Response] = Queue()
+        self.requests_queue: GenericClassQueue[Request | Notification] = (
+            Queue()
+        )
         self.client_end: Connection
         self.main_server: Process
         self.create_server()
@@ -77,6 +80,9 @@ class IPC:
                     "language": kwargs.get("language", ""),
                     "text_range": kwargs.get("text_range", (1, -1)),
                     "file_path": kwargs.get("file_path", __file__),
+                    "definition_starters": kwargs.get(
+                        "definition_starters", [("", "ahead")]
+                    ),
                 }
                 self.requests_queue.put(request)
             case "notification":
@@ -99,6 +105,7 @@ class IPC:
         language: str = "Text",
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
+        definition_starters: list[tuple[str, str]] = [("", "ahead")],
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
@@ -120,6 +127,7 @@ class IPC:
             language=language,
             text_range=text_range,
             file_path=file_path,
+            definition_starters=definition_starters,
         )
 
     @beartype

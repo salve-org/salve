@@ -1,5 +1,5 @@
-from multiprocessing import Queue
 from multiprocessing.connection import Connection
+from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
 from beartype import beartype
@@ -9,6 +9,7 @@ from .misc import COMMANDS, Notification, Request, Response
 from .server_functions import (
     Token,
     find_autocompletions,
+    get_definition,
     get_highlights,
     get_replacements,
 )
@@ -17,17 +18,16 @@ from .server_functions import (
 class Server:
     """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
 
-    # @beartype
-    # Does not support the additional context in line 29 yet
+    @beartype
     def __init__(
         self,
         server_end: Connection,
-        response_queue: Queue,
-        requests_queue: Queue,
+        response_queue: GenericClassQueue,
+        requests_queue: GenericClassQueue,
     ) -> None:
         self.server_end: Connection = server_end
-        self.response_queue: Queue[Response] = response_queue
-        self.requests_queue: Queue[Request] = requests_queue
+        self.response_queue: GenericClassQueue[Response] = response_queue
+        self.requests_queue: GenericClassQueue[Request] = requests_queue
         self.all_ids: list[int] = []
         self.newest_ids: dict[str, int] = {}
         self.newest_requests: dict[str, Request | None] = {}
@@ -113,6 +113,10 @@ class Server:
                 result += [token for token in pre_refined_result]  # type: ignore
             case "editorconfig":
                 result = get_config(request["file_path"])  # type: ignore
+            case "definition":
+                result = get_definition(
+                    self.files[file], request["definition_starters"], request["current_word"]  # type: ignore
+                )
             case _:
                 cancelled = True
 
