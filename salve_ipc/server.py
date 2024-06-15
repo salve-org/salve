@@ -9,9 +9,9 @@ from .misc import COMMANDS, Notification, Request, Response
 from .server_functions import (
     Token,
     find_autocompletions,
+    get_definition,
     get_highlights,
     get_replacements,
-    get_definition,
 )
 
 
