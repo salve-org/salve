@@ -35,26 +35,26 @@ The `is_unicode_letter()` function returns a boolean if a given word is a unicod
 
 ### `IPC` Class
 
-| Method                           | Description                                                                                                                   | Arguments                                                                      |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `.request_autocomplete()`        | Requests autocompletions from the server                                                                                      | `file`: str, `expected_keywords`: list[str], `current_word`: str               |
-| `.request_replacements()`        | Requests replacement suggestions from the server                                                                              | `file`: str, `expected_keywords`: list[str], `current_word`: str               |
-| `.request_highlight()`           | Requests highlighting tokens from the server                                                                                  | `file`: str, `language`: str,                                                  |
-| `.request_editorconfig()`        | Requests editorconfig details from the server                                                                                 | `file_path`: Path or str                                                       |
-| `.request_definition()`          | Requests definition locations from the server                                                                                 | `file`: str, `definition_starters`: list[tuple[str, str]], `current_word`: str |
-| `.cancel_autocomplete_request()` | Cancels requests for autocompletions                                                                                          | None                                                                           |
-| `.cancel_replacements_request()` | Cancels requests for replacements                                                                                             | None                                                                           |
-| `.cancel_highlight_request()`    | Cancels requests for highlighting                                                                                             | None                                                                           |
-| `.cancel_editorconfig_request()` | Cancels requests for editorconfig details                                                                                     | None                                                                           |
-| `.cancel_definition_request()`   | Cancels requests for defnition                                                                                                | None                                                                           |
-| `.get_autocomplete_response()`   | Gets newest autocomplete response from the server if any                                                                      | None                                                                           |
-| `.get_replacements_response()`   | Gets newest replacement response from the server if any                                                                       | None                                                                           |
-| `.get_highlight_response()`      | Gets newest highlight response from the server if any                                                                         | None                                                                           |
-| `.get_editorconfig_response()`   | Gets newest editorconfig response from the server if any                                                                      | None                                                                           |
-| `.get_definition_response()`     | Gets newest definition response from the server if any                                                                        | None                                                                           |
-| `.update_file()`                 | Updates files stored on the server that are used to get responses                                                             | `filename`: str, `current_state`: str (just the text of the file)              |
-| `.remove_file()`                 | Removes a file of the name given if any exists. Files should only be removed after all requests using the file are completed. | `filename`: str                                                                |
-| `.kill_IPC()`                    | This kills the IPC process and acts as a precaution against wasted CPU                                                        | None                                                                           |
+| Method | Description | Arguments | Return type |
+| - | - | - | - |
+| `.request_autocomplete()` | Requests autocompletions from the server | `file`: str, `expected_keywords`: list[str], `current_word`: str | None |
+| `.request_replacements()` | Requests replacement suggestions from the server | `file`: str, `expected_keywords`: list[str], `current_word`: str | None |
+| `.request_highlight()` | Requests highlighting tokens from the server | `file`: str, `language`: str | None |
+| `.request_editorconfig()` | Requests editorconfig details from the server | `file_path`: Path or str | None |
+| `.request_definition()` | Requests definition locations from the server | `file`: str, `definition_starters`: list[tuple[str, str]], `current_word`: str | None |
+| `.cancel_autocomplete_request()` | Cancels requests for autocompletions | None | None |
+| `.cancel_replacements_request()` | Cancels requests for replacements| None | None |
+| `.cancel_highlight_request()` | Cancels requests for highlighting| None | None |
+| `.cancel_editorconfig_request()` | Cancels requests for editorconfig details | None | None |
+| `.cancel_definition_request()` | Cancels requests for defnition | None | None |
+| `.get_autocomplete_response()` | Gets newest autocomplete response from the server if any| None | Response \| None |
+| `.get_replacements_response()` | Gets newest replacement response from the server if any | None | Response \| None |
+| `.get_highlight_response()` | Gets newest highlight response from the server if any | None | Response \| None |
+| `.get_editorconfig_response()` | Gets newest editorconfig response from the server if any| None | Response \| None |
+| `.get_definition_response()` | Gets newest definition response from the server if any| None | Response \| None |
+| `.update_file()` | Updates files stored on the server that are used to get responses| `filename`: str, `current_state`: str (just the text of the file) | None |
+| `.remove_file()` | Removes a file of the name given if any exists. Files should only be removed after all requests using the file are completed. | `filename`: str | None |
+| `.kill_IPC()` | This kills the IPC process and acts as a precaution against wasted CPU | None | None |
 
 ### Basic Usage:
 
