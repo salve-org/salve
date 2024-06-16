@@ -4,8 +4,6 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
-from beartype import beartype
-
 from .misc import COMMANDS, Notification, Request, Response
 from .server import Server
 
@@ -19,7 +17,6 @@ class IPC:
     - IPC.kill_IPC()
     """
 
-    @beartype
     def __init__(self, id_max: int = 15_000) -> None:
         self.all_ids: list[int] = []
         self.id_max = id_max
@@ -55,7 +52,6 @@ class IPC:
         for filename, data in files_copy.items():
             self.update_file(filename, data)
 
-    @beartype
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
         id = randint(1, self.id_max)  # 0 is reserved for the empty case
@@ -95,42 +91,65 @@ class IPC:
                 }
                 self.requests_queue.put(notification)
 
-    @beartype
-    def request(
-        self,
-        command: str,
-        file: str,
-        expected_keywords: list[str] = [""],
-        current_word: str = "",
-        language: str = "Text",
-        text_range: tuple[int, int] = (1, -1),
-        file_path: Path | str = Path(__file__),
-        definition_starters: list[tuple[str, str]] = [("", "ahead")],
-    ) -> None:
-        """Sends the main_server a request of type command with given kwargs - external API"""
-        if command not in COMMANDS:
-            self.kill_IPC()
-            raise Exception(
-                f"Command {command} not in builtin commands. Those are {COMMANDS}!"
-            )
-
+    def request_autocomplete(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
         if file not in self.files:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
 
         self.create_message(
             type="request",
-            command=command,
             file=file,
+            command="autocomplete",
             expected_keywords=expected_keywords,
-            current_word=current_word,
-            language=language,
-            text_range=text_range,
-            file_path=file_path,
-            definition_starters=definition_starters,
+            current_word=current_word
         )
 
-    @beartype
+    def request_replacements(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
+        if file not in self.files:
+            self.kill_IPC()
+            raise Exception(f"File {file} does not exist in system!")
+
+        self.create_message(
+            type="request",
+            file=file,
+            command="replacements",
+            expected_keywords=expected_keywords,
+            current_word=current_word
+        )
+
+    def request_highlight(self, file: str, language: str = "text", text_range: tuple[int, int] = (1, -1)) -> None:
+        if file not in self.files:
+            self.kill_IPC()
+            raise Exception(f"File {file} does not exist in system!")
+
+        self.create_message(
+            type="request",
+            file=file,
+            command="highlight",
+            language=language,
+            text_range=text_range
+        )
+
+    def request_editorconfig(self, file_path: str | Path) -> None:
+        self.create_message(
+            type="request",
+            command="editorconfig",
+            file_path=file_path
+        )
+
+    def request_definition(self, file: str, current_word: str = "",  definition_starters: list[tuple[str, str]] = []) -> None:
+        if file not in self.files:
+            self.kill_IPC()
+            raise Exception(f"File {file} does not exist in system!")
+
+        self.create_message(
+            type="request",
+            file=file,
+            command="definition",
+            current_word=current_word,
+            definition_starters=definition_starters
+        )
+
     def cancel_request(self, command: str):
         """Cancels a request of type command - external API"""
         if command not in COMMANDS:
@@ -141,7 +160,6 @@ class IPC:
 
         self.current_ids[command] = 0
 
-    @beartype
     def parse_response(self, res: Response) -> None:
         """Parses main_server output line and discards useless responses - internal API"""
         id = res["id"]
@@ -162,7 +180,6 @@ class IPC:
         while not self.response_queue.empty():
             self.parse_response(self.response_queue.get())
 
-    @beartype
     def get_response(self, command: str) -> Response | None:
         """Runs IPC.check_responses() and returns the current response of type command if it has been returned - external API"""
         if command not in COMMANDS:
@@ -176,7 +193,21 @@ class IPC:
         self.newest_responses[command] = None
         return response
 
-    @beartype
+    def get_autocomplete_response(self) -> Response | None:
+        return self.get_response("autocomplete")
+
+    def get_replacements_response(self) -> Response | None:
+        return self.get_response("replacements")
+
+    def get_highlight_response(self) -> Response | None:
+        return self.get_response("highlight")
+
+    def get_editorconfig_response(self)-> Response | None:
+        return self.get_response("editorconfig")
+
+    def get_definition_response(self)-> Response | None:
+        return self.get_response("definition")
+
     def update_file(self, filename: str, current_state: str) -> None:
         """Updates files in the system - external API"""
 
@@ -186,7 +217,6 @@ class IPC:
             "notification", filename=filename, contents=current_state
         )
 
-    @beartype
     def remove_file(self, filename: str) -> None:
         """Removes a file from the main_server - external API"""
         if filename not in list(self.files.keys()):
