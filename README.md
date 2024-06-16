@@ -52,8 +52,8 @@ The `is_unicode_letter()` function returns a boolean if a given word is a unicod
 | `.get_highlight_response()` | Gets newest highlight response from the server if any | None | Response \| None |
 | `.get_editorconfig_response()` | Gets newest editorconfig response from the server if any| None | Response \| None |
 | `.get_definition_response()` | Gets newest definition response from the server if any| None | Response \| None |
-| `.update_file()` | Updates files stored on the server that are used to get responses| `filename`: str, `current_state`: str (just the text of the file) | None |
-| `.remove_file()` | Removes a file of the name given if any exists. Files should only be removed after all requests using the file are completed. | `filename`: str | None |
+| `.update_file()` | Updates files stored on the server that are used to get responses| `file`: str, `current_state`: str (just the text of the file) | None |
+| `.remove_file()` | Removes a file of the name given if any exists. Files should only be removed after all requests using the file are completed. | `file`: str | None |
 | `.kill_IPC()` | This kills the IPC process and acts as a precaution against wasted CPU | None | None |
 
 ### Basic Usage:
