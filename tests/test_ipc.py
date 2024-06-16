@@ -107,7 +107,9 @@ def test_IPC():
         ],
     }
 
-    editorconfig_response: Response | None = context.get_editorconfig_response()
+    editorconfig_response: Response | None = (
+        context.get_editorconfig_response()
+    )
     if editorconfig_response is None:
         raise AssertionError("Editorconfig output is None")
     editorconfig_response["id"] = 0

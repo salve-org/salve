@@ -114,7 +114,12 @@ class IPC:
                 }
                 self.requests_queue.put(notification)
 
-    def request_autocomplete(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
+    def request_autocomplete(
+        self,
+        file: str,
+        expected_keywords: list[str] = [],
+        current_word: str = "",
+    ) -> None:
         """Sends request to server for autocompletions - external API"""
         if file not in self.files:
             self.kill_IPC()
@@ -125,10 +130,15 @@ class IPC:
             file=file,
             command="autocomplete",
             expected_keywords=expected_keywords,
-            current_word=current_word
+            current_word=current_word,
         )
 
-    def request_replacements(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
+    def request_replacements(
+        self,
+        file: str,
+        expected_keywords: list[str] = [],
+        current_word: str = "",
+    ) -> None:
         """Sends request to server for replacements - external API"""
         if file not in self.files:
             self.kill_IPC()
@@ -139,10 +149,15 @@ class IPC:
             file=file,
             command="replacements",
             expected_keywords=expected_keywords,
-            current_word=current_word
+            current_word=current_word,
         )
 
-    def request_highlight(self, file: str, language: str = "text", text_range: tuple[int, int] = (1, -1)) -> None:
+    def request_highlight(
+        self,
+        file: str,
+        language: str = "text",
+        text_range: tuple[int, int] = (1, -1),
+    ) -> None:
         """Sends request to server for highlighting - external API"""
         if file not in self.files:
             self.kill_IPC()
@@ -153,18 +168,21 @@ class IPC:
             file=file,
             command="highlight",
             language=language,
-            text_range=text_range
+            text_range=text_range,
         )
 
     def request_editorconfig(self, file_path: str | Path) -> None:
         """Sends request to server for editorconfig info - external API"""
         self.create_message(
-            type="request",
-            command="editorconfig",
-            file_path=file_path
+            type="request", command="editorconfig", file_path=file_path
         )
 
-    def request_definition(self, file: str, current_word: str = "",  definition_starters: list[tuple[str, str]] = []) -> None:
+    def request_definition(
+        self,
+        file: str,
+        current_word: str = "",
+        definition_starters: list[tuple[str, str]] = [],
+    ) -> None:
         """Sends request to server for definition location - external API"""
         if file not in self.files:
             self.kill_IPC()
@@ -175,7 +193,7 @@ class IPC:
             file=file,
             command="definition",
             current_word=current_word,
-            definition_starters=definition_starters
+            definition_starters=definition_starters,
         )
 
     def cancel_request(self, command: str):
@@ -253,11 +271,11 @@ class IPC:
         """Checks for response of type highlight - external API"""
         return self.get_response("highlight")
 
-    def get_editorconfig_response(self)-> Response | None:
+    def get_editorconfig_response(self) -> Response | None:
         """Checks for response of type editorconfig - external API"""
         return self.get_response("editorconfig")
 
-    def get_definition_response(self)-> Response | None:
+    def get_definition_response(self) -> Response | None:
         """Checks for response of type definition - external API"""
         return self.get_response("definition")
 
