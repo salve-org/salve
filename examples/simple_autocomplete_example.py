@@ -11,8 +11,7 @@ def main():
         open(__file__, "r+").read(),
     )
 
-    context.request(
-        "autocomplete",
+    context.request_autocomplete(
         file="test",
         expected_keywords=[],
         current_word="t",
@@ -20,7 +19,7 @@ def main():
 
     sleep(1)
 
-    output: Response = context.get_response("autocomplete")  # type: ignore
+    output: Response = context.get_autocomplete_response()  # type: ignore
     print(output["result"])  # type: ignore
     context.kill_IPC()
 

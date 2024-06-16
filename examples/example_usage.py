@@ -29,8 +29,7 @@ def main():
                 context.update_file("test", line)
 
                 # Make request to server
-                context.request(
-                    "autocomplete",
+                context.request_autocomplete(
                     expected_keywords=[],
                     file="test",
                     current_word=line[-2],
@@ -38,7 +37,7 @@ def main():
 
         # Check output
         # context.cancel_request("autocomplete") # Uncommenting this line will cause the request to always be cancelled
-        output: Response | None = context.get_response("autocomplete")
+        output: Response | None = context.get_autocomplete_response()
         if not output:
             continue
 

@@ -8,8 +8,7 @@ def main():
 
     context.update_file("test", open(__file__, "r+").read())
 
-    context.request(
-        "definition",
+    context.request_definition(
         file="test",
         current_word="context",
         definition_starters=[
@@ -22,7 +21,7 @@ def main():
     )
 
     sleep(1)
-    output: Response | None = context.get_response("definition")
+    output: Response | None = context.get_definition_response()
     print(output["result"])  # type: ignore
     context.kill_IPC()
 
