@@ -9,11 +9,34 @@ from .server import Server
 
 
 class IPC:
-    """The IPC class is used to talk to the server and run commands ("autocomplete", "replacements", and "highlight"). The public API includes the following methods:
-    - IPC.request()
-    - IPC.cancel_request()
+    """The IPC class is used to talk to the server and run commands. The public API includes the following methods:
+
+    Make requests:
+    - IPC.request_autocomplete()
+    - IPC.request_replacements()
+    - IPC.request_highlight()
+    - IPC.request_editorconfig()
+    - IPC.request_definition()
+
+    Cancel requests:
+    - IPC.cancel_autocomplete_request()
+    - IPC.cancel_replacements_request()
+    - IPC.cancel_highlight_request()
+    - IPC.cancel_editorconfig_request()
+    - IPC.cancel_definition_request()
+
+    Get Responses:
+    - IPC.get_autocomplete_response()
+    - IPC.get_replacements_response()
+    - IPC.get_highlight_response()
+    - IPC.get_editorconfig_response()
+    - IPC.get_definition_response()
+
+    File management:
     - IPC.update_file()
     - IPC.remove_file()
+
+    IPC management:
     - IPC.kill_IPC()
     """
 
@@ -92,6 +115,7 @@ class IPC:
                 self.requests_queue.put(notification)
 
     def request_autocomplete(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
+        """Sends request to server for autocompletions - external API"""
         if file not in self.files:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
@@ -105,6 +129,7 @@ class IPC:
         )
 
     def request_replacements(self, file: str, expected_keywords: list[str] = [], current_word: str = "") -> None:
+        """Sends request to server for replacements - external API"""
         if file not in self.files:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
@@ -118,6 +143,7 @@ class IPC:
         )
 
     def request_highlight(self, file: str, language: str = "text", text_range: tuple[int, int] = (1, -1)) -> None:
+        """Sends request to server for highlighting - external API"""
         if file not in self.files:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
@@ -131,6 +157,7 @@ class IPC:
         )
 
     def request_editorconfig(self, file_path: str | Path) -> None:
+        """Sends request to server for editorconfig info - external API"""
         self.create_message(
             type="request",
             command="editorconfig",
@@ -138,6 +165,7 @@ class IPC:
         )
 
     def request_definition(self, file: str, current_word: str = "",  definition_starters: list[tuple[str, str]] = []) -> None:
+        """Sends request to server for definition location - external API"""
         if file not in self.files:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
@@ -151,7 +179,7 @@ class IPC:
         )
 
     def cancel_request(self, command: str):
-        """Cancels a request of type command - external API"""
+        """Cancels a request of type command - internal API"""
         if command not in COMMANDS:
             self.kill_IPC()
             raise Exception(
@@ -159,6 +187,26 @@ class IPC:
             )
 
         self.current_ids[command] = 0
+
+    def cancel_autocomplete_request(self):
+        """Cancels a request of type autocomplete - external API"""
+        self.cancel_request("autocomplete")
+
+    def cancel_replacements_request(self):
+        """Cancels a request of type replacements - external API"""
+        self.cancel_request("replacements")
+
+    def cancel_highlight_request(self):
+        """Cancels a request of type highlight - external API"""
+        self.cancel_request("highlight")
+
+    def cancel_editorconfig_request(self):
+        """Cancels a request of type editorconfig - external API"""
+        self.cancel_request("editorconfig")
+
+    def cancel_definition_request(self):
+        """Cancels a request of type definition - external API"""
+        self.cancel_request("definition")
 
     def parse_response(self, res: Response) -> None:
         """Parses main_server output line and discards useless responses - internal API"""
@@ -181,7 +229,7 @@ class IPC:
             self.parse_response(self.response_queue.get())
 
     def get_response(self, command: str) -> Response | None:
-        """Runs IPC.check_responses() and returns the current response of type command if it has been returned - external API"""
+        """Runs IPC.check_responses() and returns the current response of type command if it has been returned - internal API"""
         if command not in COMMANDS:
             self.kill_IPC()
             raise Exception(
@@ -194,18 +242,23 @@ class IPC:
         return response
 
     def get_autocomplete_response(self) -> Response | None:
+        """Checks for response of type autocomplete - external API"""
         return self.get_response("autocomplete")
 
     def get_replacements_response(self) -> Response | None:
+        """Checks for response of type replacements - external API"""
         return self.get_response("replacements")
 
     def get_highlight_response(self) -> Response | None:
+        """Checks for response of type highlight - external API"""
         return self.get_response("highlight")
 
     def get_editorconfig_response(self)-> Response | None:
+        """Checks for response of type editorconfig - external API"""
         return self.get_response("editorconfig")
 
     def get_definition_response(self)-> Response | None:
+        """Checks for response of type definition - external API"""
         return self.get_response("definition")
 
     def update_file(self, filename: str, current_state: str) -> None:

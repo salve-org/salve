@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.5.0</h1>
+<h1 align="center">Salve v0.6.0</h1>
 
 # Installation
 
@@ -12,16 +12,6 @@ Salve is an IPC library that can be used by code editors to easily get autocompl
 > The first time that the system is loaded or a new server needs to be started it will take a fair bit longer
 
 ## Documentation
-
-### `COMMANDS`
-
-The `COMMANDS` list contains all valid commands to request server output from. If multiple requests of different commands are made they will be kept and held seperately and can be retrieved seperately. Current commands are as follows:
-
-- "autocomplete"
-- "replacements"
-- "highlight"
-- "editorconfig"
-- "definition"
 
 ### `Token` type alias
 
