@@ -1,6 +1,7 @@
 from time import sleep
 
 from salve_ipc import IPC, Response
+from salve_ipc.misc import DEFINITION
 
 
 def main():
@@ -9,7 +10,7 @@ def main():
     context.update_file("test", open(__file__, "r+").read())
 
     context.request(
-        "definition",
+        DEFINITION,
         file="test",
         current_word="context",
         definition_starters=[
@@ -22,8 +23,8 @@ def main():
     )
 
     sleep(1)
-    output: Response | None = context.get_response("definition")
-    print(output["result"])  # type: ignore
+    output: Response | None = context.get_response(DEFINITION)
+    print(output)
     context.kill_IPC()
 
 

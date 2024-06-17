@@ -1,6 +1,7 @@
 from time import sleep
 
 from salve_ipc import IPC, Response
+from salve_ipc.misc import HIGHLIGHT
 
 
 def main():
@@ -12,12 +13,12 @@ def main():
     )
 
     context.request(
-        "highlight", file="test", language="python", text_range=(1, 30)
+        HIGHLIGHT, file="test", language="python", text_range=(1, 30)
     )
 
     sleep(1)
-    output: Response | None = context.get_response("highlight")
-    print(output["result"])  # type: ignore
+    output: Response | None = context.get_response(HIGHLIGHT)
+    print(output)
     context.kill_IPC()
 
 

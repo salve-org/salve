@@ -3,6 +3,7 @@ from selectors import EVENT_READ, DefaultSelector
 from sys import stdin, stdout
 
 from salve_ipc import IPC, Response
+from salve_ipc.misc import AUTOCOMPLETE
 
 
 def main():
@@ -30,7 +31,7 @@ def main():
 
                 # Make request to server
                 context.request(
-                    "autocomplete",
+                    AUTOCOMPLETE,
                     expected_keywords=[],
                     file="test",
                     current_word=line[-2],
@@ -38,7 +39,7 @@ def main():
 
         # Check output
         # context.cancel_request("autocomplete") # Uncommenting this line will cause the request to always be cancelled
-        output: Response | None = context.get_response("autocomplete")
+        output: Response | None = context.get_response(AUTOCOMPLETE)
         if not output:
             continue
 
