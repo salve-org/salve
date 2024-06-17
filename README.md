@@ -23,6 +23,8 @@ The `COMMANDS` list contains all valid commands to request server output from. I
 - "editorconfig"
 - "definition"
 
+These can be imported as string constants (`AUTOCOMPLETE`, `REPLACEMENTS`, `HIGHLIGHT`, `EDITORCONFIG`, `DEFINITION`) for usage in calling requests and requesting output from the server while getting "spelling checks" from your code editor so to speak (E.G. not very hard to misspell "autocomplete" as "autocopmlete").
+
 ### `Token` type alias
 
 The `Token` type alias helps your type checker when you work with `Token`'s from salve.
