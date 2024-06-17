@@ -29,7 +29,7 @@ def test_IPC():
         current_word="thid",
     )
     context.request(HIGHLIGHT, file="test", language="python")
-    context.request(EDITORCONFIG, file="test", file_path=__file__)
+    context.request(EDITORCONFIG, file_path=__file__)
     context.request(
         DEFINITION,
         file="test",

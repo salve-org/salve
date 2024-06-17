@@ -4,7 +4,14 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
-from .misc import COMMAND, COMMANDS, DEFINITION, EDITORCONFIG, Notification, Request, Response
+from .misc import (
+    COMMAND,
+    COMMANDS,
+    EDITORCONFIG,
+    Notification,
+    Request,
+    Response,
+)
 from .server import Server
 
 
@@ -89,7 +96,7 @@ class IPC:
     def request(
         self,
         command: COMMAND,
-        file: str,
+        file: str = "",
         expected_keywords: list[str] = [""],
         current_word: str = "",
         language: str = "Text",
@@ -104,8 +111,7 @@ class IPC:
                 f"Command {command} not in builtin commands. Those are {COMMANDS}!"
             )
 
-        # or not command == EDITORCONFIG:
-        if file not in self.files:
+        if file not in self.files and command != EDITORCONFIG:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
 

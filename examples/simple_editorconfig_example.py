@@ -6,9 +6,7 @@ from salve_ipc import IPC, Response
 def main():
     context = IPC()
 
-    context.update_file("test", "")
-
-    context.request("editorconfig", file="test", file_path=__file__)
+    context.request("editorconfig", file_path=__file__)
 
     sleep(1)
     output: Response | None = context.get_response("editorconfig")
