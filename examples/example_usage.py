@@ -2,8 +2,7 @@ from os import set_blocking
 from selectors import EVENT_READ, DefaultSelector
 from sys import stdin, stdout
 
-from salve_ipc import IPC, Response
-from salve_ipc.misc import AUTOCOMPLETE
+from salve_ipc import AUTOCOMPLETE, IPC, Response
 
 
 def main():

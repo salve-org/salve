@@ -1,7 +1,6 @@
 from time import sleep
 
-from salve_ipc import IPC, Response
-from salve_ipc.misc import EDITORCONFIG
+from salve_ipc import EDITORCONFIG, IPC, Response
 
 
 def main():

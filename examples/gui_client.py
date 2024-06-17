@@ -1,7 +1,6 @@
 from tkinter import Entry, Label, Tk
 
-from salve_ipc import IPC, Response
-from salve_ipc.misc import AUTOCOMPLETE
+from salve_ipc import AUTOCOMPLETE, IPC, Response
 
 
 def main():

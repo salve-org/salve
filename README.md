@@ -65,7 +65,7 @@ The `is_unicode_letter()` function returns a boolean if a given word is a unicod
 ```python
 from time import sleep
 
-from salve_ipc import IPC, Response
+from salve_ipc import IPC, Response, HIGHLIGHT
 
 
 def main():
@@ -77,11 +77,11 @@ def main():
     )
 
     context.request(
-        "highlight", file="test", language="python", text_range=(1, 30)
+        HIGHLIGHT, file="test", language="python", text_range=(1, 30)
     )
 
     sleep(1)
-    output: Response | None = context.get_response("highlight")
+    output: Response | None = context.get_response(HIGHLIGHT)
     print(output["result"])  # type: ignore
     context.kill_IPC()
 

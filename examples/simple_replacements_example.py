@@ -1,7 +1,6 @@
 from time import sleep
 
-from salve_ipc import IPC, Response
-from salve_ipc.misc import REPLACEMENTS
+from salve_ipc import IPC, REPLACEMENTS, Response
 
 
 def main():
