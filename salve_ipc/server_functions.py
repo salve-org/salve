@@ -320,7 +320,7 @@ def get_definition(
         (
             (compile(definition[0] + word_to_find), definition[0])
             if definition[1] == "after"
-            else (compile(word_to_find + definition[0]), definition[0])
+            else (compile(word_to_find + definition[0]), definition[0]) if definition[1] == "before" else (compile("" + word_to_find), definition[0])
         )
         for definition in definition_starters
     ]

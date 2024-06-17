@@ -31,7 +31,7 @@ def test_IPC():
             (r"import .*,? ", "after"),
             (r"from ", "after"),
             (r"class ", "after"),
-            (r":?.*=.*", "ahead"),
+            (r":?.*=.*", "before"),
         ],
     )
 

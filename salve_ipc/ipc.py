@@ -81,7 +81,7 @@ class IPC:
                     "text_range": kwargs.get("text_range", (1, -1)),
                     "file_path": kwargs.get("file_path", __file__),
                     "definition_starters": kwargs.get(
-                        "definition_starters", [("", "ahead")]
+                        "definition_starters", [("", "before")]
                     ),
                 }
                 self.requests_queue.put(request)
@@ -105,7 +105,7 @@ class IPC:
         language: str = "Text",
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
-        definition_starters: list[tuple[str, str]] = [("", "ahead")],
+        definition_starters: list[tuple[str, str]] = [("", "before")],
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
