@@ -7,7 +7,7 @@ def test_get_definition():
         (r"import .*,? ", "after"),
         (r"from ", "after"),
         (r"class ", "after"),
-        (r":?.*=.*", "ahead"),
+        (r":?.*=.*", "before"),
     ]
     file = open("tests/testing_file2.py", "r+").read()
 
@@ -37,12 +37,12 @@ def test_get_definition():
 
     assert get_definition(
         file,
-        [("", "ahead")],
+        [("", "before")],
         "x",
     ) == ((5, 3), 1, "Definition")
 
     assert get_definition(
         file,
-        [("", "ahead")],
+        [("", "before")],
         "test",
     ) == ((8, 0), 4, "Definition")

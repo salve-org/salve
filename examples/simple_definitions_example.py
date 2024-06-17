@@ -17,7 +17,7 @@ def main():
             (r"import .*,? ", "after"),
             (r"from ", "after"),
             (r"class ", "after"),
-            (r":?.*=.*", "ahead"),
+            (r":?.*=.*", "before"),
         ],  # Every way to define a variable, class, namespace, etc in Python (regex)
     )
 
