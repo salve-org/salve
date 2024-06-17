@@ -4,8 +4,6 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
-from beartype import beartype
-
 from .misc import COMMANDS, Notification, Request, Response
 from .server import Server
 
@@ -19,7 +17,6 @@ class IPC:
     - IPC.kill_IPC()
     """
 
-    @beartype
     def __init__(self, id_max: int = 15_000) -> None:
         self.all_ids: list[int] = []
         self.id_max = id_max
@@ -55,7 +52,6 @@ class IPC:
         for filename, data in files_copy.items():
             self.update_file(filename, data)
 
-    @beartype
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
         id = randint(1, self.id_max)  # 0 is reserved for the empty case
@@ -95,7 +91,6 @@ class IPC:
                 }
                 self.requests_queue.put(notification)
 
-    @beartype
     def request(
         self,
         command: str,
@@ -130,7 +125,6 @@ class IPC:
             definition_starters=definition_starters,
         )
 
-    @beartype
     def cancel_request(self, command: str):
         """Cancels a request of type command - external API"""
         if command not in COMMANDS:
@@ -141,7 +135,6 @@ class IPC:
 
         self.current_ids[command] = 0
 
-    @beartype
     def parse_response(self, res: Response) -> None:
         """Parses main_server output line and discards useless responses - internal API"""
         id = res["id"]
@@ -162,7 +155,6 @@ class IPC:
         while not self.response_queue.empty():
             self.parse_response(self.response_queue.get())
 
-    @beartype
     def get_response(self, command: str) -> Response | None:
         """Runs IPC.check_responses() and returns the current response of type command if it has been returned - external API"""
         if command not in COMMANDS:
@@ -176,7 +168,6 @@ class IPC:
         self.newest_responses[command] = None
         return response
 
-    @beartype
     def update_file(self, filename: str, current_state: str) -> None:
         """Updates files in the system - external API"""
 
@@ -186,7 +177,6 @@ class IPC:
             "notification", filename=filename, contents=current_state
         )
 
-    @beartype
     def remove_file(self, filename: str) -> None:
         """Removes a file from the main_server - external API"""
         if filename not in list(self.files.keys()):
