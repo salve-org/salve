@@ -1,6 +1,7 @@
 from tkinter import Entry, Label, Tk
 
 from salve_ipc import IPC, Response
+from salve_ipc.misc import AUTOCOMPLETE
 
 
 def main():
@@ -13,7 +14,7 @@ def main():
     def create_request(_) -> None:
         context.update_file("test", entry.get())
         context.request(
-            "autocomplete",
+            AUTOCOMPLETE,
             expected_keywords=[],
             file="test",
             current_word=entry.get()[-1],
@@ -28,7 +29,7 @@ def main():
     label.pack()
 
     def loop() -> None:
-        output: Response | None = context.get_response("autocomplete")
+        output: Response | None = context.get_response(AUTOCOMPLETE)
         data: list[str] = [""]
         if output is not None:
             data: list[str] = output["result"]  # type: ignore

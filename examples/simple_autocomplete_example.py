@@ -1,6 +1,7 @@
 from time import sleep
 
 from salve_ipc import IPC, Response
+from salve_ipc.misc import AUTOCOMPLETE
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
     )
 
     context.request(
-        "autocomplete",
+        AUTOCOMPLETE,
         file="test",
         expected_keywords=[],
         current_word="t",
@@ -20,8 +21,8 @@ def main():
 
     sleep(1)
 
-    output: Response = context.get_response("autocomplete")  # type: ignore
-    print(output["result"])  # type: ignore
+    output: Response | None = context.get_response(AUTOCOMPLETE)
+    print(output)
     context.kill_IPC()
 
 
