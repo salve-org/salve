@@ -51,12 +51,12 @@ class Server:
         id: int = message["id"]
         match message["type"]:
             case "notification":
-                filename: str = message["file"]  # type: ignore
+                file: str = message["file"]  # type: ignore
                 if message["remove"]:  # type: ignore
-                    self.files.pop(filename)
+                    self.files.pop(file)
                     return
                 contents: str = message["contents"]  # type: ignore
-                self.files[filename] = contents
+                self.files[file] = contents
                 self.simple_id_response(id, False)
             case "request":
                 self.all_ids.append(id)

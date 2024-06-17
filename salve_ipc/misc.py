@@ -9,6 +9,13 @@ COMMANDS: list[str] = [
     "definition",
 ]
 
+COMMAND = str
+AUTOCOMPLETE: COMMAND = COMMANDS[0]
+REPLACEMENTS: COMMAND = COMMANDS[1]
+HIGHLIGHT: COMMAND = COMMANDS[2]
+EDITORCONFIG: COMMAND = COMMANDS[3]
+DEFINITION: COMMAND = COMMANDS[4]
+
 
 class Message(TypedDict):
     """Base class for messages in and out of the server"""

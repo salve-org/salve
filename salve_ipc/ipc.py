@@ -4,7 +4,14 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
-from .misc import COMMANDS, Notification, Request, Response
+from .misc import (
+    COMMAND,
+    COMMANDS,
+    EDITORCONFIG,
+    Notification,
+    Request,
+    Response,
+)
 from .server import Server
 
 
@@ -49,8 +56,8 @@ class IPC:
 
         files_copy = self.files.copy()
         self.files = {}
-        for filename, data in files_copy.items():
-            self.update_file(filename, data)
+        for file, data in files_copy.items():
+            self.update_file(file, data)
 
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
@@ -70,31 +77,26 @@ class IPC:
                     "id": id,
                     "type": type,
                     "command": command,
-                    "file": kwargs.get("file", ""),
-                    "expected_keywords": kwargs.get("expected_keywords", []),
-                    "current_word": kwargs.get("current_word", ""),
-                    "language": kwargs.get("language", ""),
-                    "text_range": kwargs.get("text_range", (1, -1)),
-                    "file_path": kwargs.get("file_path", __file__),
-                    "definition_starters": kwargs.get(
-                        "definition_starters", [("", "before")]
-                    ),
+                    "file": "",
                 }
+                request.update(**kwargs)
+                # print(request)
                 self.requests_queue.put(request)
             case "notification":
                 notification: Notification = {
                     "id": id,
                     "type": type,
-                    "remove": kwargs.get("remove", False),
-                    "file": kwargs.get("filename", ""),
-                    "contents": kwargs.get("contents", ""),
+                    "remove": False,
+                    "file": "",
+                    "contents": "",
                 }
+                notification.update(**kwargs)
                 self.requests_queue.put(notification)
 
     def request(
         self,
-        command: str,
-        file: str,
+        command: COMMAND,
+        file: str = "",
         expected_keywords: list[str] = [""],
         current_word: str = "",
         language: str = "Text",
@@ -109,7 +111,7 @@ class IPC:
                 f"Command {command} not in builtin commands. Those are {COMMANDS}!"
             )
 
-        if file not in self.files:
+        if file not in self.files and command != EDITORCONFIG:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
 
@@ -168,24 +170,22 @@ class IPC:
         self.newest_responses[command] = None
         return response
 
-    def update_file(self, filename: str, current_state: str) -> None:
+    def update_file(self, file: str, current_state: str) -> None:
         """Updates files in the system - external API"""
 
-        self.files[filename] = current_state
+        self.files[file] = current_state
 
-        self.create_message(
-            "notification", filename=filename, contents=current_state
-        )
+        self.create_message("notification", file=file, contents=current_state)
 
-    def remove_file(self, filename: str) -> None:
+    def remove_file(self, file: str) -> None:
         """Removes a file from the main_server - external API"""
-        if filename not in list(self.files.keys()):
+        if file not in list(self.files.keys()):
             self.kill_IPC()
             raise Exception(
-                f"Cannot remove file {filename} as file is not in file database!"
+                f"Cannot remove file {file} as file is not in file database!"
             )
 
-        self.create_message("notification", remove=True, filename=filename)
+        self.create_message("notification", remove=True, file=file)
 
     def kill_IPC(self) -> None:
         """Kills the main_server when salve_ipc's services are no longer required - external API"""

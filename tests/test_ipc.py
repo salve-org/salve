@@ -1,6 +1,14 @@
 from time import sleep
 
-from salve_ipc import IPC, Response
+from salve_ipc import (
+    AUTOCOMPLETE,
+    DEFINITION,
+    EDITORCONFIG,
+    HIGHLIGHT,
+    IPC,
+    REPLACEMENTS,
+    Response,
+)
 
 
 def test_IPC():
@@ -9,21 +17,21 @@ def test_IPC():
     context.update_file("test", open("tests/testing_file1.py", "r+").read())
 
     context.request(
-        "autocomplete",
+        AUTOCOMPLETE,
         file="test",
         expected_keywords=[],
         current_word="t",
     )
     context.request(
-        "replacements",
+        REPLACEMENTS,
         file="test",
         expected_keywords=[],
         current_word="thid",
     )
-    context.request("highlight", file="test", language="python")
-    context.request("editorconfig", file="test", file_path=__file__)
+    context.request(HIGHLIGHT, file="test", language="python")
+    context.request(EDITORCONFIG, file_path=__file__)
     context.request(
-        "definition",
+        DEFINITION,
         file="test",
         current_word="Bar",
         definition_starters=[
@@ -38,7 +46,7 @@ def test_IPC():
     sleep(1)
 
     # Check output
-    autocomplete_output: Response | None = context.get_response("autocomplete")
+    autocomplete_output: Response | None = context.get_response(AUTOCOMPLETE)
     if autocomplete_output is None:
         raise AssertionError("Autocomplete output is None")
     autocomplete_output["id"] = 0
@@ -46,11 +54,11 @@ def test_IPC():
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "command": "autocomplete",
+        "command": AUTOCOMPLETE,
         "result": ["this"],
     }
 
-    replacements_output: Response | None = context.get_response("replacements")
+    replacements_output: Response | None = context.get_response(REPLACEMENTS)
     if replacements_output is None:
         raise AssertionError("Replacements output is None")
     replacements_output["id"] = 0
@@ -58,11 +66,11 @@ def test_IPC():
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "command": "replacements",
+        "command": REPLACEMENTS,
         "result": ["this"],
     }
 
-    highlight_output: Response | None = context.get_response("highlight")
+    highlight_output: Response | None = context.get_response(HIGHLIGHT)
     if highlight_output is None:
         raise AssertionError("Highlight output is None")
     highlight_output["id"] = 0
@@ -70,7 +78,7 @@ def test_IPC():
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "command": "highlight",
+        "command": HIGHLIGHT,
         "result": [
             ((1, 0), 4, "Keyword"),
             ((1, 5), 4, "Name"),
@@ -110,9 +118,7 @@ def test_IPC():
         ],
     }
 
-    editorconfig_response: Response | None = context.get_response(
-        "editorconfig"
-    )
+    editorconfig_response: Response | None = context.get_response(EDITORCONFIG)
     if editorconfig_response is None:
         raise AssertionError("Editorconfig output is None")
     editorconfig_response["id"] = 0
@@ -120,7 +126,7 @@ def test_IPC():
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "command": "editorconfig",
+        "command": EDITORCONFIG,
         "result": {
             "end_of_line": "lf",
             "insert_final_newline": "true",
@@ -130,7 +136,7 @@ def test_IPC():
         },
     }
 
-    definition_response: Response | None = context.get_response("definition")
+    definition_response: Response | None = context.get_response(DEFINITION)
     if definition_response is None:
         raise AssertionError("Definition output is None")
     definition_response["id"] = 0
@@ -138,7 +144,7 @@ def test_IPC():
         "id": 0,
         "type": "response",
         "cancelled": False,
-        "command": "definition",
+        "command": DEFINITION,
         "result": ((3, 0), 3, "Definition"),
     }
 
