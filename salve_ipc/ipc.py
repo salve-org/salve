@@ -4,7 +4,7 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
-from .misc import COMMANDS, Notification, Request, Response
+from .misc import COMMAND, COMMANDS, Notification, Request, Response
 from .server import Server
 
 
@@ -88,7 +88,7 @@ class IPC:
 
     def request(
         self,
-        command: str,
+        command: COMMAND,
         file: str,
         expected_keywords: list[str] = [""],
         current_word: str = "",
