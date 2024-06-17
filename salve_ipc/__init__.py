@@ -1,4 +1,3 @@
-from __future__ import annotations
 from beartype.claw import beartype_this_package
 beartype_this_package()
 
