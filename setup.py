@@ -7,7 +7,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="salve_ipc",
-    version="0.5.1",
+    version="0.5.2",
     description="Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.",
     author="Moosems",
     author_email="moosems.j@gmail.com",
