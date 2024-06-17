@@ -2,7 +2,6 @@ from difflib import get_close_matches
 from re import Match, Pattern, compile
 from unicodedata import category
 
-from beartype import beartype
 from pygments import lex
 from pygments.lexer import Lexer
 from pygments.lexers import get_lexer_by_name
@@ -43,7 +42,6 @@ generic_tokens: list[str] = [
 Token = tuple[tuple[int, int], int, str]
 
 
-@beartype
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
     new_type: str = generic_tokens[0]
@@ -57,7 +55,6 @@ def get_new_token_type(old_token: str) -> str:
 url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
 
 
-@beartype
 def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
     start_pos: tuple[int, int] = (start_line, 0)
     url_toks: list[Token] = []
@@ -149,7 +146,6 @@ hidden_chars: dict[str, str] = {
 }
 
 
-@beartype
 def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
         ((line_index + start_line, char_index), char)
@@ -163,7 +159,6 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     return tok_list
 
 
-@beartype
 def get_highlights(
     full_text: str,
     language: str = "text",
@@ -205,13 +200,11 @@ def get_highlights(
     return new_tokens
 
 
-@beartype
 def is_unicode_letter(char: str) -> bool:
     """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
     return char == "_" or category(char).startswith("L")
 
 
-@beartype
 def find_words(full_text: str) -> list[str]:
     """Returns a list of all words in a given piece of text"""
     words_list = []
@@ -237,7 +230,6 @@ def find_words(full_text: str) -> list[str]:
     return words_list
 
 
-@beartype
 def find_autocompletions(
     full_text: str, expected_keywords: list[str], current_word: str
 ) -> list[str]:
@@ -271,7 +263,6 @@ def find_autocompletions(
     return autocomplete_matches
 
 
-@beartype
 def get_replacements(
     full_text: str, expected_keywords: list[str], replaceable_word: str
 ) -> list[str]:
@@ -306,7 +297,6 @@ def get_replacements(
     return ranked_matches
 
 
-@beartype
 def get_definition(
     full_text: str,
     definition_starters: list[tuple[str, str]],
