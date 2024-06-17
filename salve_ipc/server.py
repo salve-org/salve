@@ -103,14 +103,18 @@ class Server:
                 )
             case "highlight":
                 pre_refined_result: list[Token] = get_highlights(
-                    full_text=self.files[file], language=request["language"], text_range=request["text_range"]  # type: ignore
+                    full_text=self.files[file],
+                    language=request["language"],
+                    text_range=request["text_range"],  # type: ignore
                 )
                 result += [token for token in pre_refined_result]  # type: ignore
             case "editorconfig":
                 result = get_config(request["file_path"])  # type: ignore
             case "definition":
                 result = get_definition(
-                    self.files[file], request["definition_starters"], request["current_word"]  # type: ignore
+                    self.files[file],
+                    request["definition_starters"],
+                    request["current_word"],  # type: ignore
                 )
             case _:
                 cancelled = True
