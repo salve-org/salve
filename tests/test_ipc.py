@@ -1,13 +1,13 @@
 from time import sleep
 
 from salve_ipc import (
-    IPC,
-    Response,
     AUTOCOMPLETE,
-    REPLACEMENTS,
-    HIGHLIGHT,
-    EDITORCONFIG,
     DEFINITION,
+    EDITORCONFIG,
+    HIGHLIGHT,
+    IPC,
+    REPLACEMENTS,
+    Response,
 )
 
 
