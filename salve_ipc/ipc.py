@@ -1,4 +1,4 @@
-from multiprocessing import Pipe, Process, Queue, freeze_support
+from multiprocessing import JoinableQueue, Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
 from pathlib import Path
 from random import randint
@@ -37,7 +37,7 @@ class IPC:
         self.files: dict[str, str] = {}
 
         self.response_queue: ResponseQueueType = Queue()
-        self.requests_queue: RequestQueueType = Queue()
+        self.requests_queue: RequestQueueType = JoinableQueue()
         self.client_end: Connection
         self.main_server: Process
         self.create_server()
@@ -58,6 +58,10 @@ class IPC:
         for file, data in files_copy.items():
             self.update_file(file, data)
 
+    def check_server(self) -> None:
+        if not self.main_server.is_alive():
+            self.create_server()
+
     def create_message(self, type: str, **kwargs) -> None:
         """Creates a Message based on the args and kwawrgs provided. Highly flexible. - internal API"""
         id = randint(1, self.id_max)  # 0 is reserved for the empty case
@@ -65,8 +69,7 @@ class IPC:
             id = randint(1, self.id_max)
         self.all_ids.append(id)
 
-        if not self.main_server.is_alive():
-            self.create_server()
+        self.check_server()
 
         match type:
             case "request":
@@ -153,6 +156,8 @@ class IPC:
 
     def check_responses(self) -> None:
         """Checks all main_server output by calling IPC.parse_line() on each response - internal API"""
+
+        self.check_server()
         while not self.response_queue.empty():
             self.parse_response(self.response_queue.get())
 

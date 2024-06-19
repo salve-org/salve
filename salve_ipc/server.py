@@ -1,5 +1,4 @@
 from multiprocessing.connection import Connection
-from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
 from pyeditorconfig import get_config
@@ -27,8 +26,8 @@ class Server:
     def __init__(
         self,
         server_end: Connection,
-        response_queue: GenericClassQueue,
-        requests_queue: GenericClassQueue,
+        response_queue: ResponseQueueType,
+        requests_queue: RequestQueueType,
     ) -> None:
         self.server_end: Connection = server_end
         self.response_queue: ResponseQueueType = response_queue
@@ -139,6 +138,7 @@ class Server:
     def run_tasks(self) -> None:
         while not self.requests_queue.empty():
             self.parse_line(self.requests_queue.get())
+            self.requests_queue.task_done()
 
         self.cancel_all_ids_except_newest()
 

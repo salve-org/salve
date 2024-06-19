@@ -1,4 +1,5 @@
 from multiprocessing.queues import Queue as GenericQueueClass
+from multiprocessing.queues import JoinableQueue as GenericJoinableQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
@@ -60,9 +61,9 @@ class Response(Message):
 
 if TYPE_CHECKING:
     ResponseQueueType = GenericQueueClass[Response]
-    RequestQueueType = GenericQueueClass[Request | Notification]
+    RequestQueueType = GenericJoinableQueueClass[Request | Notification]
 # Else, this is CPython < 3.12. We are now in the No Man's Land
 # of Typing. In this case, avoid subscripting "GenericQueue". Ugh.
 else:
     ResponseQueueType = GenericQueueClass
-    RequestQueueType = GenericQueueClass
+    RequestQueueType = GenericJoinableQueueClass
