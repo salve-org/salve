@@ -1,5 +1,5 @@
-from multiprocessing.queues import Queue as GenericQueueClass
 from multiprocessing.queues import JoinableQueue as GenericJoinableQueueClass
+from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
