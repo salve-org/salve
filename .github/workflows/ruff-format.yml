@@ -1,4 +1,4 @@
-name: Black Formatting
+name: Ruff Formatting
 
 on: push
 

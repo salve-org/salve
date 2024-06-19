@@ -1,4 +1,4 @@
-name: Ruff Formatting
+name: Ruff Check
 
 on: push
 

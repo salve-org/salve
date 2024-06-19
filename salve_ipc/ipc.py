@@ -16,7 +16,7 @@ from .server import Server
 
 
 class IPC:
-    """The IPC class is used to talk to the server and run commands ("autocomplete", "replacements", and "highlight"). The public API includes the following methods:
+    """The IPC class is used to talk to the server and run commands. The public API includes the following methods:
     - IPC.request()
     - IPC.cancel_request()
     - IPC.update_file()
