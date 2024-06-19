@@ -1,6 +1,5 @@
 from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
-from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from random import randint
 
@@ -10,7 +9,9 @@ from .misc import (
     EDITORCONFIG,
     Notification,
     Request,
+    RequestQueueType,
     Response,
+    ResponseQueueType,
 )
 from .server import Server
 
@@ -35,10 +36,8 @@ class IPC:
 
         self.files: dict[str, str] = {}
 
-        self.response_queue: GenericClassQueue[Response] = Queue()
-        self.requests_queue: GenericClassQueue[Request | Notification] = (
-            Queue()
-        )
+        self.response_queue: ResponseQueueType = Queue()
+        self.requests_queue: RequestQueueType = Queue()
         self.client_end: Connection
         self.main_server: Process
         self.create_server()

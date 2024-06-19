@@ -4,7 +4,14 @@ from time import sleep
 
 from pyeditorconfig import get_config
 
-from .misc import COMMANDS, Notification, Request, Response
+from .misc import (
+    COMMANDS,
+    Notification,
+    Request,
+    RequestQueueType,
+    Response,
+    ResponseQueueType,
+)
 from .server_functions import (
     Token,
     find_autocompletions,
@@ -24,8 +31,8 @@ class Server:
         requests_queue: GenericClassQueue,
     ) -> None:
         self.server_end: Connection = server_end
-        self.response_queue: GenericClassQueue[Response] = response_queue
-        self.requests_queue: GenericClassQueue[Request] = requests_queue
+        self.response_queue: ResponseQueueType = response_queue
+        self.requests_queue: RequestQueueType = requests_queue
         self.all_ids: list[int] = []
         self.newest_ids: dict[str, int] = {}
         self.newest_requests: dict[str, Request | None] = {}
@@ -104,7 +111,7 @@ class Server:
             case "highlight":
                 pre_refined_result: list[Token] = get_highlights(
                     full_text=self.files[file],
-                    language=request["language"],
+                    language=request["language"],  # type: ignore
                     text_range=request["text_range"],  # type: ignore
                 )
                 result += [token for token in pre_refined_result]  # type: ignore
@@ -113,7 +120,7 @@ class Server:
             case "definition":
                 result = get_definition(
                     self.files[file],
-                    request["definition_starters"],
+                    request["definition_starters"],  # type: ignore
                     request["current_word"],  # type: ignore
                 )
             case _:

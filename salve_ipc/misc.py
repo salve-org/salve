@@ -1,5 +1,6 @@
+from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
-from typing import NotRequired, TypedDict
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 COMMANDS: list[str] = [
     "autocomplete",
@@ -55,3 +56,13 @@ class Response(Message):
     result: NotRequired[
         list[str | tuple[tuple[int, int], int, str]] | dict[str, str]
     ]
+
+
+if TYPE_CHECKING:
+    ResponseQueueType = GenericQueueClass[Response]
+    RequestQueueType = GenericQueueClass[Request | Notification]
+# Else, this is CPython < 3.12. We are now in the No Man's Land
+# of Typing. In this case, avoid subscripting "GenericQueue". Ugh.
+else:
+    ResponseQueueType = GenericQueueClass
+    RequestQueueType = GenericQueueClass
