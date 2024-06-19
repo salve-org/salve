@@ -1,7 +1,9 @@
 from beartype.claw import beartype_this_package
 
-from .ipc import IPC  # noqa: F401
-from .misc import (  # noqa: F401
+beartype_this_package()
+
+from .ipc import IPC  # noqa: F401, E402
+from .misc import (  # noqa: F401, E402
     AUTOCOMPLETE,
     COMMANDS,
     DEFINITION,
@@ -10,10 +12,8 @@ from .misc import (  # noqa: F401
     REPLACEMENTS,
     Response,
 )
-from .server_functions import (  # noqa: F401
+from .server_functions import (  # noqa: F401, E402
     Token,
     generic_tokens,
     is_unicode_letter,
 )
-
-beartype_this_package()
