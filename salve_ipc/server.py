@@ -4,14 +4,6 @@ from time import sleep
 
 from pyeditorconfig import get_config
 
-from .server_functions import (
-    Token,
-    find_autocompletions,
-    get_definition,
-    get_highlights,
-    get_replacements,
-)
-
 from .misc import (
     COMMANDS,
     Notification,
@@ -19,6 +11,13 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
+)
+from .server_functions import (
+    Token,
+    find_autocompletions,
+    get_definition,
+    get_highlights,
+    get_replacements,
 )
 
 
