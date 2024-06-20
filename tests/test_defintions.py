@@ -1,6 +1,5 @@
-from sys import path
-print(path)
 from salve_ipc.server_functions import get_definition
+
 
 def test_get_definition():
     python_regexes: list[tuple[str, str]] = [
