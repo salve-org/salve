@@ -1,11 +1,11 @@
-from difflib import get_close_matches
 from re import Match, Pattern, compile
-from unicodedata import category
 
 from pygments import lex
 from pygments.lexer import Lexer
 from pygments.lexers import get_lexer_by_name
 from pygments.token import _TokenType
+
+from .misc import Token, generic_tokens
 
 default_tokens: list[str] = [
     "Token.Text.Whitespace",
@@ -21,25 +21,6 @@ default_tokens: list[str] = [
     "Token.Comment",
     "Token.Generic",
 ]
-generic_tokens: list[str] = [
-    "Whitespace",
-    "Text",
-    "Error",
-    "Keyword",
-    "Name",
-    "String",
-    "Number",
-    "Literal",
-    "Operator",
-    "Punctuation",
-    "Comment",
-    "Generic",
-    "Link",  # Website link (Not given by pygments)
-    "Hidden_Char",  # Hidden chars (no width space kind of stuff)
-    "Definition",  # Definitions
-]
-
-Token = tuple[tuple[int, int], int, str]
 
 
 def get_new_token_type(old_token: str) -> str:
@@ -198,172 +179,3 @@ def get_highlights(
         new_tokens += find_hidden_chars(split_text, text_range[0])
 
     return new_tokens
-
-
-def is_unicode_letter(char: str) -> bool:
-    """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
-    return char == "_" or category(char).startswith("L")
-
-
-def find_words(full_text: str) -> list[str]:
-    """Returns a list of all words in a given piece of text"""
-    words_list = []
-    current_word = ""
-
-    for char in full_text:
-        if is_unicode_letter(char):
-            current_word += char
-            continue
-
-        word_is_empty: bool = not current_word
-        if word_is_empty:
-            continue
-
-        words_list.append(current_word)
-        current_word = ""
-
-    word_left = bool(current_word)
-    if word_left:
-        words_list.append(current_word)
-
-    return words_list
-
-
-def find_autocompletions(
-    full_text: str, expected_keywords: list[str], current_word: str
-) -> list[str]:
-    """Returns a list of autocompletions based on the word, text, and language keywords"""
-
-    words_in_text: list[str] = find_words(full_text)
-
-    words_after_original_removal = [
-        word for word in words_in_text if word != current_word
-    ]
-
-    relevant_words = [
-        word
-        for word in words_after_original_removal
-        if word.startswith(current_word)
-    ]
-
-    no_usable_words_in_text: bool = not relevant_words
-    if no_usable_words_in_text:
-        relevant_words += expected_keywords
-
-    relevant_words = [
-        word for word in relevant_words if word.startswith(current_word)
-    ]
-
-    autocomplete_matches = sorted(
-        set(relevant_words),
-        key=(lambda s: (-relevant_words.count(s), len(s), s)),
-    )
-
-    return autocomplete_matches
-
-
-def get_replacements(
-    full_text: str, expected_keywords: list[str], replaceable_word: str
-) -> list[str]:
-    """Returns a list of possible and plausible replacements for a given word"""
-    # Get all words in file
-    starter_words = find_words(full_text)
-    starter_words += (
-        expected_keywords * 3
-    )  # We add a multiplier of three to boost the score of keywords
-    while replaceable_word in starter_words:
-        starter_words.remove(replaceable_word)
-
-    # Get close matches
-    starters_no_duplicates = set(starter_words)
-    similar_words = get_close_matches(
-        replaceable_word,
-        starters_no_duplicates,
-        n=len(starters_no_duplicates),
-        cutoff=0.6,
-    )
-
-    # Reintroduce duplicates
-    similar_with_duplicates = [
-        word for word in starter_words if word in similar_words
-    ]
-
-    ranked_matches = sorted(
-        set(similar_with_duplicates),
-        key=(lambda s: (-similar_with_duplicates.count(s), len(s), s)),
-    )
-
-    return ranked_matches
-
-
-def get_definition(
-    full_text: str,
-    definition_starters: list[tuple[str, str]],
-    word_to_find: str,
-) -> Token:
-    """Finds all definitions of a given word in text using language definition starters"""
-    default_pos = ((0, 0), 0, "Definition")
-    split_text: list[str] = full_text.splitlines()
-
-    regex_possibilities: list[tuple[Pattern, str]] = [
-        (
-            (compile(definition[0] + word_to_find), definition[0])
-            if definition[1] == "after"
-            else (
-                (compile(word_to_find + definition[0]), definition[0])
-                if definition[1] == "before"
-                else (compile("" + word_to_find), definition[0])
-            )
-        )
-        for definition in definition_starters
-    ]
-
-    matches: list[tuple[Match, str, tuple[int, int]]] = []
-    for regex, definition in regex_possibilities:
-        start_pos: tuple[int, int] = (1, 0)
-
-        while True:
-            if start_pos[0] > len(split_text):
-                break
-
-            line: str = split_text[start_pos[0] - 1][start_pos[1] :]
-            match_start: Match[str] | None = regex.search(line)
-
-            if not match_start:
-                start_pos = (start_pos[0] + 1, 0)
-                continue
-
-            matches.append((match_start, definition, start_pos))
-            span = match_start.span()
-            start_pos = (start_pos[0], start_pos[1] + span[0] + span[1])
-
-    if not len(matches):
-        return default_pos
-
-    for best_match in matches:
-        match_str: str = str(best_match[0].string)
-
-        if word_to_find not in find_words(match_str):
-            continue
-
-        true_end: int = best_match[2][1] + best_match[0].span()[1]
-        true_start: int = true_end - len(word_to_find)
-
-        if match_str.startswith(word_to_find):
-            true_start = 0
-            true_end = len(word_to_find)
-
-        if match_str.find(word_to_find) < true_start:
-            true_start = match_str.find(word_to_find)
-            true_end = true_start + len(word_to_find)
-
-        word_found: str = str(best_match[0].string)[true_start:true_end]
-
-        if word_found == word_to_find:
-            return (
-                (best_match[2][0], true_start),
-                len(word_to_find),
-                "Definition",
-            )
-
-    return default_pos

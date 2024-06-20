@@ -3,6 +3,13 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
 from pyeditorconfig import get_config
+from .server_functions import (
+    Token,
+    find_autocompletions,
+    get_definition,
+    get_highlights,
+    get_replacements,
+)
 
 from .misc import (
     COMMANDS,
@@ -11,13 +18,6 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
-)
-from .server_functions import (
-    Token,
-    find_autocompletions,
-    get_definition,
-    get_highlights,
-    get_replacements,
 )
 
 
