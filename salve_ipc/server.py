@@ -4,7 +4,7 @@ from time import sleep
 
 from pyeditorconfig import get_config
 
-from salve_ipc.server_functions import (
+from .server_functions import (
     Token,
     find_autocompletions,
     get_definition,
