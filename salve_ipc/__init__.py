@@ -12,7 +12,7 @@ from .misc import (  # noqa: F401, E402
     REPLACEMENTS,
     Response,
 )
-from .server_functions import (  # noqa: F401, E402
+from salve_ipc.server_functions import (  # noqa: F401, E402
     Token,
     generic_tokens,
     is_unicode_letter,
