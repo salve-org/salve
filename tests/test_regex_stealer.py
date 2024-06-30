@@ -1,6 +1,6 @@
 from pygments.lexers import CssLexer, PythonLexer
 
-from salve_ipc import get_pygments_comment_regexes
+from salve_ipc.server_functions import get_pygments_comment_regexes
 
 
 def test_regex_stealing() -> None:

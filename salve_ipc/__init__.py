@@ -15,6 +15,5 @@ from .misc import (  # noqa: F401, E402
 from .server_functions import (  # noqa: F401, E402
     Token,
     generic_tokens,
-    get_pygments_comment_regexes,
     is_unicode_letter,
 )
