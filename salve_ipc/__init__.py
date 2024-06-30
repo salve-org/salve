@@ -16,4 +16,5 @@ from .server_functions import (  # noqa: F401, E402
     Token,
     generic_tokens,
     is_unicode_letter,
+    get_pygments_comment_regexes
 )
