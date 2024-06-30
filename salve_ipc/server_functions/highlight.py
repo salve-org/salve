@@ -1,6 +1,6 @@
 from re import Match, Pattern, compile
-from beartype.typing import Callable
 
+from beartype.typing import Callable
 from pygments import lex
 from pygments.lexer import Lexer, RegexLexer
 from pygments.lexers import get_lexer_by_name
@@ -144,9 +144,9 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
 
 
 def get_pygments_comment_regexes(lexer: RegexLexer) -> list[str]:
-    root_tokens: list[str] | list[tuple[str, _TokenType]] = lexer.tokens[
-        "root"
-    ]
+    root_tokens: list[str] | list[tuple[str, _TokenType | Callable]] = (
+        lexer.tokens["root"]
+    )
 
     if isinstance(root_tokens[0], str):
         root_tokens = lexer.tokens[root_tokens[0]]
@@ -175,7 +175,8 @@ def get_pygments_comment_regexes(lexer: RegexLexer) -> list[str]:
             continue
 
         tokens: tuple[_TokenType, ...] = [
-            cell.cell_contents for cell in token_tuple[1].__closure__
+            cell.cell_contents
+            for cell in token_tuple[1].__closure__  # type: ignore
         ][0]
 
         if not tokens:

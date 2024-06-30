@@ -6,6 +6,6 @@ from salve_ipc.server_functions import get_pygments_comment_regexes
 def test_regex_stealing() -> None:
     assert get_pygments_comment_regexes(CssLexer()) == ["/\\*(?:.|\\n)*?\\*/"]
     assert get_pygments_comment_regexes(PythonLexer()) == [
-        "^(\\s*)([rRuUbB]{,2})('''(?:.|\\n)*?''')",
         '^(\\s*)([rRuUbB]{,2})("""(?:.|\\n)*?""")',
+        "^(\\s*)([rRuUbB]{,2})('''(?:.|\\n)*?''')",
     ]
