@@ -1,5 +1,5 @@
 from re import Match, Pattern, compile
-from typing import Callable
+from beartype.typing import Callable
 
 from pygments import lex
 from pygments.lexer import Lexer, RegexLexer
