@@ -195,7 +195,9 @@ def get_pygments_comment_regexes(
 
 
 def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
-    proper_highlight_regexes: list[tuple[str, _TokenType]] = get_pygments_comment_regexes(lexer)
+    proper_highlight_regexes: list[tuple[str, _TokenType]] = (
+        get_pygments_comment_regexes(lexer)
+    )
     new_docstring_tokens: list[Token] = []
     for regex, token_type in proper_highlight_regexes:
         match_strings = compile(regex, flags=MULTILINE).findall(full_text)
