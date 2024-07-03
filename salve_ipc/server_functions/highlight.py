@@ -143,51 +143,65 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     return tok_list
 
 
-def get_pygments_comment_regexes(
-    lexer: RegexLexer,
-) -> list[tuple[str, _TokenType]]:
-    useful_toks = {
-        StringToken.Doc,
-        StringToken.Heredoc,
-        # StringToken.Double,
-        CommentToken,
-        CommentToken.Multiline,
-    }
-    regexes: list[str] = []
+# Instantiate some useful variables/types for the following functions
+useful_toks = {
+    StringToken.Doc,
+    StringToken.Heredoc,
+    CommentToken,
+    CommentToken.Multiline,
+}
 
-    all_tokens = lexer.tokens
-    for path in all_tokens:
+# Beartype speed optimizations
+_TokenTupleInternalType = tuple[_TokenType | Callable, ...]
+_TokenTupleReturnType = list[tuple[str, _TokenType]]
+_ListOfStrs = list[str]
+_RegexListType = list[tuple[str, ...]]
+_LexReturnTokens = list[tuple[_TokenType, str]]
+
+
+def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
+    """
+    Steals the regexes that pgments uses to give docstring, heredoc, comment, and multiline comment highlights
+    (css comments, though multine, aren't called multiline comments)
+    """
+
+    regexes: _TokenTupleReturnType = []
+
+    for path in lexer.tokens:
+        # This should have a better type definition but I didn't have the mental capacity to
+        # write each possibility so I'm waiting for beartype to implement the functionality for me like the bum I am
         path_tokens: list = lexer.tokens[path]
 
         if isinstance(path_tokens[0], str):
+            # This means that the path is redirecting to another path in its place but we check them all anyway so just exit this path
             continue
 
         for token_tuple in path_tokens:
+            if token_tuple[1] in useful_toks:
+                regexes.append((token_tuple[0], token_tuple[1]))
+                continue
+
+            # The Token tuple should not be default but SHOULD be a callable
             if isinstance(token_tuple, default):
                 continue
-
-            if token_tuple[1] in useful_toks:
-                regexes.append((token_tuple[0], token_tuple[1]))  # type: ignore
-                continue
-
-            if not isinstance(token_tuple[1], Callable):
+            if not callable(token_tuple[1]):
                 continue
 
             pygments_func: Callable = token_tuple[1]
 
             if pygments_func.__closure__ is None:
-                # No idea whats going on here
+                # Will always evaluate to False but its for the static type checkers appeasement
                 continue
 
-            tokens: tuple[_TokenType | Callable, ...] = [
-                cell.cell_contents
-                for cell in token_tuple[1].__closure__  # type: ignore
-            ][0]
-            if not tokens:
-                continue
+            tokens: _TokenTupleInternalType = [
+                cell.cell_contents for cell in token_tuple[1].__closure__
+            ][
+                0
+            ]  # Sometimes pygments hides these types in functional programming
 
             for token in tokens:
                 if token in useful_toks:
+                    # We know if its in the useful tokens list that its a token type but the static type checker doesn't
                     regexes.append((token_tuple[0], token))  # type: ignore
                     continue
 
@@ -195,19 +209,28 @@ def get_pygments_comment_regexes(
 
 
 def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
-    proper_highlight_regexes: list[tuple[str, _TokenType]] = (
+    proper_highlight_regexes: _TokenTupleReturnType = (
         get_pygments_comment_regexes(lexer)
     )
+
     new_docstring_tokens: list[Token] = []
+
     for regex, token_type in proper_highlight_regexes:
-        match_strings = compile(regex, flags=MULTILINE).findall(full_text)
+        match_strings: _RegexListType = compile(
+            regex, flags=MULTILINE
+        ).findall(full_text)
+
+        # Iterate through all the matches
         for match in match_strings:
             while match[2] in full_text:
                 if "\n" not in match[2]:
+                    # We get some info for our tokens
                     current_location = full_text.find(match[2])
                     line_location: int = full_text[:current_location].count(
                         "\n"
                     )
+
+                    # Create Token and add to the list
                     new_docstring_tokens.append(
                         (
                             (
@@ -220,6 +243,9 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
                             get_new_token_type(str(token_type)),
                         )
                     )
+
+                    # Modify the full text to remove the match string to exit the while loop
+                    # NOTE: I eventually want to move from a long string to a list of strings to improve efficiencu
                     full_text = (
                         full_text[:current_location]
                         + "\n" * match[2].count("\n")
@@ -227,11 +253,17 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
                     )
                     continue
 
+                # We know that this is a multiline docstring/comment/etc
+
+                # Create variables for Token creation
                 current_location = full_text.find(match[2])
                 start_line_location: int = full_text[:current_location].count(
                     "\n"
                 )
-                split_match: list[str] = match[2].splitlines()
+                # Since match[2] is multiple lines andwe add the tokens line by
+                # line instead of including newlines we need to make this a variable for efficiency
+                split_match: _ListOfStrs = match[2].splitlines()
+
                 for i in range(len(split_match)):
                     new_docstring_tokens.append(
                         (
@@ -246,12 +278,14 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
                         )
                     )
 
+                # Modify and remove the full match
                 full_text = (
                     full_text[:current_location]
                     + "\n" * match[2].count("\n")
                     + full_text[current_location + len(match[2]) :]
                 )
 
+    # All the loops are exited (for of for of while of many ifs) and the nested pain is over!
     return new_docstring_tokens
 
 
@@ -261,27 +295,37 @@ def get_highlights(
     text_range: tuple[int, int] = (1, -1),
 ) -> list[Token]:
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
+
+    # Create some variables used all throughout the function
     lexer: Lexer = get_lexer_by_name(language)
-    split_text: list[str] = full_text.splitlines()
+    split_text: _ListOfStrs = full_text.splitlines()
     new_tokens: list[Token] = []
+
     if text_range[1] == -1:
+        # This indicates that the text range should span the length of the entire code
         text_range = (text_range[0], len(split_text))
+
     start_index: tuple[int, int] = (text_range[0], 0)
-    split_text = split_text[text_range[0] - 1 : text_range[1]]
+    # We want only the lines in the text range because this list is iterated
+    split_text: _ListOfStrs = split_text[text_range[0] - 1 : text_range[1]]
 
     for line in split_text:
-        og_tokens: list[tuple[_TokenType, str]] = list(lex(line, lexer))
+        og_tokens: _LexReturnTokens = list(lex(line, lexer))
         for token in og_tokens:
             new_type: str = get_new_token_type(str(token[0]))
             token_str: str = token[1]
             token_len: int = len(token_str)
 
-            if token_str == "\n":  # Lexer adds the newline back
+            if token_str == "\n":
+                # Lexer adds the newline back as its own token
                 continue
+
             if not token_str.strip() and new_type == "Text":
+                # If the token is empty or is plain Text we simply skip it because thats ultimately useless info
                 start_index = (start_index[0], start_index[1] + token_len)
                 continue
 
+            # Create and append the Token that will be returned
             new_token = (start_index, token_len, new_type)
             new_tokens.append(new_token)
 
@@ -289,14 +333,14 @@ def get_highlights(
         start_index = (start_index[0] + 1, 0)
 
     # Add extra token types
+    # NOTE: we add these at the end so that when they are applied one by one by the editor these
+    # override older tokens that may not be as accurate
     new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
+        # if there are not hidden chars we don't want to needlessly compute this
         new_tokens += find_hidden_chars(split_text, text_range[0])
 
-    # Override with new docstring/multiline comment highlights
-    if not isinstance(lexer, RegexLexer):
-        return new_tokens
-
-    new_tokens += proper_docstring_tokens(lexer, full_text)
+    if isinstance(lexer, RegexLexer):
+        new_tokens += proper_docstring_tokens(lexer, full_text)
 
     return new_tokens
