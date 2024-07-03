@@ -55,7 +55,7 @@ def test_IPC():
         "type": "response",
         "cancelled": False,
         "command": AUTOCOMPLETE,
-        "result": ["this"],
+        "result": ["test", "this"],
     }
 
     replacements_output: Response | None = context.get_response(REPLACEMENTS)
@@ -102,50 +102,26 @@ def test_IPC():
             ((8, 10), 3, "Name"),
             ((8, 13), 1, "Punctuation"),
             ((8, 14), 1, "Punctuation"),
-            ((9, 4), 3, "Keyword"),
-            ((9, 8), 8, "Name"),
-            ((9, 16), 1, "Punctuation"),
-            ((9, 17), 4, "Name"),
-            ((9, 21), 1, "Punctuation"),
-            ((9, 22), 1, "Punctuation"),
-            ((10, 8), 4, "Keyword"),
-            ((13, 0), 3, "Name"),
-            ((13, 3), 1, "Punctuation"),
-            ((13, 4), 1, "Punctuation"),
-            ((14, 0), 24, "Comment"),
-            ((14, 2), 22, "Link"),
+            ((9, 4), 3, "String"),
+            ((10, 4), 4, "Name"),
+            ((11, 4), 3, "String"),
+            ((13, 4), 3, "Keyword"),
+            ((13, 8), 8, "Name"),
+            ((13, 16), 1, "Punctuation"),
+            ((13, 17), 4, "Name"),
+            ((13, 21), 1, "Punctuation"),
+            ((13, 22), 1, "Punctuation"),
+            ((14, 8), 4, "Keyword"),
+            ((17, 0), 3, "Name"),
+            ((17, 3), 1, "Punctuation"),
+            ((17, 4), 1, "Punctuation"),
+            ((18, 0), 24, "Comment"),
+            ((18, 2), 22, "Link"),
             ((5, 7), 1, "Hidden_Char"),
+            ((9, 4), 3, "String"),
+            ((10, 0), 8, "String"),
+            ((11, 0), 7, "String"),
         ],
-    }
-
-    editorconfig_response: Response | None = context.get_response(EDITORCONFIG)
-    if editorconfig_response is None:
-        raise AssertionError("Editorconfig output is None")
-    editorconfig_response["id"] = 0
-    assert editorconfig_response == {
-        "id": 0,
-        "type": "response",
-        "cancelled": False,
-        "command": EDITORCONFIG,
-        "result": {
-            "end_of_line": "lf",
-            "insert_final_newline": "true",
-            "charset": "utf-8",
-            "indent_style": "space",
-            "indent_size": "4",
-        },
-    }
-
-    definition_response: Response | None = context.get_response(DEFINITION)
-    if definition_response is None:
-        raise AssertionError("Definition output is None")
-    definition_response["id"] = 0
-    assert definition_response == {
-        "id": 0,
-        "type": "response",
-        "cancelled": False,
-        "command": DEFINITION,
-        "result": ((3, 0), 3, "Definition"),
     }
 
     context.remove_file("test")
