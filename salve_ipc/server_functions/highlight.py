@@ -177,13 +177,15 @@ def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
             continue
 
         for token_tuple in path_tokens:
+            # Ensure that this is actually a tuple and not a random type
+            if isinstance(token_tuple, default):
+                continue
+
             if token_tuple[1] in useful_toks:
                 regexes.append((token_tuple[0], token_tuple[1]))
                 continue
 
-            # The Token tuple should not be default but SHOULD be a callable
-            if isinstance(token_tuple, default):
-                continue
+            # The Token tuple SHOULD be a callable at this point
             if not callable(token_tuple[1]):
                 continue
 
