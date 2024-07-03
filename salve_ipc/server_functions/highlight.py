@@ -1,8 +1,8 @@
-from re import Match, Pattern, compile
+from re import MULTILINE, Match, Pattern, compile
 
 from beartype.typing import Callable
 from pygments import lex
-from pygments.lexer import Lexer, RegexLexer
+from pygments.lexer import Lexer, RegexLexer, default
 from pygments.lexers import get_lexer_by_name
 from pygments.token import Comment as CommentToken
 from pygments.token import String as StringToken
@@ -143,51 +143,55 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     return tok_list
 
 
-def get_pygments_comment_regexes(lexer: RegexLexer) -> list[str]:
-    root_tokens: list[str] | list[tuple[str, _TokenType | Callable]] = (
-        lexer.tokens["root"]
-    )
-
-    if isinstance(root_tokens[0], str):
-        root_tokens = lexer.tokens[root_tokens[0]]
-
+def get_pygments_comment_regexes(
+    lexer: RegexLexer,
+) -> list[tuple[str, _TokenType]]:
     useful_toks = {
         StringToken.Doc,
         StringToken.Heredoc,
+        # StringToken.Double,
         CommentToken,
         CommentToken.Multiline,
     }
     regexes: list[str] = []
 
-    for token_tuple in root_tokens:
-        if token_tuple[1] in useful_toks:
-            regexes.append(token_tuple[0])
+    all_tokens = lexer.tokens
+    for path in all_tokens:
+        path_tokens: list = lexer.tokens[path]
+
+        if isinstance(path_tokens[0], str):
             continue
 
-        if not isinstance(token_tuple[1], Callable):
-            continue
-
-        pygments_func: Callable = token_tuple[1]
-
-        if pygments_func.__closure__ is None:
-            # No idea whats going on here
-            print(token_tuple[1])
-            continue
-
-        tokens: tuple[_TokenType, ...] = [
-            cell.cell_contents
-            for cell in token_tuple[1].__closure__  # type: ignore
-        ][0]
-
-        if not tokens:
-            continue
-
-        for token in tokens:
-            if token in useful_toks:
-                regexes.append(token_tuple[0])
+        for token_tuple in path_tokens:
+            if isinstance(token_tuple, default):
                 continue
 
-    return list(set(regexes))
+            if token_tuple[1] in useful_toks:
+                regexes.append((token_tuple[0], token_tuple[1]))  # type: ignore
+                continue
+
+            if not isinstance(token_tuple[1], Callable):
+                continue
+
+            pygments_func: Callable = token_tuple[1]
+
+            if pygments_func.__closure__ is None:
+                # No idea whats going on here
+                continue
+
+            tokens: tuple[_TokenType | Callable, ...] = [
+                cell.cell_contents
+                for cell in token_tuple[1].__closure__  # type: ignore
+            ][0]
+            if not tokens:
+                continue
+
+            for token in tokens:
+                if token in useful_toks:
+                    regexes.append((token_tuple[0], token))  # type: ignore
+                    continue
+
+    return list(set(regexes))  # type: ignore
 
 
 def get_highlights(
@@ -227,5 +231,66 @@ def get_highlights(
     new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
         new_tokens += find_hidden_chars(split_text, text_range[0])
+
+    # Override with new docstring/multiline comment highlights
+    if not isinstance(lexer, RegexLexer):
+        return new_tokens
+
+    proper_highlight_regexes = get_pygments_comment_regexes(lexer)
+    new_docstring_tokens: list[Token] = []
+    for regex, token_type in proper_highlight_regexes:
+        match_strings = compile(regex, flags=MULTILINE).findall(full_text)
+        for match in match_strings:
+            while match[2] in full_text:
+                if "\n" not in match[2]:
+                    current_location = full_text.find(match[2])
+                    line_location: int = full_text[:current_location].count(
+                        "\n"
+                    )
+                    new_docstring_tokens.append(
+                        (
+                            (
+                                line_location + 1,
+                                full_text.splitlines()[line_location].find(
+                                    match[2]
+                                ),
+                            ),
+                            len(match[2]),
+                            get_new_token_type(str(token_type)),
+                        )
+                    )
+                    full_text = (
+                        full_text[:current_location]
+                        + "\n" * match[2].count("\n")
+                        + full_text[current_location + len(match[2]) :]
+                    )
+                    continue
+
+                current_location = full_text.find(match[2])
+                start_line_location: int = full_text[:current_location].count(
+                    "\n"
+                )
+                split_match: list[str] = match[2].splitlines()
+                for i in range(len(split_match)):
+                    new_docstring_tokens.append(
+                        (
+                            (
+                                start_line_location + i + 1,
+                                full_text.splitlines()[
+                                    start_line_location + i
+                                ].find(split_match[i]),
+                            ),
+                            len(split_match[i]),
+                            get_new_token_type(str(token_type)),
+                        )
+                    )
+
+                full_text = (
+                    full_text[:current_location]
+                    + "\n" * match[2].count("\n")
+                    + full_text[current_location + len(match[2]) :]
+                )
+
+    print(new_docstring_tokens)
 
     return new_tokens
