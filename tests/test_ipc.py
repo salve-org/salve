@@ -118,9 +118,9 @@ def test_IPC():
             ((18, 0), 24, "Comment"),
             ((18, 2), 22, "Link"),
             ((5, 7), 1, "Hidden_Char"),
-            ((9, 4), 3, "String"),
-            ((10, 0), 8, "String"),
-            ((11, 0), 7, "String"),
+            ((8, 4), 3, "String"),
+            ((9, 4), 4, "String"),
+            ((10, 4), 3, "String"),
         ],
     }
 

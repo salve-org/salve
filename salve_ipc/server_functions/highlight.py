@@ -155,7 +155,6 @@ useful_toks = {
 _TokenTupleInternalType = tuple[_TokenType | Callable, ...]
 _TokenTupleReturnType = list[tuple[str, _TokenType]]
 _ListOfStrs = list[str]
-_RegexListType = list[tuple[str, ...]]
 _LexReturnTokens = list[tuple[_TokenType, str]]
 
 
@@ -216,78 +215,94 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
     )
 
     new_docstring_tokens: list[Token] = []
+    split_text: _ListOfStrs = full_text.splitlines()
 
     for regex, token_type in proper_highlight_regexes:
-        match_strings: _RegexListType = compile(
-            regex, flags=MULTILINE
-        ).findall(full_text)
+        current_text = full_text
+        match: Match[str] | None = compile(regex, flags=MULTILINE).search(
+            full_text
+        )
 
-        # Iterate through all the matches
-        for match in match_strings:
-            while match[2] in full_text:
-                if "\n" not in match[2]:
-                    # We get some info for our tokens
-                    current_location = full_text.find(match[2])
-                    line_location: int = full_text[:current_location].count(
-                        "\n"
-                    )
+        if match is None:
+            # Onwards to the next regex!
+            continue
 
-                    # Create Token and add to the list
-                    new_docstring_tokens.append(
-                        (
-                            (
-                                line_location + 1,
-                                full_text.splitlines()[line_location].find(
-                                    match[2]
-                                ),
-                            ),
-                            len(match[2]),
-                            get_new_token_type(str(token_type)),
-                        )
-                    )
+        start_pos: tuple[int, int] = (0, 0)
+        simple_token_type: str = get_new_token_type(str(token_type))
 
-                    # Modify the full text to remove the match string to exit the while loop
-                    # NOTE: I eventually want to move from a long string to a list of strings to improve efficiencu
-                    full_text = (
-                        full_text[:current_location]
-                        + "\n" * match[2].count("\n")
-                        + full_text[current_location + len(match[2]) :]
-                    )
-                    continue
+        while match:
+            span: tuple[int, int] = match.span()
+            matched_str: str = current_text[span[0] : span[1]]
 
-                # We know that this is a multiline docstring/comment/etc
+            # Remove any whitespace previous to the match and update span accordingly
+            matched_len_initial: int = len(matched_str)
+            matched_str = matched_str.lstrip()
+            matched_len_lstripped: int = len(matched_str)
+            span = (
+                (span[0] + matched_len_initial - matched_len_lstripped),
+                span[1],
+            )
 
-                # Create variables for Token creation
-                current_location = full_text.find(match[2])
-                start_line_location: int = full_text[:current_location].count(
-                    "\n"
+            # Other useful variables without relation
+            newline_count: int = matched_str.count("\n")
+            previous_text: str = current_text[: span[0]]
+
+            start_line: int = previous_text.count("\n") + start_pos[0]
+
+            # Deal with the easy case first
+            if not newline_count:
+                # Prepare token variables
+                start_col: int = split_text[start_line].find(matched_str)
+                current_text: str = full_text[span[0] + span[1] - span[0] :]
+
+                # Create and add token
+                token: Token = (
+                    (start_line, start_col),
+                    matched_len_lstripped,
+                    simple_token_type,
                 )
-                # Since match[2] is multiple lines andwe add the tokens line by
-                # line instead of including newlines we need to make this a variable for efficiency
-                split_match: _ListOfStrs = match[2].splitlines()
+                new_docstring_tokens.append(token)
 
-                for i in range(len(split_match)):
-                    new_docstring_tokens.append(
-                        (
-                            (
-                                start_line_location + i + 1,
-                                full_text.splitlines()[
-                                    start_line_location + i
-                                ].find(split_match[i]),
-                            ),
-                            len(split_match[i]),
-                            get_new_token_type(str(token_type)),
-                        )
-                    )
+                start_pos = (start_line, start_col + matched_len_lstripped)
+                current_text = current_text[: span[1]]
 
-                # Modify and remove the full match
-                full_text = (
-                    full_text[:current_location]
-                    + "\n" * match[2].count("\n")
-                    + full_text[current_location + len(match[2]) :]
+                # Continue onward!
+                match = compile(regex, flags=MULTILINE).search(current_text)
+                continue
+
+            # Now for multiple line matches
+            split_match: list[str] = matched_str.splitlines()
+            for i in range(newline_count + 1):
+                match_str: str = split_match[i]
+                initial_len: int = len(match_str)
+                start_col: int = initial_len - len(match_str.lstrip())
+
+                if i == 0:
+                    line: str = split_text[start_line + i]
+
+                    true_len: int = len(line)
+                    lstripped_len: int = len(line.lstrip())
+                    initial_len = lstripped_len
+                    if lstripped_len != true_len:
+                        # In case the regex doesn't skip whitespace/junk
+                        initial_len = true_len
+
+                    start_col = line.find(match_str)
+
+                # Create and add token
+                token: Token = (
+                    (start_line + i, start_col),
+                    initial_len - start_col,
+                    simple_token_type,
                 )
+                new_docstring_tokens.append(token)
 
-    # All the loops are exited (for of for of while of many ifs) and the nested pain is over!
+                start_pos = (start_line + i, start_col + len(match_str))
+
+            # Continue onward!
+            current_text = current_text[span[1] :]
+            match = compile(regex, flags=MULTILINE).search(current_text)
+
     return new_docstring_tokens
 
 
