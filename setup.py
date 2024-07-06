@@ -15,7 +15,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=["pygments", "pyeditorconfig", "beartype"],
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     license="MIT license",
     classifiers=[
         "Development Status :: 3 - Alpha",
