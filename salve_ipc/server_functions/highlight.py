@@ -278,7 +278,7 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
                 start_col: int = initial_len - len(match_str.lstrip())
 
                 if i == 0:
-                    line: str = split_text[start_line- 1]
+                    line: str = split_text[start_line - 1]
 
                     true_len: int = len(line)
                     lstripped_len: int = len(line.lstrip())
@@ -303,7 +303,6 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
             current_text = current_text[span[1] :]
             match = compile(regex, flags=MULTILINE).search(current_text)
 
-    print(new_docstring_tokens)
     return new_docstring_tokens
 
 
