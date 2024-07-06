@@ -151,7 +151,7 @@ useful_toks = {
 }
 
 # Beartype speed optimizations
-_TokenType = type(StringToken) # Resolves to pygments.token._TokenType
+_TokenType = type(StringToken)  # Resolves to pygments.token._TokenType
 _TokenTupleInternalType = tuple[_TokenType | Callable, ...]
 _TokenTupleReturnType = list[tuple[str, _TokenType]]
 _ListOfStrs = list[str]
