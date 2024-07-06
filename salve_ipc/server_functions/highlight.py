@@ -6,7 +6,6 @@ from pygments.lexer import Lexer, RegexLexer, default
 from pygments.lexers import get_lexer_by_name
 from pygments.token import Comment as CommentToken
 from pygments.token import String as StringToken
-from pygments.token import _TokenType
 
 from .misc import Token, generic_tokens
 
@@ -152,6 +151,7 @@ useful_toks = {
 }
 
 # Beartype speed optimizations
+_TokenType = type(StringToken) # Resolves to pygments.token._TokenType
 _TokenTupleInternalType = tuple[_TokenType | Callable, ...]
 _TokenTupleReturnType = list[tuple[str, _TokenType]]
 _ListOfStrs = list[str]
