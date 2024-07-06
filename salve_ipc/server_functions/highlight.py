@@ -352,12 +352,13 @@ def get_highlights(
     # Add extra token types
     # NOTE: we add these at the end so that when they are applied one by one by the editor these
     # override older tokens that may not be as accurate
+
+    if isinstance(lexer, RegexLexer):
+        new_tokens += proper_docstring_tokens(lexer, full_text)
+
     new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
         # if there are not hidden chars we don't want to needlessly compute this
         new_tokens += find_hidden_chars(split_text, text_range[0])
-
-    if isinstance(lexer, RegexLexer):
-        new_tokens += proper_docstring_tokens(lexer, full_text)
 
     return new_tokens
