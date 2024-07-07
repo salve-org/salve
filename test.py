@@ -1,7 +1,5 @@
 Token = tuple[tuple[int, int], int, str]
 
-_RangeTokenDict = dict[int, list[tuple[range, str]]]
-
 
 def merge_tokens(tokens: list[Token]) -> list[Token]:
     output_tokens: list[Token] = []
@@ -48,7 +46,7 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
                 continue
 
             same_line: bool = old_token[0][0] == new_token[0][0]
-            can_add_token: bool = not old_token in dont_add_tokens
+            can_add_token: bool = old_token not in dont_add_tokens
             if not same_line:
                 if can_add_token:
                     output_tokens.append(old_token)
