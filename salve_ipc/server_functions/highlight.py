@@ -22,6 +22,7 @@ default_tokens: list[str] = [
     "Token.Generic",
 ]
 
+
 def merge_tokens(tokens: list[Token]) -> list[Token]:
     output_tokens: list[Token] = []
     depth: int = 0
