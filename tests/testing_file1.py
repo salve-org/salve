@@ -16,3 +16,6 @@ class Foo(Bar):
 
 Foo()
 # https://www.google.com
+"""
+test
+"""
