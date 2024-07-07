@@ -28,7 +28,9 @@ def test_IPC():
         expected_keywords=[],
         current_word="thid",
     )
-    context.request(HIGHLIGHT, file="test", language="python", text_range=(1, 18))
+    context.request(
+        HIGHLIGHT, file="test", language="python", text_range=(1, 18)
+    )
     context.request(EDITORCONFIG, file_path=__file__)
     context.request(
         DEFINITION,
