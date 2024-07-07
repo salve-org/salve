@@ -135,19 +135,20 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
 def overwrite_and_merge_tokens(
     old_tokens: list[Token], new_tokens: list[Token]
 ) -> list[Token]:
-    merged_old_tokens: list[Token] = merge_tokens(old_tokens)
-    merged_new_tokens: list[Token] = merge_tokens(new_tokens)
+    merged_old_tokens: list[Token] = merge_tokens(sorted(set(old_tokens)))
+    merged_new_tokens: list[Token] = merge_tokens(sorted(set(new_tokens)))
     output_tokens: list[Token] = overwrite_tokens(
         merged_old_tokens, merged_new_tokens
     )
 
-    output_tokens = merge_tokens(output_tokens)
+    output_tokens = sorted(set(merge_tokens(output_tokens)))
     return output_tokens
 
 
 existing_tokens: list[Token] = [
     ((2, 0), 5, "Name"),
     ((2, 5), 1, "Punctuation"),
+    ((2, 6), 1, "String"),
     ((2, 6), 1, "String"),
     ((2, 7), 3, "String"),
     ((2, 10), 1, "String"),
