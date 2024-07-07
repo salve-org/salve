@@ -1,3 +1,4 @@
+from pathlib import Path
 from salve_ipc.server_functions import get_definition
 
 
@@ -9,7 +10,7 @@ def test_get_definition():
         (r"class ", "after"),
         (r":?.*=.*", "before"),
     ]
-    file = open("tests/testing_file2.py", "r+").read()
+    file = open(Path("tests/testing_file2.py"), "r+").read()
 
     assert get_definition(
         file,
