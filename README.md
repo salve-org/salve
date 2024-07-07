@@ -10,7 +10,9 @@ Salve is an IPC library that can be used by code editors to easily get autocompl
 
 > **Notes:**
 > The first time that the system is loaded or a new server needs to be started it will take a fair bit longer.
+<br>
 > Any usage of IPC needs to eventually be called from an `if __name__ == "__main__":` block to prevent a multiproccesing error.
+<br>
 > Due to the way Windows handles chars the hidden character highlighter may not work properly. See [#57](https://github.com/Moosems/salve/pull/57). If anyone knows how to fix this, I would greatly appreciate you opening a PR :)
 
 ## Documentation
