@@ -6,10 +6,6 @@ print("​")  # No width space
 
 
 class Foo(Bar):
-    """
-    test
-    """
-
     def __init__(self):
         pass
 
