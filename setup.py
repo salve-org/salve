@@ -7,7 +7,7 @@ with open("README.md", "r") as file:
 
 setup(
     name="salve_ipc",
-    version="0.7.0",
+    version="0.6.0",
     description="Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.",
     author="Moosems",
     author_email="moosems.j@gmail.com",
@@ -15,7 +15,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=["pygments", "pyeditorconfig", "beartype"],
-    python_requires=">=3.11",
+    python_requires=">=3.9",
     license="MIT license",
     classifiers=[
         "Development Status :: 3 - Alpha",
