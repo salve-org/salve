@@ -15,7 +15,9 @@ from salve_ipc import (
 def test_IPC():
     context = IPC()
 
-    context.update_file("test", open(Path("tests/testing_file1.py"), "r+").read())
+    context.update_file(
+        "test", open(Path("tests/testing_file1.py"), "r+").read()
+    )
 
     context.request(
         AUTOCOMPLETE,

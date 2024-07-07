@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from salve_ipc.server_functions import get_definition
 
 
