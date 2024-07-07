@@ -2,6 +2,7 @@ from multiprocessing import Pipe, Process, Queue, freeze_support
 from multiprocessing.connection import Connection
 from pathlib import Path
 from random import randint
+from sys import platform
 
 from .misc import (
     COMMAND,
@@ -14,6 +15,12 @@ from .misc import (
     ResponseQueueType,
 )
 from .server import Server
+
+# Deal with Windows weirdness
+if platform == "win32":
+    from multiprocessing.connection import (
+        PipeConnection as Connection,  # type: ignore
+    )
 
 
 class IPC:

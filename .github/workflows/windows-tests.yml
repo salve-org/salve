@@ -1,10 +1,10 @@
-name: Code Tests
+name: Code Tests (On Windows)
 
 on: push
 
 jobs:
   formatting:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -15,4 +15,4 @@ jobs:
         run: |
           pip install .
           pip install pytest
-          python3 -m pytest .
+          python3 -m pytest . -s
