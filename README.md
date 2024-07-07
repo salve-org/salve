@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.5.2</h1>
+<h1 align="center">Salve v0.6.0</h1>
 
 # Installation
 
@@ -9,7 +9,7 @@ In the Command Line, paste the following: `pip install salve_ipc`
 Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.
 
 > **Note**
-> The first time that the system is loaded or a new server needs to be started it will take a fair bit longer
+> The first time that the system is loaded or a new server needs to be started it will take a fair bit longer. Additionally, any usage of IPC needs to eventually be called from an `if __name__ == "__main__":` block to prevent a multiproccesing error.
 
 ## Documentation
 
