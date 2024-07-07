@@ -1,4 +1,5 @@
 from unicodedata import category
+from functools import cache
 
 Token = tuple[tuple[int, int], int, str]
 
@@ -21,6 +22,7 @@ generic_tokens: list[str] = [
 ]
 
 
+@cache
 def is_unicode_letter(char: str) -> bool:
     """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
     return char == "_" or category(char).startswith("L")

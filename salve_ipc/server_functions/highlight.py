@@ -1,4 +1,5 @@
 from re import MULTILINE, Match, Pattern, compile
+from functools import cache
 
 from beartype.typing import Callable
 from pygments import lex
@@ -167,6 +168,7 @@ def overwrite_and_merge_tokens(
     return output_tokens
 
 
+@cache
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
     new_type: str = generic_tokens[0]
@@ -300,6 +302,7 @@ _ListOfStrs = list[str]
 _LexReturnTokens = list[tuple[_TokenType, str]]
 
 
+@cache
 def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
     """
     Steals the regexes that pgments uses to give docstring, heredoc, comment, and multiline comment highlights
@@ -448,6 +451,11 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
     return new_docstring_tokens
 
 
+@cache
+def lexer_by_name_cached(language: str) -> Lexer:
+    return get_lexer_by_name(language)
+
+
 def get_highlights(
     full_text: str,
     language: str = "text",
@@ -456,7 +464,7 @@ def get_highlights(
     """Gets pygments tokens from text provided in language proved and converts them to Token's"""
 
     # Create some variables used all throughout the function
-    lexer: Lexer = get_lexer_by_name(language)
+    lexer: Lexer = lexer_by_name_cached(language)
     split_text: _ListOfStrs = full_text.splitlines()
     new_tokens: list[Token] = []
 
