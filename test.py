@@ -37,6 +37,7 @@ def merge_tokens(tokens: list[Token]) -> list[Token]:
         output_tokens[-1] = new_token
     return output_tokens
 
+
 def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
     output_tokens: list[Token] = []
     dont_add_tokens: list[Token] = []
@@ -59,11 +60,19 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
             old_token_end: int = old_token[0][1] + old_token[1]
             new_token_end: int = new_token[0][1] + new_token[1]
 
-            partial_front_overlap: bool = new_token[0][1] <= old_token_end and not old_token_end > new_token_end
+            partial_front_overlap: bool = (
+                new_token[0][1] <= old_token_end
+                and not old_token_end > new_token_end
+            )
             partial_end_overlap: bool = new_token_end >= old_token[0][1]
-            fully_contained: bool = old_token_end <= new_token_end and old_token[0][1] >= new_token[0][1]
+            fully_contained: bool = (
+                old_token_end <= new_token_end
+                and old_token[0][1] >= new_token[0][1]
+            )
 
-            if not (partial_front_overlap or partial_end_overlap or fully_contained):
+            if not (
+                partial_front_overlap or partial_end_overlap or fully_contained
+            ):
                 continue
 
             dont_add_tokens.append(old_token)
@@ -77,15 +86,43 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
             # If we are here if means its a partial overlap
             if partial_front_overlap:
                 created_token: Token = (
-                    (new_token[0][0], old_token[0][1]), new_token[0][1] - old_token[0][1], old_token[2]
+                    (new_token[0][0], old_token[0][1]),
+                    new_token[0][1] - old_token[0][1],
+                    old_token[2],
                 )
+                while created_token in output_tokens:
+                    output_tokens.remove(created_token)
                 output_tokens.append(created_token)
                 dont_add_tokens.append(created_token)
                 continue
 
+            if old_token[0][1] < new_token[0][1]:
+                created_token_1: Token = (
+                    (new_token[0][0], old_token[0][1]),
+                    new_token[0][1] - old_token[0][1],
+                    old_token[2],
+                )
+                created_token_2: Token = (
+                    (new_token[0][0], new_token_end),
+                    old_token_end - new_token_end,
+                    old_token[2],
+                )
+                while created_token_1 in output_tokens:
+                    output_tokens.remove(created_token_1)
+                output_tokens.append(created_token_1)
+                while created_token_2 in output_tokens:
+                    output_tokens.remove(created_token_2)
+                output_tokens.append(created_token_2)
+                dont_add_tokens.append(created_token_1)
+                dont_add_tokens.append(created_token_2)
+
             created_token: Token = (
-                (new_token[0][0], new_token_end), old_token_end - new_token_end, old_token[2]
+                (new_token[0][0], new_token_end),
+                old_token_end - new_token_end,
+                old_token[2],
             )
+            while created_token in output_tokens:
+                output_tokens.remove(created_token)
             output_tokens.append(created_token)
             dont_add_tokens.append(created_token)
 
@@ -108,7 +145,6 @@ def overwrite_and_merge_tokens(
     return output_tokens
 
 
-
 existing_tokens: list[Token] = [
     ((2, 0), 5, "Name"),
     ((2, 5), 1, "Punctuation"),
@@ -118,6 +154,7 @@ existing_tokens: list[Token] = [
     ((2, 11), 1, "Punctuation"),
     ((3, 0), 3, "String"),
     ((4, -1), 2, "Test"),
+    ((4, -1), 12, "Test"),
     ((4, 0), 4, "Name"),
     ((4, 4), 1, "Punctuation"),
     ((4, 5), 4, "Name"),
@@ -149,6 +186,7 @@ assert output == [
     ((3, 0), 3, "String"),
     ((4, -1), 1, "Test"),  # Super important
     ((4, 0), 10, "String"),
+    ((4, 10), 1, "Test"),  # Super important
     ((4, 10), 4, "Test"),  # Super important
     ((4, 11), 5, "Test"),  # Super important
     ((5, 0), 3, "String"),
