@@ -59,11 +59,11 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
             old_token_end: int = old_token[0][1] + old_token[1]
             new_token_end: int = new_token[0][1] + new_token[1]
 
-            front_overlaps: bool = new_token[0][1] <= old_token_end and not old_token_end > new_token_end
-            end_overlaps: bool = new_token_end >= old_token[0][1]
-            full_overlap: bool = front_overlaps and end_overlaps
+            partial_front_overlap: bool = new_token[0][1] <= old_token_end and not old_token_end > new_token_end
+            partial_end_overlap: bool = new_token_end >= old_token[0][1]
+            fully_contained: bool = old_token_end <= new_token_end and old_token[0][1] >= new_token[0][1]
 
-            if not (front_overlaps or end_overlaps):
+            if not (partial_front_overlap or partial_end_overlap or fully_contained):
                 continue
 
             dont_add_tokens.append(old_token)
@@ -71,13 +71,13 @@ def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
             while old_token in output_tokens:
                 output_tokens.remove(old_token)
 
-            if full_overlap:
+            if fully_contained:
                 continue
 
             # If we are here if means its a partial overlap
-            if front_overlaps:
+            if partial_front_overlap:
                 created_token: Token = (
-                    (new_token[0][0], old_token[0][1]), new_token[0][1] - old_token[1], old_token[2]
+                    (new_token[0][0], old_token[0][1]), new_token[0][1] - old_token[0][1], old_token[2]
                 )
                 output_tokens.append(created_token)
                 dont_add_tokens.append(created_token)
@@ -117,6 +117,7 @@ existing_tokens: list[Token] = [
     ((2, 10), 1, "String"),
     ((2, 11), 1, "Punctuation"),
     ((3, 0), 3, "String"),
+    ((4, -1), 2, "Test"),
     ((4, 0), 4, "Name"),
     ((4, 4), 1, "Punctuation"),
     ((4, 5), 4, "Name"),
@@ -146,6 +147,7 @@ assert output == [
     ((2, 6), 5, "String"),
     ((2, 11), 1, "Punctuation"),
     ((3, 0), 3, "String"),
+    ((4, -1), 1, "Test"),  # Super important
     ((4, 0), 10, "String"),
     ((4, 10), 4, "Test"),  # Super important
     ((4, 11), 5, "Test"),  # Super important
