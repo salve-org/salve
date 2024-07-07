@@ -1,5 +1,6 @@
 from multiprocessing.connection import Connection
 from multiprocessing.queues import Queue as GenericClassQueue
+from sys import platform
 from time import sleep
 
 from pyeditorconfig import get_config
@@ -19,6 +20,12 @@ from .server_functions import (
     get_highlights,
     get_replacements,
 )
+
+# Deal with Windows weirdness
+if platform == "win32":
+    from multiprocessing.connection import (
+        PipeConnection as Connection,  # type: ignore
+    )
 
 
 class Server:
