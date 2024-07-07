@@ -11,7 +11,7 @@ jobs:
         with:
           python-version: 3.11.1
 
-      - name: Code Formatting (App)
+      - name: Run tests
         run: |
           pip install .
           pip install pytest
