@@ -168,6 +168,26 @@ def overwrite_and_merge_tokens(
     return output_tokens
 
 
+def only_tokens_in_text_range(
+    tokens: list[Token], text_range: tuple[int, int]
+) -> list[Token]:
+    # We create a new list becase lists are pass by reference
+    output_tokens: list[Token] = []
+
+    for token in tokens:
+        token_lineno: int = token[0][0]
+        minimum_line: int = text_range[0]
+        maximum_line: int = text_range[1]
+
+        if token_lineno < minimum_line or token_lineno > maximum_line:
+            continue
+
+        output_tokens.append(token)
+
+    output_tokens = merge_tokens(output_tokens)
+    return output_tokens
+
+
 @cache
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""
@@ -513,5 +533,5 @@ def get_highlights(
         # if there are not hidden chars we don't want to needlessly compute this
         new_tokens += find_hidden_chars(split_text, text_range[0])
 
-    new_tokens = merge_tokens(new_tokens)
+    new_tokens = only_tokens_in_text_range(new_tokens, text_range)
     return new_tokens
