@@ -79,6 +79,7 @@ def test_IPC():
     if highlight_output is None:
         raise AssertionError("Highlight output is None")
     highlight_output["id"] = 0
+    print(highlight_output)
     assert highlight_output == {
         "id": 0,
         "type": "response",
