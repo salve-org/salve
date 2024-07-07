@@ -1,5 +1,5 @@
-from unicodedata import category
 from functools import cache
+from unicodedata import category
 
 Token = tuple[tuple[int, int], int, str]
 

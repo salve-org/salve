@@ -1,5 +1,5 @@
-from re import MULTILINE, Match, Pattern, compile
 from functools import cache
+from re import MULTILINE, Match, Pattern, compile
 
 from beartype.typing import Callable
 from pygments import lex
