@@ -1,6 +1,7 @@
 from re import Match, Pattern, compile
 
-from .misc import Token, find_words
+from .misc import find_words
+from .tokens import Token
 
 
 def get_definition(
