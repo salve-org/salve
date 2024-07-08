@@ -35,6 +35,7 @@ default_tokens: list[str] = [
     "Token.Generic",
 ]
 
+
 @cache
 def get_new_token_type(old_token: str) -> str:
     """Turns pygments token types into a generic predefined Token"""

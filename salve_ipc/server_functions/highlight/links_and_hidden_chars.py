@@ -4,6 +4,7 @@ from .tokens import Token
 
 url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
 
+
 def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
     start_pos: tuple[int, int] = (start_line, 0)
     url_toks: list[Token] = []
@@ -35,6 +36,7 @@ def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
         start_pos = (start_pos[0], start_pos[1] + url_len + token_start_col)
 
     return url_toks
+
 
 hidden_chars: dict[str, str] = {
     "\u0009": "CHARACTER TABULATION",
@@ -92,6 +94,7 @@ hidden_chars: dict[str, str] = {
     "\u1d17A": "MUSICAL SYMBOL END PHRASE",
     "\ue0020": "TAG SPACE",
 }
+
 
 def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
     hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
