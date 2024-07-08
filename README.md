@@ -1,4 +1,4 @@
-<h1 align="center">Salve v0.6.0</h1>
+<h1 align="center">Salve v0.7.0</h1>
 
 # Installation
 
@@ -8,8 +8,10 @@ In the Command Line, paste the following: `pip install salve_ipc`
 
 Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.
 
-> **Note**
-> The first time that the system is loaded or a new server needs to be started it will take a fair bit longer. Additionally, any usage of IPC needs to eventually be called from an `if __name__ == "__main__":` block to prevent a multiproccesing error.
+> **Notes:**
+>  - The first time that the system is loaded or a new server needs to be started it will take a fair bit longer.
+>  - Any usage of IPC needs to eventually be called from an `if __name__ == "__main__":` block to prevent a multiproccesing error.
+>  - Due to the way Windows handles chars the hidden character highlighter may not work properly. See [#57](https://github.com/Moosems/salve/pull/57). If anyone knows how to fix this, I would greatly appreciate you opening a PR :)
 
 ## Documentation
 
@@ -93,6 +95,11 @@ if __name__ == "__main__":
 ## Contributing
 
 To contribute, fork the repository, make your changes, and then make a pull request. If you want to add a feature, please open an issue first so it can be discussed. Note that whenever and wherever possible you should try to use stdlib modules rather than external ones.
+
+## Required Python Version: 3.11+
+
+Salve IPC will use the three most recent versions (full releases) going forward and will drop any older versions as I hope to keep this package up to date with modern python versions.
+Currently 3.11 is the minimum (instead of 3.10) as it what Salve IPC was developed under. However, after 3.14 is released, the minimum will be 3.12 as  and will change accordingly in the future as is described above.
 
 ## License
 

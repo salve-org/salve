@@ -1,26 +1,8 @@
+from functools import cache
 from unicodedata import category
 
-Token = tuple[tuple[int, int], int, str]
 
-generic_tokens: list[str] = [
-    "Whitespace",
-    "Text",
-    "Error",
-    "Keyword",
-    "Name",
-    "String",
-    "Number",
-    "Literal",
-    "Operator",
-    "Punctuation",
-    "Comment",
-    "Generic",
-    "Link",  # Website link (Not given by pygments)
-    "Hidden_Char",  # Hidden chars (no width space kind of stuff)
-    "Definition",  # Definitions
-]
-
-
+@cache
 def is_unicode_letter(char: str) -> bool:
     """Returns a boolean value of whether a given unicode char is a letter or not (includes "_" for code completion reasons)"""
     return char == "_" or category(char).startswith("L")
