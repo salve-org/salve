@@ -2,7 +2,7 @@
 name: Bug Report | Feature Idea
 about: Report a bug or suggest a feature
 title: "Bug Report | Feature Idea:"
-labels: bug, enhancement, Template
+labels: bug, enhancement
 assignees: ""
 ---
 
