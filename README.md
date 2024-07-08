@@ -103,4 +103,4 @@ Currently 3.11 is the minimum (instead of 3.10) as Salve IPC was developed under
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LISCENSE).
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE).
