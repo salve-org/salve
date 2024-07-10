@@ -164,7 +164,7 @@ class IPC:
             self.parse_response(self.response_queue.get())
 
     def get_response(self, command: str) -> Response | None:
-        """Runs IPC.check_responses() and returns the current response of type command if it has been returned - external API"""
+        """Checks responses and returns the current response of type command if it has been returned - external API"""
         if command not in COMMANDS:
             self.kill_IPC()
             raise Exception(

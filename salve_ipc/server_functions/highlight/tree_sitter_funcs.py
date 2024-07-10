@@ -1,7 +1,6 @@
 from tree_sitter import Node, Parser, Tree, TreeCursor
 
-from salve_ipc import Token
-from salve_ipc.server_functions.highlight.tokens import merge_tokens
+from .tokens import Token, merge_tokens
 
 
 def node_to_tokens(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
@@ -54,12 +53,12 @@ def node_to_tokens(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
 def edit_tree(
     old_code: str, new_code: str, tree: Tree, parser: Parser
 ) -> Tree:
-    # NOTE: Made with Chat GPT, don't have any idea why or how it works, but it does :D
+    # NOTE: Made with ChatGPT, don't have any idea why or how it works, but it does :D
     if old_code == new_code:
         return tree
 
-    old_lines = old_code.splitlines(keepends=True)
-    new_lines = new_code.splitlines(keepends=True)
+    old_code_lines = old_code.splitlines(keepends=True)
+    new_code_lines = new_code.splitlines(keepends=True)
 
     # Find the first differing line
     def find_first_diff(old_lines, new_lines):
@@ -78,17 +77,17 @@ def edit_tree(
         return min_len
 
     # Get line diffs
-    first_diff = find_first_diff(old_lines, new_lines)
-    last_diff_old = find_last_diff(old_lines, new_lines)
-    last_diff_new = find_last_diff(new_lines, old_lines)
+    first_diff = find_first_diff(old_code_lines, new_code_lines)
+    last_diff_old = find_last_diff(old_code_lines, new_code_lines)
+    last_diff_new = find_last_diff(new_code_lines, old_code_lines)
 
     # Calculate byte offsets
-    start_byte = sum(len(line) + 1 for line in old_lines[:first_diff])
+    start_byte = sum(len(line) + 1 for line in old_code_lines[:first_diff])
     old_end_byte = sum(
-        len(line) + 1 for line in old_lines[: last_diff_old + 1]
+        len(line) + 1 for line in old_code_lines[: last_diff_old + 1]
     )
     new_end_byte = sum(
-        len(line) + 1 for line in new_lines[: last_diff_new + 1]
+        len(line) + 1 for line in new_code_lines[: last_diff_new + 1]
     )
 
     # Edit the tree
@@ -99,11 +98,11 @@ def edit_tree(
         start_point=(first_diff, 0),
         old_end_point=(
             last_diff_old,
-            len(old_lines[last_diff_old]) if old_lines else 0,
+            len(old_code_lines[last_diff_old]) if old_code_lines else 0,
         ),
         new_end_point=(
             last_diff_new,
-            len(new_lines[last_diff_new]) if new_lines else 0,
+            len(new_code_lines[last_diff_new]) if new_code_lines else 0,
         ),
     )
 
@@ -147,8 +146,8 @@ def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
     return ""
 
 
-# NOTE: The auto-mapper is great for users who don't want to spend forever mapping stuff so it
-# will give a mapping made from what context it can get and then the user can refine it further
+# NOTE: The auto-mapper is great for users who don't want to spend forever mapping stuff as it
+# will give a mapping made from what context it is given and then the user can refine it further
 def make_unrefined_mapping(
     root_node: Tree,
     pygments_special_output: list[Token],

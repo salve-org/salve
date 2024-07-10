@@ -2,7 +2,7 @@ from re import Match, Pattern, compile
 
 from .tokens import Token
 
-url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
+url_regex: Pattern = compile(r"(ftp|http|https)://[a-zA-Z0-9_-]")
 
 
 def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:

@@ -36,8 +36,9 @@ def get_highlights(
         text_range = (text_range[0], len(split_text))
 
     start_index: tuple[int, int] = (text_range[0], 0)
+
     # We want only the lines in the text range because this list is iterated
-    split_text: list[str] = split_text[text_range[0] - 1 : text_range[1]]
+    split_text = split_text[text_range[0] - 1 : text_range[1]]
 
     for line in split_text:
         og_tokens: _LexReturnTokens = list(lex(line, lexer))
@@ -51,7 +52,7 @@ def get_highlights(
                 continue
 
             if not token_str.strip() or new_type == "Text":
-                # If the token is empty or is plain Text we simply skip it because thats ultimately useless info
+                # If the token is empty or is plain Text we simply skip it because that's ultimately useless info
                 start_index = (start_index[0], start_index[1] + token_len)
                 continue
 
@@ -69,7 +70,7 @@ def get_highlights(
 
     new_tokens += get_urls(split_text, text_range[0])
     if [char for char in hidden_chars if char in full_text]:
-        # if there are not hidden chars we don't want to needlessly compute this
+        # If there are no hidden chars we don't want to needlessly compute this
         new_tokens += find_hidden_chars(split_text, text_range[0])
 
     new_tokens = only_tokens_in_text_range(new_tokens, text_range)

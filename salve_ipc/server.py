@@ -29,7 +29,7 @@ if platform == "win32":
 
 
 class Server:
-    """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
+    """Handles input from the user and returns output from special functions. Not an external API."""
 
     def __init__(
         self,

@@ -1,5 +1,9 @@
 from functools import cache
 
+from pygments.token import String as StringToken
+
+_TokenType = type(StringToken)  # Resolves to pygments.token._TokenType
+
 Token = tuple[tuple[int, int], int, str]
 
 generic_tokens: list[str] = [
@@ -50,7 +54,7 @@ def get_new_token_type(old_token: str) -> str:
 def only_tokens_in_text_range(
     tokens: list[Token], text_range: tuple[int, int]
 ) -> list[Token]:
-    # We create a new list becase lists are pass by reference
+    # We create a new list because lists are pass by reference
     output_tokens: list[Token] = []
 
     for token in tokens:
@@ -152,7 +156,7 @@ def overwrite_tokens(
             if fully_contained:
                 continue
 
-            # If we are here if means its a partial overlap
+            # If we are here if means it's a partial overlap
             if partial_front_overlap:
                 created_token: Token = (
                     (new_token[0][0], old_token[0][1]),

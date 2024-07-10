@@ -2,6 +2,8 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
+from .server_functions import Token
+
 COMMANDS: list[str] = [
     "autocomplete",
     "replacements",
@@ -53,9 +55,7 @@ class Response(Message):
 
     cancelled: bool
     command: NotRequired[str]
-    result: NotRequired[
-        list[str | tuple[tuple[int, int], int, str]] | dict[str, str]
-    ]
+    result: NotRequired[list[str | Token] | dict[str, str] | Token]
 
 
 if TYPE_CHECKING:
