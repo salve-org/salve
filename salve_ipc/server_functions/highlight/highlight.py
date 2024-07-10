@@ -50,7 +50,7 @@ def get_highlights(
                 # Lexer adds the newline back as its own token
                 continue
 
-            if not token_str.strip() and new_type == "Text":
+            if not token_str.strip() or new_type == "Text":
                 # If the token is empty or is plain Text we simply skip it because thats ultimately useless info
                 start_index = (start_index[0], start_index[1] + token_len)
                 continue
