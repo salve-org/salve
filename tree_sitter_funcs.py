@@ -4,7 +4,7 @@ from salve_ipc import Token
 from salve_ipc.server_functions.highlight.tokens import merge_tokens
 
 
-def traverse_node(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
+def node_to_tokens(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
     cursor: TreeCursor = root_node.walk()
     tokens: list[Token] = []
     visited_nodes: set = set()
@@ -54,7 +54,7 @@ def traverse_node(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
 def edit_tree(
     old_code: str, new_code: str, tree: Tree, parser: Parser
 ) -> Tree:
-    """Made with Chat GPT, don't have any idea why or how it works, but it does :D"""
+    # NOTE: Made with Chat GPT, don't have any idea why or how it works, but it does :D
     if old_code == new_code:
         return tree
 
@@ -113,15 +113,18 @@ def edit_tree(
     return tree
 
 
-def token_type_of_test(old_token: Token, new_tokens: list[Token]) -> str:
-    if not new_tokens:
+# Given a test token from the mapping function it will try to match it with the
+# closest token type found elsewhere in the pygments list
+def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
+    if not pygments_tokens:
         return ""
 
-    for new_token in new_tokens:
+    for new_token in pygments_tokens:
         # Check if the tokens are effectively the same
-        same_line: bool = old_token[0][0] == new_token[0][0]
+        same_line: bool = test_token[0][0] == new_token[0][0]
         same_col_and_length: bool = (
-            old_token[0][1] == new_token[0][1] and old_token[1] == new_token[1]
+            test_token[0][1] == new_token[0][1]
+            and test_token[1] == new_token[1]
         )
         if not same_line:
             continue
@@ -129,12 +132,12 @@ def token_type_of_test(old_token: Token, new_tokens: list[Token]) -> str:
             return new_token[2]
 
         # Check if the token's range is covered by the new_token
-        old_token_end: int = old_token[0][1] + old_token[1]
+        old_token_end: int = test_token[0][1] + test_token[1]
         new_token_end: int = new_token[0][1] + new_token[1]
 
         fully_contained: bool = (
             old_token_end <= new_token_end
-            and old_token[0][1] >= new_token[0][1]
+            and test_token[0][1] >= new_token[0][1]
         )
 
         # We assume there is no partial overlap
@@ -144,6 +147,8 @@ def token_type_of_test(old_token: Token, new_tokens: list[Token]) -> str:
     return ""
 
 
+# NOTE: The auto-mapper is great for users who don't want to spend forever mapping stuff so it
+# will give a mapping made from what context it can get and then the user can refine it further
 def make_unrefined_mapping(
     root_node: Tree,
     pygments_special_output: list[Token],

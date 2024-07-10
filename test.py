@@ -1,7 +1,7 @@
 from tree_sitter import Language, Parser, Tree
 from tree_sitter_python import language as py_language
 
-from tree_sitter_funcs import edit_tree, make_unrefined_mapping, traverse_node
+from tree_sitter_funcs import edit_tree, make_unrefined_mapping, node_to_tokens
 
 # Create useful variables
 original_code_snippet: str = """class foo:
@@ -81,7 +81,7 @@ def test_tree_sitter():
 
     tree = parser.parse(bytes(original_code_snippet, "utf8"))
 
-    tree_sitter_output = traverse_node(tree, mapping=minimal_python_mapping)
+    tree_sitter_output = node_to_tokens(tree, mapping=minimal_python_mapping)
     assert pygments_output == tree_sitter_output
 
     assert (
@@ -92,7 +92,7 @@ def test_tree_sitter():
     old_code = original_code_snippet
     code_snippet = '"""' + original_code_snippet + '"""'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
-    assert traverse_node(tree, mapping=minimal_python_mapping) == [
+    assert node_to_tokens(tree, mapping=minimal_python_mapping) == [
         ((1, 0), 0, "String"),
         ((5, 0), 3, "String"),
     ]
@@ -100,7 +100,7 @@ def test_tree_sitter():
     old_code = code_snippet
     code_snippet = code_snippet[3 : len(code_snippet) - 3] + 'print("Boo!")'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
-    output = traverse_node(tree, mapping=minimal_python_mapping)
+    output = node_to_tokens(tree, mapping=minimal_python_mapping)
 
     assert output == [
         ((1, 0), 5, "Keyword"),
