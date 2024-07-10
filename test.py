@@ -2,9 +2,7 @@ from tree_sitter import Language, Node, Parser, Tree, TreeCursor
 from tree_sitter_python import language as py_language
 
 from salve_ipc import Token
-from salve_ipc.server_functions.highlight.tokens import (
-    merge_tokens,
-)
+from salve_ipc.server_functions.highlight.tokens import merge_tokens
 
 original_code_snippet: str = """class foo:
     def bar() -> None:
