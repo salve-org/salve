@@ -97,13 +97,16 @@ own_output = [
     ((4, 15), 2, "Punctuation"),
 ]
 tree_sitter_output = traverse_node(tree, mapping=python_generic_mapping)
-print(own_output == tree_sitter_output)
+assert own_output == tree_sitter_output
 
 
 def edit_tree(old_code: str, new_code: str, tree: Tree) -> Tree:
     """Made with Chat GPT, don't have any idea why or how it works, but it does :D"""
-    old_lines = old_code.splitlines()
-    new_lines = new_code.splitlines()
+    if old_code == new_code:
+        return tree
+
+    old_lines = old_code.splitlines(keepends=True)
+    new_lines = new_code.splitlines(keepends=True)
 
     # Find the first differing line
     def find_first_diff(old_lines, new_lines):
@@ -121,10 +124,12 @@ def edit_tree(old_code: str, new_code: str, tree: Tree) -> Tree:
                 return len(old_lines) - i
         return min_len
 
+    # Get line diffs
     first_diff = find_first_diff(old_lines, new_lines)
     last_diff_old = find_last_diff(old_lines, new_lines)
     last_diff_new = find_last_diff(new_lines, old_lines)
 
+    # Calculate byte offsets
     start_byte = sum(len(line) + 1 for line in old_lines[:first_diff])
     old_end_byte = sum(
         len(line) + 1 for line in old_lines[: last_diff_old + 1]
@@ -133,6 +138,7 @@ def edit_tree(old_code: str, new_code: str, tree: Tree) -> Tree:
         len(line) + 1 for line in new_lines[: last_diff_new + 1]
     )
 
+    # Edit the tree
     tree.edit(
         start_byte=start_byte,
         old_end_byte=old_end_byte,
@@ -153,6 +159,7 @@ def edit_tree(old_code: str, new_code: str, tree: Tree) -> Tree:
 
     return tree
 
+tree: Tree = edit_tree(code_snippet, code_snippet, tree)
 
 old_code = code_snippet
 code_snippet = '"""' + code_snippet + '"""'
