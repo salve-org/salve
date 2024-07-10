@@ -168,11 +168,13 @@ def test_IPC():
 
     assert highlight_output == expected_output
 
-    context.update_file("foo", open(Path("tests/testing_file2.py"), "r+").read())
+    context.update_file(
+        "foo", open(Path("tests/testing_file2.py"), "r+").read()
+    )
     context.request(HIGHLIGHT, file="foo", language="python")
     while not (output := context.get_response(HIGHLIGHT)):
         pass
-    response = output["result"] # type: ignore
+    response = output["result"]  # type: ignore
     assert response != []
 
     context.remove_file("test")
