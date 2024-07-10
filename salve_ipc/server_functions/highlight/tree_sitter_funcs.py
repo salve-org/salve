@@ -53,7 +53,6 @@ def node_to_tokens(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
 def edit_tree(
     old_code: str, new_code: str, tree: Tree, parser: Parser
 ) -> Tree:
-    # NOTE: Made with ChatGPT, don't have any idea why or how it works, but it does :D
     if old_code == new_code:
         return tree
 
