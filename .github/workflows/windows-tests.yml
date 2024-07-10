@@ -14,5 +14,5 @@ jobs:
       - name: Run tests
         run: |
           pip install .
-          pip install pytest tree-sitter-python
+          pip install -r requirements-dev.txt
           python3 -m pytest . -s

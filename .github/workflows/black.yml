@@ -13,6 +13,5 @@ jobs:
 
       - name: Code Formatting (App)
         run: |
-          pip install black
-          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
           black --check .

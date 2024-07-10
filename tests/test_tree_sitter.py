@@ -1,5 +1,7 @@
 from tree_sitter import Language, Parser, Tree
-from tree_sitter_python import language as py_language
+from tree_sitter_python import (
+    language as py_language,  # Downloaded automatically by test runners
+)
 
 from salve_ipc.server_functions.highlight.tree_sitter_funcs import (
     edit_tree,
