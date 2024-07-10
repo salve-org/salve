@@ -1,7 +1,11 @@
 from tree_sitter import Language, Parser, Tree
 from tree_sitter_python import language as py_language
 
-from tree_sitter_funcs import edit_tree, make_unrefined_mapping, node_to_tokens
+from salve_ipc.server_functions.highlight.tree_sitter_funcs import (
+    edit_tree,
+    make_unrefined_mapping,
+    node_to_tokens,
+)
 
 # Create useful variables
 original_code_snippet: str = """class foo:
