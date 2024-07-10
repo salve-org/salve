@@ -102,7 +102,9 @@ def merge_tokens(tokens: list[Token]) -> list[Token]:
     return output_tokens
 
 
-def overwrite_tokens(old_tokens: list[Token], new_tokens: list[Token]):
+def overwrite_tokens(
+    old_tokens: list[Token], new_tokens: list[Token]
+) -> list[Token]:
     if not new_tokens:
         return old_tokens
 
