@@ -1,11 +1,8 @@
-from multiprocessing.connection import Connection
 from multiprocessing.queues import Queue as GenericClassQueue
-from sys import platform
 from time import sleep
 
 from pyeditorconfig import get_config
 from tree_sitter import Language
-from tree_sitter_python import language
 
 from .misc import (
     COMMANDS,
@@ -23,13 +20,6 @@ from .server_functions import (
     get_highlights,
     get_replacements,
 )
-
-# Deal with Windows weirdness
-if platform == "win32":
-    from multiprocessing.connection import (
-        PipeConnection as Connection,  # type: ignore
-    )
-
 
 class Server:
     """Handles input from the user and returns output from special functions. Not an external API."""
@@ -136,7 +126,7 @@ class Server:
                     "tree_sitter_language"
                 ]  # type: ignore
                 # true_language.to_tree_sitter_language()
-                # Language(true_language.c_ptr)
+                Language(true_language.c_ptr)
                 # Both of these will crash
                 print(true_language)
             case _:

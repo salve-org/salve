@@ -2,7 +2,7 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
-from tree_sitter import Language, Parser
+from tree_sitter import Language
 from tree_sitter_python import language
 
 from salve_ipc import (

@@ -2,7 +2,7 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
-from tree_sitter import Language, Parser
+from tree_sitter import Language
 
 from .server_functions import Token
 
