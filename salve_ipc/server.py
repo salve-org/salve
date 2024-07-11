@@ -132,11 +132,12 @@ class Server:
                 if isinstance(language_function, Path):
                     lang = lang_from_so(
                         str(language_function.absolute()),
-                        language_function["language"],
-                    )  # type: ignore
+                        request["language"],  # type: ignore
+                    )
                 elif isinstance(language_function, str):
                     lang = lang_from_so(
-                        language_function, language_function["language"]
+                        language_function,
+                        request["language"],  # type: ignore
                     )  # type: ignore
                 elif callable(language_function):
                     lang = Language(language_function())

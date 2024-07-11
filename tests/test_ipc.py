@@ -299,6 +299,26 @@ def test_IPC():
     response = output["result"]  # type: ignore
     assert response != []
 
+    if platform != "win32":
+        if platform == "darwin":
+            context.request(
+                HIGHLIGHT_TREE_SITTER,
+                file="test",
+                language="python",
+                tree_sitter_language="./tests/languages-darwin.so",
+                mapping=minimal_python_mapping,
+                text_range=(1, 18),
+            )
+        else:
+            context.request(
+                HIGHLIGHT_TREE_SITTER,
+                file="test",
+                language="python",
+                tree_sitter_language="./tests/languages-linux.so",
+                mapping=minimal_python_mapping,
+                text_range=(1, 18),
+            )
+
     context.remove_file("test")
     context.kill_IPC()
 

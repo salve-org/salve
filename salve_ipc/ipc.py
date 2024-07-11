@@ -100,7 +100,7 @@ class IPC:
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
         definition_starters: list[tuple[str, str]] = [("", "before")],
-        tree_sitter_language: Callable[[], int] | None = None,
+        tree_sitter_language: Callable[[], int] | Path | str | None = None,
         mapping: dict[str, str] | None = None,
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
