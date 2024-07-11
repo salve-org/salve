@@ -113,6 +113,10 @@ class IPC:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
 
+        pointer_int = 0
+        if tree_sitter_language:
+            pointer_int = tree_sitter_language.c_ptr
+
         self.create_message(
             type="request",
             command=command,
@@ -123,7 +127,7 @@ class IPC:
             text_range=text_range,
             file_path=file_path,
             definition_starters=definition_starters,
-            tree_sitter_language=tree_sitter_language,
+            tree_sitter_language=pointer_int,
             mapping=mapping,
         )
 
