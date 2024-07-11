@@ -21,6 +21,7 @@ from .server_functions import (
     get_replacements,
 )
 
+
 class Server:
     """Handles input from the user and returns output from special functions. Not an external API."""
 
