@@ -5,7 +5,7 @@ from pygments.lexer import Lexer, RegexLexer
 from pygments.lexers import get_lexer_by_name
 
 from .docstring_highlight import _LexReturnTokens, proper_docstring_tokens
-from .links_and_hidden_chars import find_hidden_chars, get_urls, hidden_chars
+from .links_and_hidden_chars import get_special_tokens
 from .misc import normal_text_range
 from .tokens import (
     Token,
@@ -63,10 +63,6 @@ def get_highlights(
             new_tokens, proper_docstring_tokens(lexer, full_text)
         )
 
-    new_tokens += get_urls(split_text, text_range[0])
-    if [char for char in hidden_chars if char in full_text]:
-        # If there are no hidden chars we don't want to needlessly compute this
-        new_tokens += find_hidden_chars(split_text, text_range[0])
-
+    new_tokens += get_special_tokens(full_text, split_text, text_range[0])
     new_tokens = only_tokens_in_text_range(new_tokens, text_range)
     return new_tokens

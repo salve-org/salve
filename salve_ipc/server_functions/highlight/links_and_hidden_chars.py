@@ -107,3 +107,14 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
         (char[0], len(char[1]), "Hidden_Char") for char in hidden_char_indexes
     ]
     return tok_list
+
+
+def get_special_tokens(
+    whole_text: str, split_text: list[str], start_offset: int
+) -> list[Token]:
+    return_tokens: list[Token] = []
+    return_tokens += get_urls(split_text, start_offset)
+    if [char for char in hidden_chars if char in whole_text]:
+        # If there are no hidden chars we don't want to needlessly compute this
+        return_tokens += find_hidden_chars(split_text, start_offset)
+    return return_tokens

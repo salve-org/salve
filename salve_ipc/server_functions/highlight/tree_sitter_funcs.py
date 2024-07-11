@@ -1,6 +1,7 @@
 from tree_sitter import Node, Parser, Tree, TreeCursor
 
 from .highlight import get_highlights
+from .links_and_hidden_chars import get_special_tokens
 from .misc import normal_text_range
 from .tokens import Token, merge_tokens, only_tokens_in_text_range
 
@@ -24,7 +25,7 @@ def tree_sitter_highlight(
         )
         return custom_highlights
 
-    _, text_range = normal_text_range(new_code, text_range)
+    split_text, text_range = normal_text_range(new_code, text_range)
 
     if language_str not in trees_and_parsers:
         if not language_parser:
@@ -35,6 +36,9 @@ def tree_sitter_highlight(
         tree = language_parser.parse(bytes(new_code, "utf8"))
         trees_and_parsers[language_str] = (tree, language_parser, new_code)
         return_tokens = node_to_tokens(tree.root_node, mapping)
+        return_tokens += get_special_tokens(
+            new_code, split_text, text_range[0]
+        )
         return_tokens = only_tokens_in_text_range(return_tokens, text_range)
         return return_tokens
 
@@ -43,6 +47,7 @@ def tree_sitter_highlight(
     trees_and_parsers[language_str] = (new_tree, parser, new_code)
 
     return_tokens = node_to_tokens(new_tree, mapping)
+    return_tokens += get_special_tokens(new_code, split_text, text_range[0])
     return_tokens = only_tokens_in_text_range(return_tokens, text_range)
     return return_tokens
 
@@ -152,8 +157,8 @@ def edit_tree(
     )
 
     # Reparse the tree from the start_byte
-    new_tree = parser.parse(bytes(new_code, "utf8"), tree)
-    return new_tree
+    tree = parser.parse(bytes(new_code, "utf8"), tree)
+    return tree
 
 
 # Given a test token from the mapping function it will try to match it with the
