@@ -99,6 +99,7 @@ def test_tree_sitter_highlight():
         == code_snippet_output
     )
 
+
 def test_make_mapping():
     code_snippet = original_code_snippet + 'print("Boo!")'
     tree: Tree = parser.parse(bytes(code_snippet, "utf8"))
