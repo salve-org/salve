@@ -129,13 +129,13 @@ class Server:
                 ]  # type: ignore
                 lang = Language(language_function())
                 parser = Parser(lang)
-                result = tree_sitter_highlight(
+                result = tree_sitter_highlight(  # type: ignore
                     self.files[file],
-                    request["language"],
-                    request["mapping"],
+                    request["language"],  # type: ignore
+                    request["mapping"],  # type: ignore
                     parser,
-                    request["text_range"],
-                )  # type: ignore
+                    request["text_range"],  # type: ignore
+                )
 
             case _:
                 print("NOT RECOGNIZED", command)

@@ -1,4 +1,4 @@
-from tree_sitter import Node, Parser, Tree, TreeCursor
+from tree_sitter import Language, Node, Parser, Tree, TreeCursor
 
 from .highlight import get_highlights
 from .links_and_hidden_chars import get_special_tokens
@@ -23,6 +23,11 @@ def tree_sitter_highlight(
         custom_highlights: list[Token] = get_highlights(
             new_code, language_str, text_range
         )
+
+        if language_str not in trees_and_parsers and language_parser:
+            tree = language_parser.parse(bytes(new_code, "utf8"))
+            trees_and_parsers[language_str] = (tree, language_parser, new_code)
+
         return custom_highlights
 
     split_text, text_range = normal_text_range(new_code, text_range)
@@ -228,12 +233,12 @@ def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
 # NOTE: The auto-mapper is great for users who don't want to spend forever mapping stuff as it
 # will give a mapping made from what context it is given and then the user can refine it further
 def make_unrefined_mapping(
-    root_node: Node | Tree,
+    tree: Tree,
     custom_highlights: list[Token],
     avoid_list: list[str],
 ) -> dict[str, str]:
     # We assume that the pygments special output has parsed this the
-    cursor: TreeCursor = root_node.walk()
+    cursor: TreeCursor = tree.walk()
     mapping: dict[str, str] = {}
     visited_nodes: set = set()
 
