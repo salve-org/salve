@@ -10,6 +10,8 @@ from .misc import (  # noqa: F401, E402
     EDITORCONFIG,
     HIGHLIGHT,
     REPLACEMENTS,
+    HIGHLIGHT_TREE_SITTER,
+    SalveTreeSitterLanguage,
     Response,
 )
 from .server_functions import (  # noqa: F401, E402

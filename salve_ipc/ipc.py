@@ -13,6 +13,7 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
+    SalveTreeSitterLanguage
 )
 from .server import Server
 
@@ -45,17 +46,15 @@ class IPC:
 
         self.response_queue: ResponseQueueType = Queue()
         self.requests_queue: RequestQueueType = Queue()
-        self.client_end: Connection
         self.main_server: Process
         self.create_server()
 
     def create_server(self) -> None:
         """Creates the main_server through a subprocess - internal API"""
-        self.client_end, server_end = Pipe()
         freeze_support()
         self.main_server = Process(
             target=Server,
-            args=(server_end, self.response_queue, self.requests_queue),
+            args=(self.response_queue, self.requests_queue),
             daemon=True,
         )
         self.main_server.start()
@@ -86,7 +85,6 @@ class IPC:
                     "file": "",
                 }
                 request.update(**kwargs)
-                # print(request)
                 self.requests_queue.put(request)
             case "notification":
                 notification: Notification = {
@@ -109,6 +107,8 @@ class IPC:
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
         definition_starters: list[tuple[str, str]] = [("", "before")],
+        tree_sitter_language: SalveTreeSitterLanguage | None = None,
+        mapping: dict[str, str] | None = None,
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
@@ -131,6 +131,8 @@ class IPC:
             text_range=text_range,
             file_path=file_path,
             definition_starters=definition_starters,
+            tree_sitter_language=tree_sitter_language,
+            mapping=mapping,
         )
 
     def cancel_request(self, command: str):

@@ -2,6 +2,9 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
+from tree_sitter import Language, Parser
+from tree_sitter_python import language
+
 from salve_ipc import (
     AUTOCOMPLETE,
     DEFINITION,
@@ -9,7 +12,9 @@ from salve_ipc import (
     HIGHLIGHT,
     IPC,
     REPLACEMENTS,
+    HIGHLIGHT_TREE_SITTER,
     Response,
+    SalveTreeSitterLanguage
 )
 
 
@@ -47,6 +52,26 @@ def test_IPC():
             (r"class ", "after"),
             (r":?.*=.*", "before"),
         ],
+    )
+    minimal_python_mapping: dict[str, str] = {
+        "class": "Keyword",
+        "identifier": "Name",
+        ":": "Punctuation",
+        "def": "Keyword",
+        "(": "Punctuation",
+        ")": "Punctuation",
+        "->": "Operator",
+        "none": "Keyword",
+        "if": "Keyword",
+        "string_start": "String",
+        "string_content": "String",
+        "string_end": "String",
+        "string": "String",
+    }
+    print(Language(language()))
+    print(Language(language()))
+    context.request(
+        HIGHLIGHT_TREE_SITTER, file="test", language="python", tree_sitter_language=SalveTreeSitterLanguage(language()), mapping=minimal_python_mapping, text_range=(1, 18)
     )
 
     sleep(1)
@@ -167,6 +192,10 @@ def test_IPC():
         }
 
     assert highlight_output == expected_output
+
+    tree_sitter_highlight_output = context.get_response(HIGHLIGHT_TREE_SITTER)
+    highlight_output["id"] = 0
+    print(tree_sitter_highlight_output)
 
     context.update_file(
         "foo", open(Path("tests/testing_file2.py"), "r+").read()

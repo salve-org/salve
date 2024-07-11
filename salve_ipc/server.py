@@ -4,6 +4,8 @@ from sys import platform
 from time import sleep
 
 from pyeditorconfig import get_config
+from tree_sitter import Language
+from tree_sitter_python import language
 
 from .misc import (
     COMMANDS,
@@ -12,6 +14,7 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
+    SalveTreeSitterLanguage,
 )
 from .server_functions import (
     Token,
@@ -33,11 +36,9 @@ class Server:
 
     def __init__(
         self,
-        server_end: Connection,
         response_queue: GenericClassQueue,
         requests_queue: GenericClassQueue,
     ) -> None:
-        self.server_end: Connection = server_end
         self.response_queue: ResponseQueueType = response_queue
         self.requests_queue: RequestQueueType = requests_queue
         self.all_ids: list[int] = []
@@ -130,7 +131,14 @@ class Server:
                     request["definition_starters"],  # type: ignore
                     request["current_word"],  # type: ignore
                 )
+            case "highlight-tree-sitter":
+                true_language: SalveTreeSitterLanguage = request["tree_sitter_language"]  # type: ignore
+                # true_language.to_tree_sitter_language()
+                # Language(true_language.c_ptr)
+                # Both of these will crash
+                print(true_language)
             case _:
+                print("NOT RECOGNIZED", command)
                 cancelled = True
 
         response: Response = {
