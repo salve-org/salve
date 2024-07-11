@@ -3,10 +3,11 @@ from tree_sitter_python import (
     language as py_language,  # Downloaded automatically by test runners
 )
 
+from salve_ipc import make_unrefined_mapping
 from salve_ipc.server_functions.highlight.tree_sitter_funcs import (
     edit_tree,
-    make_unrefined_mapping,
     node_to_tokens,
+    tree_sitter_highlight,
 )
 
 # Create useful variables
@@ -78,13 +79,28 @@ code_snippet_output = [
     ((5, 6), 6, "String"),
     ((5, 12), 1, "Punctuation"),
 ]
+parser: Parser = Parser(
+    Language(py_language())
+)  # Will be input along with code snippet
+
+
+def test_tree_sitter_highlight():
+    assert (
+        tree_sitter_highlight(
+            original_code_snippet, "python", minimal_python_mapping, parser
+        )
+        == pygments_output
+    )
+
+    # Run a second time to ensure the tree updates properly
+    code_snippet = original_code_snippet + 'print("Boo!")'
+    assert (
+        tree_sitter_highlight(code_snippet, "python", minimal_python_mapping)
+        == code_snippet_output
+    )
 
 
 def test_tree_sitter():
-    parser: Parser = Parser(
-        Language(py_language())
-    )  # Will be input along with code snippet
-
     tree = parser.parse(bytes(original_code_snippet, "utf8"))
 
     tree_sitter_output = node_to_tokens(tree, mapping=minimal_python_mapping)
@@ -104,7 +120,7 @@ def test_tree_sitter():
     ]
 
     old_code = code_snippet
-    code_snippet = code_snippet[3 : len(code_snippet) - 3] + 'print("Boo!")'
+    code_snippet = original_code_snippet + 'print("Boo!")'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
     output = node_to_tokens(tree, mapping=minimal_python_mapping)
 

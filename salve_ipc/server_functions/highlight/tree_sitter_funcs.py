@@ -1,9 +1,55 @@
 from tree_sitter import Node, Parser, Tree, TreeCursor
 
-from .tokens import Token, merge_tokens
+from .highlight import get_highlights
+from .misc import normal_text_range
+from .tokens import Token, merge_tokens, only_tokens_in_text_range
+
+trees_and_parsers: dict[str, tuple[Tree, Parser, str]] = {}
 
 
-def node_to_tokens(root_node: Tree, mapping: dict[str, str]) -> list[Token]:
+def tree_sitter_highlight(
+    new_code: str,
+    language_str: str,
+    mapping: dict[str, str] | None = None,
+    language_parser: Parser | None = None,
+    text_range: tuple[int, int] = (1, -1),
+) -> list[Token]:
+    tree: Tree
+    return_tokens: list[Token]
+
+    if not mapping:
+        # Fallback on the custom implementation
+        custom_highlights: list[Token] = get_highlights(
+            new_code, language_str, text_range
+        )
+        return custom_highlights
+
+    _, text_range = normal_text_range(new_code, text_range)
+
+    if language_str not in trees_and_parsers:
+        if not language_parser:
+            # We will never get here, the IPC API will deal with these but we need to appease
+            # the static type checkers
+            return []
+
+        tree = language_parser.parse(bytes(new_code, "utf8"))
+        trees_and_parsers[language_str] = (tree, language_parser, new_code)
+        return_tokens = node_to_tokens(tree.root_node, mapping)
+        return_tokens = only_tokens_in_text_range(return_tokens, text_range)
+        return return_tokens
+
+    tree, parser, old_code = trees_and_parsers[language_str]
+    new_tree = edit_tree(old_code, new_code, tree, parser)
+    trees_and_parsers[language_str] = (new_tree, parser, new_code)
+
+    return_tokens = node_to_tokens(new_tree, mapping)
+    return_tokens = only_tokens_in_text_range(return_tokens, text_range)
+    return return_tokens
+
+
+def node_to_tokens(
+    root_node: Node | Tree, mapping: dict[str, str]
+) -> list[Token]:
     cursor: TreeCursor = root_node.walk()
     tokens: list[Token] = []
     visited_nodes: set = set()
@@ -56,8 +102,8 @@ def edit_tree(
     if old_code == new_code:
         return tree
 
-    old_code_lines = old_code.splitlines(keepends=True)
-    new_code_lines = new_code.splitlines(keepends=True)
+    old_code_lines = old_code.splitlines()
+    new_code_lines = new_code.splitlines()
 
     # Find the first differing line
     def find_first_diff(old_lines, new_lines):
@@ -106,9 +152,8 @@ def edit_tree(
     )
 
     # Reparse the tree from the start_byte
-    tree = parser.parse(bytes(new_code, "utf8"), tree)
-
-    return tree
+    new_tree = parser.parse(bytes(new_code, "utf8"), tree)
+    return new_tree
 
 
 # Given a test token from the mapping function it will try to match it with the
@@ -148,8 +193,8 @@ def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
 # NOTE: The auto-mapper is great for users who don't want to spend forever mapping stuff as it
 # will give a mapping made from what context it is given and then the user can refine it further
 def make_unrefined_mapping(
-    root_node: Tree,
-    pygments_special_output: list[Token],
+    root_node: Node | Tree,
+    custom_highlights: list[Token],
     avoid_list: list[str],
 ) -> dict[str, str]:
     # We assume that the pygments special output has parsed this the
@@ -174,9 +219,7 @@ def make_unrefined_mapping(
                 node.end_point[1] - node.start_point[1],
                 "TEST",
             )
-            token_type = token_type_of_test(
-                temp_token, pygments_special_output
-            )
+            token_type = token_type_of_test(temp_token, custom_highlights)
             if not token_type:
                 print(
                     f"CANNOT MAP: node.type: {node.type}, node temp_token: {temp_token}"

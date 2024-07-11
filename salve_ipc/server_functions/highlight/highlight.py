@@ -6,6 +6,7 @@ from pygments.lexers import get_lexer_by_name
 
 from .docstring_highlight import _LexReturnTokens, proper_docstring_tokens
 from .links_and_hidden_chars import find_hidden_chars, get_urls, hidden_chars
+from .misc import normal_text_range
 from .tokens import (
     Token,
     get_new_token_type,
@@ -28,17 +29,11 @@ def get_highlights(
 
     # Create some variables used all throughout the function
     lexer: Lexer = lexer_by_name_cached(language)
-    split_text: list[str] = full_text.splitlines()
     new_tokens: list[Token] = []
 
-    if text_range[1] == -1:
-        # This indicates that the text range should span the length of the entire code
-        text_range = (text_range[0], len(split_text))
+    split_text, text_range = normal_text_range(full_text, text_range)
 
     start_index: tuple[int, int] = (text_range[0], 0)
-
-    # We want only the lines in the text range because this list is iterated
-    split_text = split_text[text_range[0] - 1 : text_range[1]]
 
     for line in split_text:
         og_tokens: _LexReturnTokens = list(lex(line, lexer))
