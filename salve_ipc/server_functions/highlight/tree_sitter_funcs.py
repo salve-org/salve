@@ -1,4 +1,4 @@
-from tree_sitter import Language, Node, Parser, Tree, TreeCursor
+from tree_sitter import Node, Parser, Tree, TreeCursor
 
 from .highlight import get_highlights
 from .links_and_hidden_chars import get_special_tokens
