@@ -1,4 +1,7 @@
-from tree_sitter import Node, Parser, Tree, TreeCursor
+from ctypes import c_void_p, cdll
+from os import fspath
+
+from tree_sitter import Language, Node, Parser, Tree, TreeCursor
 
 from .highlight import get_highlights
 from .links_and_hidden_chars import get_special_tokens
@@ -6,6 +9,14 @@ from .misc import normal_text_range
 from .tokens import Token, merge_tokens, only_tokens_in_text_range
 
 trees_and_parsers: dict[str, tuple[Tree, Parser, str]] = {}
+
+
+def lang_from_so(path: str, name: str) -> Language:
+    lib = cdll.LoadLibrary(fspath(path))
+    language_function = getattr(lib, f"tree_sitter_{name}")
+    language_function.restype = c_void_p
+    language_ptr = language_function()
+    return Language(language_ptr)
 
 
 def tree_sitter_highlight(

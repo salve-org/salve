@@ -46,7 +46,9 @@ class Request(Message):
     definition_starters: NotRequired[
         list[tuple[str, str]]
     ]  # definition (list of regexes)
-    tree_sitter_language: NotRequired[Callable]  # highlight-tree-sitter
+    tree_sitter_language: NotRequired[
+        Callable | Path | str
+    ]  # highlight-tree-sitter
     mapping: NotRequired[dict[str, str]]  # highlight-tree-sitter
 
 

@@ -1,4 +1,5 @@
 from multiprocessing.queues import Queue as GenericClassQueue
+from pathlib import Path
 from time import sleep
 
 from beartype.typing import Callable
@@ -19,6 +20,7 @@ from .server_functions import (
     get_definition,
     get_highlights,
     get_replacements,
+    lang_from_so,
     tree_sitter_highlight,
 )
 
@@ -124,10 +126,20 @@ class Server:
                     request["current_word"],  # type: ignore
                 )
             case "highlight-tree-sitter":
-                language_function: Callable[[], int] = request[
+                language_function: Callable[[], int] | Path | str = request[
                     "tree_sitter_language"
                 ]  # type: ignore
-                lang = Language(language_function())
+                if isinstance(language_function, Path):
+                    lang = lang_from_so(
+                        str(language_function.absolute()),
+                        language_function["language"],
+                    )  # type: ignore
+                elif isinstance(language_function, str):
+                    lang = lang_from_so(
+                        language_function, language_function["language"]
+                    )  # type: ignore
+                elif callable(language_function):
+                    lang = Language(language_function())
                 parser = Parser(lang)
                 result = tree_sitter_highlight(  # type: ignore
                     self.files[file],
