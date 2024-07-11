@@ -2,7 +2,7 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
-from tree_sitter import Language
+from beartype.typing import Callable
 
 from .server_functions import Token
 
@@ -22,16 +22,6 @@ HIGHLIGHT: COMMAND = COMMANDS[2]
 EDITORCONFIG: COMMAND = COMMANDS[3]
 DEFINITION: COMMAND = COMMANDS[4]
 HIGHLIGHT_TREE_SITTER: COMMAND = COMMANDS[5]
-
-
-class SalveTreeSitterLanguage:
-    """Initialized with a language() the same way as tree_sitter.Language()"""
-
-    def __init__(self, c_ptr: int) -> None:
-        self.c_ptr = c_ptr
-
-    def to_tree_sitter_language(self) -> Language:
-        return Language(self.c_ptr)
 
 
 class Message(TypedDict):
@@ -56,9 +46,7 @@ class Request(Message):
     definition_starters: NotRequired[
         list[tuple[str, str]]
     ]  # definition (list of regexes)
-    tree_sitter_language: NotRequired[
-        SalveTreeSitterLanguage
-    ]  # highlight-tree-sitter
+    tree_sitter_language: NotRequired[Callable]  # highlight-tree-sitter
     mapping: NotRequired[dict[str, str]]  # highlight-tree-sitter
 
 

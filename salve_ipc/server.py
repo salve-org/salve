@@ -1,8 +1,9 @@
 from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
+from beartype.typing import Callable
 from pyeditorconfig import get_config
-from tree_sitter import Language
+from tree_sitter import Language, Parser
 
 from .misc import (
     COMMANDS,
@@ -11,7 +12,6 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
-    SalveTreeSitterLanguage,
 )
 from .server_functions import (
     Token,
@@ -19,6 +19,7 @@ from .server_functions import (
     get_definition,
     get_highlights,
     get_replacements,
+    tree_sitter_highlight,
 )
 
 
@@ -123,13 +124,13 @@ class Server:
                     request["current_word"],  # type: ignore
                 )
             case "highlight-tree-sitter":
-                true_language: SalveTreeSitterLanguage = request[
+                language_function: Callable[[], int] = request[
                     "tree_sitter_language"
                 ]  # type: ignore
-                # true_language.to_tree_sitter_language()
-                Language(true_language.c_ptr)
-                # Both of these will crash
-                print(true_language)
+                lang = Language(language_function())
+                parser = Parser(lang)
+                result = tree_sitter_highlight(self.files[file], request["language"], request["mapping"], parser, request["text_range"])  # type: ignore
+
             case _:
                 print("NOT RECOGNIZED", command)
                 cancelled = True

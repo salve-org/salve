@@ -2,7 +2,6 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
-from tree_sitter import Language
 from tree_sitter_python import language
 
 from salve_ipc import (
@@ -14,7 +13,6 @@ from salve_ipc import (
     IPC,
     REPLACEMENTS,
     Response,
-    SalveTreeSitterLanguage,
 )
 
 
@@ -63,18 +61,21 @@ def test_IPC():
         "->": "Operator",
         "none": "Keyword",
         "if": "Keyword",
-        "string_start": "String",
+        "string_start": "Punctuation",
         "string_content": "String",
-        "string_end": "String",
+        "string_end": "Punctuation",
         "string": "String",
+        "comment": "Comment",
+        "import": "Keyword",
+        "from": "Keyword",
+        "=": "Punctuation",
+        "pass": "Keyword",
     }
-    print(Language(language()))
-    print(Language(language()))
     context.request(
         HIGHLIGHT_TREE_SITTER,
         file="test",
         language="python",
-        tree_sitter_language=SalveTreeSitterLanguage(language()),
+        tree_sitter_language=language,
         mapping=minimal_python_mapping,
         text_range=(1, 18),
     )
@@ -198,9 +199,14 @@ def test_IPC():
 
     assert highlight_output == expected_output
 
-    tree_sitter_highlight_output = context.get_response(HIGHLIGHT_TREE_SITTER)
-    highlight_output["id"] = 0
-    print(tree_sitter_highlight_output)
+    tree_sitter_highlight_output: Response | None = context.get_response(HIGHLIGHT_TREE_SITTER)
+    if tree_sitter_highlight_output is None:
+        raise AssertionError("Tree Sitter Highlight Output is None")
+    tree_sitter_highlight_output["id"] = 0
+    if platform == "win32":
+        print(tree_sitter_highlight_output)
+    if platform != "win32":
+        assert tree_sitter_highlight_output == {'id': 0, 'type': 'response', 'cancelled': False, 'command': HIGHLIGHT_TREE_SITTER, 'result': [((1, 0), 4, 'Keyword'), ((1, 5), 4, 'Name'), ((1, 10), 6, 'Keyword'), ((1, 17), 1, 'Name'), ((1, 20), 12, 'Comment'), ((3, 0), 3, 'Name'), ((3, 4), 1, 'Punctuation'), ((3, 6), 3, 'Name'), ((3, 11), 7, 'Comment'), ((5, 0), 5, 'Name'), ((5, 5), 2, 'Punctuation'), ((5, 7), 3, 'String'), ((5, 10), 2, 'Punctuation'), ((5, 14), 16, 'Comment'), ((8, 0), 5, 'Keyword'), ((8, 6), 3, 'Name'), ((8, 9), 1, 'Punctuation'), ((8, 10), 3, 'Name'), ((8, 13), 2, 'Punctuation'), ((9, 4), 3, 'Punctuation'), ((10, 4), 4, 'String'), ((11, 4), 3, 'Punctuation'), ((13, 4), 3, 'Keyword'), ((13, 8), 8, 'Name'), ((13, 16), 1, 'Punctuation'), ((13, 17), 4, 'Name'), ((13, 21), 2, 'Punctuation'), ((14, 8), 4, 'Keyword'), ((17, 0), 3, 'Name'), ((17, 3), 2, 'Punctuation'), ((18, 0), 24, 'Comment'), ((18, 2), 22, 'Link'), ((5, 7), 1, 'Hidden_Char')]}
 
     context.update_file(
         "foo", open(Path("tests/testing_file2.py"), "r+").read()

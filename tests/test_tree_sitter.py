@@ -128,7 +128,10 @@ def test_edit_tree():
     code_snippet = '"""' + original_code_snippet + '"""'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
     assert node_to_tokens(tree, mapping=minimal_python_mapping) == [
-        ((1, 0), 0, "String"),
+        ((1, 0), 13, "String"),
+        ((2, 4), 18, "String"),
+        ((3, 8), 7, "String"),
+        ((4, 12), 5, "String"),
         ((5, 0), 3, "String"),
     ]
 

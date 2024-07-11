@@ -2,6 +2,8 @@ from multiprocessing import Process, Queue, freeze_support
 from pathlib import Path
 from random import randint
 
+from beartype.typing import Callable
+
 from .misc import (
     COMMAND,
     COMMANDS,
@@ -11,7 +13,6 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
-    SalveTreeSitterLanguage,
 )
 from .server import Server
 
@@ -99,7 +100,7 @@ class IPC:
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
         definition_starters: list[tuple[str, str]] = [("", "before")],
-        tree_sitter_language: SalveTreeSitterLanguage | None = None,
+        tree_sitter_language: Callable[[], int] | None = None,
         mapping: dict[str, str] | None = None,
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
@@ -113,10 +114,6 @@ class IPC:
             self.kill_IPC()
             raise Exception(f"File {file} does not exist in system!")
 
-        pointer_int = 0
-        if tree_sitter_language:
-            pointer_int = tree_sitter_language.c_ptr
-
         self.create_message(
             type="request",
             command=command,
@@ -127,7 +124,7 @@ class IPC:
             text_range=text_range,
             file_path=file_path,
             definition_starters=definition_starters,
-            tree_sitter_language=pointer_int,
+            tree_sitter_language=tree_sitter_language,
             mapping=mapping,
         )
 

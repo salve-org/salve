@@ -12,7 +12,6 @@ from .misc import (  # noqa: F401, E402
     HIGHLIGHT_TREE_SITTER,
     REPLACEMENTS,
     Response,
-    SalveTreeSitterLanguage,
 )
 from .server_functions import (  # noqa: F401, E402
     Token,
