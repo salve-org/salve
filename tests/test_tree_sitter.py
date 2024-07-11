@@ -99,8 +99,20 @@ def test_tree_sitter_highlight():
         == code_snippet_output
     )
 
+def test_make_mapping():
+    code_snippet = original_code_snippet + 'print("Boo!")'
+    tree: Tree = parser.parse(bytes(code_snippet, "utf8"))
+    assert (
+        make_unrefined_mapping(
+            tree,
+            code_snippet_output,
+            avoid_types,
+        )
+        == minimal_python_mapping
+    )
 
-def test_tree_sitter():
+
+def test_edit_tree():
     tree = parser.parse(bytes(original_code_snippet, "utf8"))
 
     tree_sitter_output = node_to_tokens(tree, mapping=minimal_python_mapping)
@@ -145,15 +157,6 @@ def test_tree_sitter():
         ((5, 12), 1, "Punctuation"),
     ]
 
-    assert (
-        make_unrefined_mapping(
-            tree,
-            code_snippet_output,
-            avoid_types,
-        )
-        == minimal_python_mapping
-    )
-
 
 if __name__ == "__main__":
-    test_tree_sitter()
+    test_edit_tree()
