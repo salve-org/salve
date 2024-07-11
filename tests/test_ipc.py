@@ -10,11 +10,11 @@ from salve_ipc import (
     DEFINITION,
     EDITORCONFIG,
     HIGHLIGHT,
+    HIGHLIGHT_TREE_SITTER,
     IPC,
     REPLACEMENTS,
-    HIGHLIGHT_TREE_SITTER,
     Response,
-    SalveTreeSitterLanguage
+    SalveTreeSitterLanguage,
 )
 
 
@@ -71,7 +71,12 @@ def test_IPC():
     print(Language(language()))
     print(Language(language()))
     context.request(
-        HIGHLIGHT_TREE_SITTER, file="test", language="python", tree_sitter_language=SalveTreeSitterLanguage(language()), mapping=minimal_python_mapping, text_range=(1, 18)
+        HIGHLIGHT_TREE_SITTER,
+        file="test",
+        language="python",
+        tree_sitter_language=SalveTreeSitterLanguage(language()),
+        mapping=minimal_python_mapping,
+        text_range=(1, 18),
     )
 
     sleep(1)

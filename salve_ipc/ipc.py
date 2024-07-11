@@ -13,7 +13,7 @@ from .misc import (
     RequestQueueType,
     Response,
     ResponseQueueType,
-    SalveTreeSitterLanguage
+    SalveTreeSitterLanguage,
 )
 from .server import Server
 

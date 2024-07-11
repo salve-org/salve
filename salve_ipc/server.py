@@ -132,7 +132,9 @@ class Server:
                     request["current_word"],  # type: ignore
                 )
             case "highlight-tree-sitter":
-                true_language: SalveTreeSitterLanguage = request["tree_sitter_language"]  # type: ignore
+                true_language: SalveTreeSitterLanguage = request[
+                    "tree_sitter_language"
+                ]  # type: ignore
                 # true_language.to_tree_sitter_language()
                 # Language(true_language.c_ptr)
                 # Both of these will crash

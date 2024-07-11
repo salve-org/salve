@@ -9,10 +9,10 @@ from .misc import (  # noqa: F401, E402
     DEFINITION,
     EDITORCONFIG,
     HIGHLIGHT,
-    REPLACEMENTS,
     HIGHLIGHT_TREE_SITTER,
-    SalveTreeSitterLanguage,
+    REPLACEMENTS,
     Response,
+    SalveTreeSitterLanguage,
 )
 from .server_functions import (  # noqa: F401, E402
     Token,
