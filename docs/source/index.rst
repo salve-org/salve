@@ -1,8 +1,8 @@
-=======================
-Salve IPC Documentation
-=======================
+===========================
+``Salve IPC`` Documentation
+===========================
 
-Welcome to Salve IPC's Documentation! **Salve IPC** is a library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting and more. It does this with a simple yet very powerful API while doing all major work in a seperate process to keep the main thread free and fast. To get started with Salve, visit the :doc:`installation` page!
+Welcome to ``Salve IPC``'s Documentation! ``Salve IPC`` is a library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting. It does this with a simple yet very powerful API while doing all major work in a seperate process to keep the main thread free and fast. To get started with Salve, visit the :doc:`installation` page!
 
 .. note::
 
@@ -14,7 +14,9 @@ Welcome to Salve IPC's Documentation! **Salve IPC** is a library that can be use
 
    installation
    example-usage
+   command-sheet
    special-classes
    variables
    functions
    extra-tools
+   examples

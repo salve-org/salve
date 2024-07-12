@@ -2,7 +2,7 @@
 Example Usage
 =============
 
-Now that you have Salve installed, let's try running a simple example that prints out the highlight Tokens of the file being run:
+Now that you have ``Salve`` installed, let's try running a simple example that prints out the highlight ``Token``'s of the file being run:
 
 .. code-block:: python
 
@@ -98,3 +98,5 @@ In a more realistic case, you would probably do something more like the followin
 
     if __name__ == "__main__":
         App()
+
+Now that is one beautiful application! Of course, there is far more that you can do beyond just getting highlights. For example: what if you want to get autocopmletions? Well, there is of course the the handy :doc:`command-sheet` page.

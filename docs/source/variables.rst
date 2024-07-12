@@ -2,14 +2,22 @@
 Special Variables and Types
 ===========================
 
-Token
-~~~~~
+.. _Token Overview:
 
-generic_tokens
-~~~~~~~~~~~~~~
+``Token``
+*********
 
-COMMANDS
-~~~~~~~~
+.. _Generic Tokens Overview:
 
-hidden_chars
-~~~~~~~~~~~~
+``generic_tokens``
+******************
+
+.. _Commands Overview:
+
+``COMMANDS``
+************
+
+.. _Hidden Chars Overview:
+
+``hidden_chars``
+****************
