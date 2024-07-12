@@ -6,7 +6,7 @@ Welcome to ``Salve IPC``'s Documentation! ``Salve IPC`` is a library that can be
 
 .. note::
 
-   This project is under active development and the API will reach its stable form at v1.0.0
+   This project is under active development and the API will reach its stable form at ``v1.0.0``
 
 .. toctree::
    :maxdepth: 2

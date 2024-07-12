@@ -99,4 +99,4 @@ In a more realistic case, you would probably do something more like the followin
     if __name__ == "__main__":
         App()
 
-Now that is one beautiful application! Of course, there is far more that you can do beyond just getting highlights. For example: what if you want to get autocopmletions? Well, there is of course the the handy :doc:`command-sheet` page.
+Now that is one beautiful application! Of course, there is far more that you can do beyond just getting highlights. For example: what if you want to get autocompletions? Well, there is of course the the handy :doc:`command-sheet` page.
