@@ -6,8 +6,8 @@ Simple Mapping Example
 
     from time import sleep
     
+    from salve_dependency_hub import conversion_dict
     from tree_sitter import Language, Parser, Tree
-    from tree_sitter_python import language
     
     from salve import HIGHLIGHT, IPC, Token, make_unrefined_mapping
     
@@ -43,7 +43,9 @@ Simple Mapping Example
             "type",
         ]
     
-        tree: Tree = Parser(Language(language())).parse(bytes(code, "utf8"))
+        tree: Tree = Parser(Language(conversion_dict["python"]())).parse(
+            bytes(code, "utf8")
+        )
     
         print(
             make_unrefined_mapping(
