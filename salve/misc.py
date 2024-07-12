@@ -67,7 +67,6 @@ class Response(Message):
     command: NotRequired[str]
     result: NotRequired[list[str | Token] | dict[str, str] | Token]
 
-
 if TYPE_CHECKING:
     ResponseQueueType = GenericQueueClass[Response]
     RequestQueueType = GenericQueueClass[Request | Notification]

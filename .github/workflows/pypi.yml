@@ -1,4 +1,4 @@
-name: Upload salve_ipc to Pypi
+name: Upload salve to Pypi
 
 on:
   release:
