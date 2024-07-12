@@ -6,7 +6,7 @@ Simple Tree Sitter Highlights Example
 
     from time import sleep
     
-    from tree_sitter_python import language
+    from salve_dependency_hub import conversion_dict
     
     from salve import HIGHLIGHT_TREE_SITTER, IPC, Response
     
@@ -55,7 +55,7 @@ Simple Tree Sitter Highlights Example
             file="test",
             language="python",
             text_range=(1, 30),
-            tree_sitter_language=language,
+            tree_sitter_language=conversion_dict["python"],
             mapping=example_mapping,
         )
     

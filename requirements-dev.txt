@@ -6,7 +6,7 @@ tree-sitter
 
 # Testing
 pytest
-tree-sitter-python
+salve_dependency_hub
 
 # Formatting
 ruff

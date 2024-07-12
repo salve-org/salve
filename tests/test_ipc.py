@@ -2,7 +2,7 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
-from tree_sitter_python import language
+from salve_dependency_hub import conversion_dict
 
 from salve import (
     AUTOCOMPLETE,
@@ -75,7 +75,7 @@ def test_IPC():
         HIGHLIGHT_TREE_SITTER,
         file="test",
         language="python",
-        tree_sitter_language=language,
+        tree_sitter_language=conversion_dict["python"],
         mapping=minimal_python_mapping,
         text_range=(1, 18),
     )

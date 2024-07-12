@@ -1,4 +1,4 @@
-# pip install -r requirements.txt --break-system-packages; pip uninstall salve -y --break-system-packages; pip install . --break-system-packages --no-build-isolation; python3 -m pytest .
+# pip install -U -r requirements-dev.txt --break-system-packages; pip uninstall salve -y --break-system-packages; pip install . --break-system-packages --no-build-isolation; python3 -m pytest .
 from setuptools import setup
 
 with open("README.md", "r") as file:

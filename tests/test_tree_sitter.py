@@ -1,9 +1,8 @@
 from logging import Logger
 
+from beartype.typing import Callable
+from salve_dependency_hub import conversion_dict
 from tree_sitter import Language, Parser, Tree
-from tree_sitter_python import (
-    language as py_language,  # Downloaded automatically by test runners
-)
 
 from salve import make_unrefined_mapping
 from salve.server_functions.highlight.tree_sitter_funcs import (
@@ -81,6 +80,7 @@ code_snippet_output = [
     ((5, 6), 6, "String"),
     ((5, 12), 1, "Punctuation"),
 ]
+py_language: Callable[[], int] = conversion_dict["python"]
 parser: Parser = Parser(
     Language(py_language())
 )  # Will be input along with code snippet
