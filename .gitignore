@@ -4,6 +4,7 @@
 # Python
 __pycache__/
 dist/
+venv/
 build/
 .ruff_cache/
 salve_ipc.egg-info/
