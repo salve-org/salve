@@ -13,10 +13,7 @@ build:
   commands:
     - python3 ./docs/source/create_example_docs.py
     - python3 -m pip install -r docs/requirements.txt
-    - python3 -m sphinx --builder html docs/source $READTHEDOCS_OUTPUT/html
-    - python3 -m sphinx --builder epub docs/source $READTHEDOCS_OUTPUT/epub
-    - cd $READTHEDOCS_OUTPUT/epub; find . -type f ! -name 'Salve.epub' -delete; find . -type d -empty -delete; cd ../..
-    - ls $READTHEDOCS_OUTPUT/epub
+    - python3 -m sphinx docs/source $READTHEDOCS_OUTPUT/html
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
@@ -26,10 +23,4 @@ sphinx:
 # https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
 python:
   install:
-    - method: pip
-      path: .
-    - requirements: docs/requirements.txt
-
-formats:
-  - epub
-  - htmlzip
+  - requirements: docs/requirements.txt
