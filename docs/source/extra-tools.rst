@@ -2,7 +2,7 @@
 Extra Tools
 ===========
 
-Currently ``Salve`` does not feature any extra tools you can use but there will be some when the ``v1.0.0`` release comes out.
+`Salve Dependency Hub <https://github.com/Moosems/salve-dependency-hub>`_ is an external tool designed for Salve in mind that allows users of it to get language functions for Tree Titter highlighting and will later host a variety of lanuage servers for when those are added to Salve.
 
 .. |br| raw:: html
 

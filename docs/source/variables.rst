@@ -37,6 +37,7 @@ The ``COMMAND`` variable is a ``str`` type alias used to hopefully prevent spell
 - HIGHLIGHT
 - EDITORCONFIG
 - DEFINITION
+- HIGHLIGHT_TREE_SITTER
 
 .. _Hidden Chars Overview:
 
