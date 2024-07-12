@@ -1,11 +1,9 @@
 name: Ruff Check
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
-  formatting:
+  ruff-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

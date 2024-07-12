@@ -1,11 +1,9 @@
 name: Code Tests (On Windows)
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
-  formatting:
+  testing-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2

@@ -1,11 +1,9 @@
 name: Isort Formatting
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
-  formatting:
+  formatting-isort:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
