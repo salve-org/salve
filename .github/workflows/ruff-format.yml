@@ -1,9 +1,12 @@
 name: Ruff Formatting
 
-on: push
+on:
+  push:
+    branches:
+      - "!docs"
 
 jobs:
-  formatting:
+  formatting-ruff:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
