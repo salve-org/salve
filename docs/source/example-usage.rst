@@ -99,4 +99,15 @@ In a more realistic case, you would probably do something more like the followin
     if __name__ == "__main__":
         App()
 
+Befor you leave, here are some quick reminders to remember as you use ``Salve``:
+
+- The first time that the system is loaded or a new server needs to be started it will take a fair bit longer.
+- Any usage of ``IPC ``needs to originally have been called from an ``if __name__ == "__main__":`` block to prevent a multiproccesing error.
+
+.. |br| raw:: html
+
+   <br />
+
+|br|
+
 Now that is one beautiful application! Of course, there is far more that you can do beyond just getting highlights. For example: what if you want to get autocompletions? Well, there is of course the the handy :doc:`command-sheet` page.
