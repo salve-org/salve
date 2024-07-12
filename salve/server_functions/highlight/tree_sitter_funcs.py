@@ -1,4 +1,5 @@
 from ctypes import c_void_p, cdll
+from logging import Logger
 from os import fspath
 
 from tree_sitter import Language, Node, Parser, Tree, TreeCursor
@@ -20,6 +21,7 @@ def lang_from_so(path: str, name: str) -> Language:
 
 
 def tree_sitter_highlight(
+    logger: Logger,
     new_code: str,
     language_str: str,
     mapping: dict[str, str] | None = None,
@@ -51,7 +53,7 @@ def tree_sitter_highlight(
 
         tree = language_parser.parse(bytes(new_code, "utf8"))
         trees_and_parsers[language_str] = (tree, language_parser, new_code)
-        return_tokens = node_to_tokens(tree.root_node, mapping)
+        return_tokens = node_to_tokens(tree.root_node, mapping, logger)
         return_tokens += get_special_tokens(
             new_code, split_text, text_range[0]
         )
@@ -62,14 +64,14 @@ def tree_sitter_highlight(
     new_tree = edit_tree(old_code, new_code, tree, parser)
     trees_and_parsers[language_str] = (new_tree, parser, new_code)
 
-    return_tokens = node_to_tokens(new_tree, mapping)
+    return_tokens = node_to_tokens(new_tree, mapping, logger)
     return_tokens += get_special_tokens(new_code, split_text, text_range[0])
     return_tokens = only_tokens_in_text_range(return_tokens, text_range)
     return return_tokens
 
 
 def node_to_tokens(
-    root_node: Node | Tree, mapping: dict[str, str]
+    root_node: Node | Tree, mapping: dict[str, str], logger: Logger
 ) -> list[Token]:
     cursor: TreeCursor = root_node.walk()
     tokens: list[Token] = []
@@ -85,11 +87,10 @@ def node_to_tokens(
             visited_nodes.add(node.id)
 
             if node.child_count == 0:
-                # Avoid KeyError (should probably ask for a logger)
                 if node.type not in mapping:
-                    print("---")
-                    print("NODE TOKEN NOT MAPPED")
-                    print(node.type, node.start_point, node.end_point)
+                    logger.warning(
+                        f"Node type {node.type} not mapped. Start point: {node.start_point}, end point: {node.end_point}"
+                    )
                     continue
 
                 start_row, start_col = node.start_point

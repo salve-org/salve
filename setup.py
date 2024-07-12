@@ -25,5 +25,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Typing :: Typed",
     ],
-    packages=["salve"],
+    packages=[
+        "salve",
+        "salve.server_functions",
+        "salve.server_functions.highlight",
+    ],
 )
