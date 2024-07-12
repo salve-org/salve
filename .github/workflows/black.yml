@@ -1,9 +1,6 @@
 name: Black Formatting
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
 
 jobs:
   formatting:

@@ -1,9 +1,7 @@
 name: Isort Formatting
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
   formatting:
     runs-on: ubuntu-latest
