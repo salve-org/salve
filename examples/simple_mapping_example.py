@@ -13,12 +13,14 @@ def main():
 
     context.update_file("test", code)
 
-    # Run once without a mapping first so the system adds the lanugage for when mapping
+    # Run normally to get the normal Tokens as a cross reference
+    # NOTE: if you try running the tree sitter higlighter without a mapping it just returns the
+    # pygments tokens assuming you will create a mapping with it. wWe aren't here but its good
+    # to know
     context.request(HIGHLIGHT, file="test", language="python")
 
     sleep(1)
-    # Note that when you try running the tree sitter higlighter without a mapping it just returns the
-    # pygments tokens assuming you will create a mapping with it
+
     pygments_output: list[Token] = context.get_response(HIGHLIGHT)["result"]  # type: ignore
 
     # Not a comprehensive list but it works for this example
