@@ -14,8 +14,7 @@ build:
     - python3 ./docs/source/create_example_docs.py
     - python3 -m pip install -r docs/requirements.txt
     - python3 -m sphinx --builder html docs/source $READTHEDOCS_OUTPUT/html
-    - python3 -m sphinx --builder epub docs/source $READTHEDOCS_OUTPUT/epub
-    - cd $READTHEDOCS_OUTPUT/epub; rm -rf -- ^Salve.epub; cd ../..
+    - python3 -m sphinx --builder epub docs/source $READTHEDOCS_OUTPUT/epub; cd $READTHEDOCS_OUTPUT/epub; rm -rf -- ^Salve.epub; cd ../..
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
