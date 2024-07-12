@@ -1,9 +1,7 @@
 name: Code Tests
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
   testing:
     runs-on: ubuntu-latest

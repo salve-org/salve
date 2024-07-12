@@ -1,9 +1,7 @@
 name: Code Tests (On Windows)
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
   testing-windows:
     runs-on: windows-latest

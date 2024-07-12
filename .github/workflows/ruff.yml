@@ -1,9 +1,7 @@
 name: Ruff Check
 
-on:
-  push:
-    branches:
-      - "!docs"
+on: push
+
 jobs:
   ruff-check:
     runs-on: ubuntu-latest
