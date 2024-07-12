@@ -8,7 +8,7 @@ def main():
 
     context.update_file(
         "test",
-        open(__file__, "r+").read() * 20,
+        open(__file__, "r+").read(),
     )
 
     context.request(
