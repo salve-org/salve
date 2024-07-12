@@ -1,0 +1,20 @@
+# Normal requirements
+pygments
+pyeditorconfig
+beartype
+tree-sitter
+
+# Testing
+pytest
+tree-sitter-python
+
+# Formatting
+ruff
+isort
+black
+
+# Builds
+setuptools
+wheel
+twine
+build

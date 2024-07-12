@@ -1,8 +1,8 @@
-from multiprocessing import Pipe, Process, Queue, freeze_support
-from multiprocessing.connection import Connection
+from multiprocessing import Process, Queue, freeze_support
 from pathlib import Path
 from random import randint
-from sys import platform
+
+from beartype.typing import Callable
 
 from .misc import (
     COMMAND,
@@ -15,12 +15,6 @@ from .misc import (
     ResponseQueueType,
 )
 from .server import Server
-
-# Deal with Windows weirdness
-if platform == "win32":
-    from multiprocessing.connection import (
-        PipeConnection as Connection,  # type: ignore
-    )
 
 
 class IPC:
@@ -45,17 +39,15 @@ class IPC:
 
         self.response_queue: ResponseQueueType = Queue()
         self.requests_queue: RequestQueueType = Queue()
-        self.client_end: Connection
         self.main_server: Process
         self.create_server()
 
     def create_server(self) -> None:
         """Creates the main_server through a subprocess - internal API"""
-        self.client_end, server_end = Pipe()
         freeze_support()
         self.main_server = Process(
             target=Server,
-            args=(server_end, self.response_queue, self.requests_queue),
+            args=(self.response_queue, self.requests_queue),
             daemon=True,
         )
         self.main_server.start()
@@ -86,7 +78,6 @@ class IPC:
                     "file": "",
                 }
                 request.update(**kwargs)
-                # print(request)
                 self.requests_queue.put(request)
             case "notification":
                 notification: Notification = {
@@ -109,6 +100,8 @@ class IPC:
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
         definition_starters: list[tuple[str, str]] = [("", "before")],
+        tree_sitter_language: Callable[[], int] | Path | str | None = None,
+        mapping: dict[str, str] | None = None,
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         if command not in COMMANDS:
@@ -131,6 +124,8 @@ class IPC:
             text_range=text_range,
             file_path=file_path,
             definition_starters=definition_starters,
+            tree_sitter_language=tree_sitter_language,
+            mapping=mapping,
         )
 
     def cancel_request(self, command: str):
@@ -164,7 +159,7 @@ class IPC:
             self.parse_response(self.response_queue.get())
 
     def get_response(self, command: str) -> Response | None:
-        """Runs IPC.check_responses() and returns the current response of type command if it has been returned - external API"""
+        """Checks responses and returns the current response of type command if it has been returned - external API"""
         if command not in COMMANDS:
             self.kill_IPC()
             raise Exception(

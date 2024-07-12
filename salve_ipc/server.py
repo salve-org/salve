@@ -1,9 +1,10 @@
-from multiprocessing.connection import Connection
 from multiprocessing.queues import Queue as GenericClassQueue
-from sys import platform
+from pathlib import Path
 from time import sleep
 
+from beartype.typing import Callable
 from pyeditorconfig import get_config
+from tree_sitter import Language, Parser
 
 from .misc import (
     COMMANDS,
@@ -19,25 +20,19 @@ from .server_functions import (
     get_definition,
     get_highlights,
     get_replacements,
+    lang_from_so,
+    tree_sitter_highlight,
 )
-
-# Deal with Windows weirdness
-if platform == "win32":
-    from multiprocessing.connection import (
-        PipeConnection as Connection,  # type: ignore
-    )
 
 
 class Server:
-    """Handles input from the user and returns output from special functions designed to make the job easy. Not an external API."""
+    """Handles input from the user and returns output from special functions. Not an external API."""
 
     def __init__(
         self,
-        server_end: Connection,
         response_queue: GenericClassQueue,
         requests_queue: GenericClassQueue,
     ) -> None:
-        self.server_end: Connection = server_end
         self.response_queue: ResponseQueueType = response_queue
         self.requests_queue: RequestQueueType = requests_queue
         self.all_ids: list[int] = []
@@ -130,7 +125,33 @@ class Server:
                     request["definition_starters"],  # type: ignore
                     request["current_word"],  # type: ignore
                 )
+            case "highlight-tree-sitter":
+                language_function: Callable[[], int] | Path | str = request[
+                    "tree_sitter_language"
+                ]  # type: ignore
+                if isinstance(language_function, Path):
+                    lang = lang_from_so(
+                        str(language_function.absolute()),
+                        request["language"],  # type: ignore
+                    )
+                elif isinstance(language_function, str):
+                    lang = lang_from_so(
+                        language_function,
+                        request["language"],  # type: ignore
+                    )  # type: ignore
+                elif callable(language_function):
+                    lang = Language(language_function())
+                parser = Parser(lang)
+                result = tree_sitter_highlight(  # type: ignore
+                    self.files[file],
+                    request["language"],  # type: ignore
+                    request["mapping"],  # type: ignore
+                    parser,
+                    request["text_range"],  # type: ignore
+                )
+
             case _:
+                print("NOT RECOGNIZED", command)
                 cancelled = True
 
         response: Response = {
