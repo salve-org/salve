@@ -1,3 +1,5 @@
+from logging import Logger
+
 from tree_sitter import Language, Parser, Tree
 from tree_sitter_python import (
     language as py_language,  # Downloaded automatically by test runners
@@ -87,7 +89,11 @@ parser: Parser = Parser(
 def test_tree_sitter_highlight():
     assert (
         tree_sitter_highlight(
-            original_code_snippet, "python", minimal_python_mapping, parser
+            Logger(""),
+            original_code_snippet,
+            "python",
+            minimal_python_mapping,
+            parser,
         )
         == pygments_output
     )
@@ -95,7 +101,9 @@ def test_tree_sitter_highlight():
     # Run a second time to ensure the tree updates properly
     code_snippet = original_code_snippet + 'print("Boo!")'
     assert (
-        tree_sitter_highlight(code_snippet, "python", minimal_python_mapping)
+        tree_sitter_highlight(
+            Logger(""), code_snippet, "python", minimal_python_mapping
+        )
         == code_snippet_output
     )
 
@@ -116,7 +124,9 @@ def test_make_mapping():
 def test_edit_tree():
     tree = parser.parse(bytes(original_code_snippet, "utf8"))
 
-    tree_sitter_output = node_to_tokens(tree, mapping=minimal_python_mapping)
+    tree_sitter_output = node_to_tokens(
+        tree, minimal_python_mapping, Logger("")
+    )
     assert pygments_output == tree_sitter_output
 
     assert (
@@ -127,7 +137,7 @@ def test_edit_tree():
     old_code = original_code_snippet
     code_snippet = '"""' + original_code_snippet + '"""'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
-    assert node_to_tokens(tree, mapping=minimal_python_mapping) == [
+    assert node_to_tokens(tree, minimal_python_mapping, Logger("")) == [
         ((1, 0), 13, "String"),
         ((2, 4), 18, "String"),
         ((3, 8), 7, "String"),
@@ -138,7 +148,7 @@ def test_edit_tree():
     old_code = code_snippet
     code_snippet = original_code_snippet + 'print("Boo!")'
     tree: Tree = edit_tree(old_code, code_snippet, tree, parser)
-    output = node_to_tokens(tree, mapping=minimal_python_mapping)
+    output = node_to_tokens(tree, minimal_python_mapping, Logger(""))
 
     assert output == [
         ((1, 0), 5, "Keyword"),
