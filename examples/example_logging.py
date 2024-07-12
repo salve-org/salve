@@ -1,12 +1,13 @@
+from logging import INFO, Logger, basicConfig, getLogger
 from time import sleep
 
 from salve import HIGHLIGHT, IPC, Response
-from logging import Logger, basicConfig, INFO, getLogger
 
 basicConfig(
     level=INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger: Logger = getLogger("Main")
+
 
 def main():
     context = IPC()

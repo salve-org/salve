@@ -1,5 +1,4 @@
 from logging import Logger, getLogger
-import logging
 from multiprocessing import Process, Queue, freeze_support
 from pathlib import Path
 from random import randint
@@ -204,7 +203,7 @@ class IPC:
         self.check_responses()
         response: Response | None = self.newest_responses[command]
         self.newest_responses[command] = None
-        self.logger.info(f"Response retrieved")
+        self.logger.info("Response retrieved")
         return response
 
     def update_file(self, file: str, current_state: str) -> None:
@@ -219,7 +218,9 @@ class IPC:
     def remove_file(self, file: str) -> None:
         """Removes a file from the main_server - external API"""
         if file not in list(self.files.keys()):
-            self.logger.exception(f"Cannot remove file {file} as file is not in file database!")
+            self.logger.exception(
+                f"Cannot remove file {file} as file is not in file database!"
+            )
             raise Exception(
                 f"Cannot remove file {file} as file is not in file database!"
             )

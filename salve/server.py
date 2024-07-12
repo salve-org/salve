@@ -79,18 +79,24 @@ class Server:
                     return
                 contents: str = message["contents"]  # type: ignore
                 self.files[file] = contents
-                self.logger.info(f"File {file} has been updated with new contents")
+                self.logger.info(
+                    f"File {file} has been updated with new contents"
+                )
                 self.simple_id_response(id, False)
-                self.logger.debug(f"Notification response for id {id} has been sent")
+                self.logger.debug(
+                    f"Notification response for id {id} has been sent"
+                )
             case "request":
                 self.logger.info(f"Mesage with id {id} is of type request")
                 self.all_ids.append(id)
                 command: str = message["command"]  # type: ignore
                 self.newest_ids[command] = id
                 self.newest_requests[command] = message  # type: ignore
-                self.logger.debug(f"Request stored for parsing")
+                self.logger.debug("Request stored for parsing")
             case _:
-                self.logger.warning(f"Unknown type {type}. Sending simple response")
+                self.logger.warning(
+                    f"Unknown type {type}. Sending simple response"
+                )
                 self.simple_id_response(id)
                 self.logger.debug(f"Simple response for id {id} sent")
 
@@ -105,7 +111,9 @@ class Server:
             if id in ids:
                 self.logger.debug(f"Id {id} is newest of its command")
                 continue
-            self.logger.debug(f"Id {id} is an old request, sending simple respone")
+            self.logger.debug(
+                f"Id {id} is an old request, sending simple respone"
+            )
             self.simple_id_response(id)
 
         self.all_ids = []
@@ -184,6 +192,7 @@ class Server:
                 self.logger.debug("Getting highlights from parser")
                 # TODO: give logger to tree_sitter_highlight
                 result = tree_sitter_highlight(  # type: ignore
+                    self.logger,
                     self.files[file],
                     request["language"],  # type: ignore
                     request["mapping"],  # type: ignore
@@ -208,7 +217,7 @@ class Server:
         self.logger.info(f"Response sent forf request of command {command}")
 
     def run_tasks(self) -> None:
-        if  self.requests_queue.empty():
+        if self.requests_queue.empty():
             return
 
         self.logger.debug("New request in queue")
