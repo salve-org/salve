@@ -2,7 +2,7 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
-from salve_ipc import (
+from salve import (
     AUTOCOMPLETE,
     DEFINITION,
     EDITORCONFIG,

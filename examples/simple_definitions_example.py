@@ -1,6 +1,6 @@
 from time import sleep
 
-from salve_ipc import DEFINITION, IPC, Response
+from salve import DEFINITION, IPC, Response
 
 
 def main():

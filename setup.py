@@ -1,4 +1,4 @@
-# pip install -r requirements.txt --break-system-packages; pip uninstall salve_ipc -y --break-system-packages; pip install . --break-system-packages --no-build-isolation; python3 -m pytest .
+# pip install -r requirements.txt --break-system-packages; pip uninstall salve -y --break-system-packages; pip install . --break-system-packages --no-build-isolation; python3 -m pytest .
 from setuptools import setup
 
 with open("README.md", "r") as file:
@@ -6,8 +6,8 @@ with open("README.md", "r") as file:
 
 
 setup(
-    name="salve_ipc",
-    version="0.7.1",
+    name="salve",
+    version="0.7.2",
     description="Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.",
     author="Moosems",
     author_email="moosems.j@gmail.com",
@@ -25,5 +25,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Typing :: Typed",
     ],
-    packages=["salve_ipc"],
+    packages=["salve"],
 )

@@ -11,7 +11,7 @@ Now that you have ``Salve`` installed, let's try running a simple example that p
     # We import the IPC class, the HIGHLIGHT command, and the Response TypedDict
     # NOTE: The HIGHLIGHT is actually just a string but it makes it easier to get
     # spelling errors from your code editor
-    from salve_ipc import HIGHLIGHT, IPC, Response
+    from salve import HIGHLIGHT, IPC, Response
 
 
     # Because this module is made with multiprocessing we need any usage to
@@ -65,7 +65,7 @@ In a more realistic case, you would probably do something more like the followin
 
 .. code-block:: python
 
-    from salve_ipc import IPC, Response, HIGHLIGHT
+    from salve import IPC, Response, HIGHLIGHT
     from tkinter import Tk
 
     class App(Tk):

@@ -6,7 +6,7 @@ Simple Editorconfig Example
 
     from time import sleep
     
-    from salve_ipc import EDITORCONFIG, IPC, Response
+    from salve import EDITORCONFIG, IPC, Response
     
     
     def main():

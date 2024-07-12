@@ -6,7 +6,7 @@ Simple Replacements Example
 
     from time import sleep
     
-    from salve_ipc import IPC, REPLACEMENTS, Response
+    from salve import IPC, REPLACEMENTS, Response
     
     
     def main():

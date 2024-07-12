@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from salve_ipc.server_functions import get_definition
+from salve.server_functions import get_definition
 
 
 def test_get_definition():

@@ -4,7 +4,7 @@ Command Sheet
 
 Below is a chart outlining the different request commands you can give and the different arguments they require with an explanation in parentheses if needed.
 
-.. list-table:: **IPC Commands**
+.. list-table:: **Requestable Commands**
     :widths: 25 75
     :header-rows: 1
 
