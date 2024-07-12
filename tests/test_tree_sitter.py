@@ -3,8 +3,8 @@ from tree_sitter_python import (
     language as py_language,  # Downloaded automatically by test runners
 )
 
-from salve_ipc import make_unrefined_mapping
-from salve_ipc.server_functions.highlight.tree_sitter_funcs import (
+from salve import make_unrefined_mapping
+from salve.server_functions.highlight.tree_sitter_funcs import (
     edit_tree,
     node_to_tokens,
     tree_sitter_highlight,

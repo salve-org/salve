@@ -6,7 +6,7 @@ Simple Highlight Example
 
     from time import sleep
     
-    from salve_ipc import HIGHLIGHT, IPC, Response
+    from salve import HIGHLIGHT, IPC, Response
     
     
     def main():

@@ -3,7 +3,7 @@ from time import sleep
 from tree_sitter import Language, Parser, Tree
 from tree_sitter_python import language
 
-from salve_ipc import HIGHLIGHT, IPC, Token, make_unrefined_mapping
+from salve import HIGHLIGHT, IPC, Token, make_unrefined_mapping
 
 
 def main():

@@ -8,7 +8,7 @@ Simple Tree Sitter Highlights Example
     
     from tree_sitter_python import language
     
-    from salve_ipc import HIGHLIGHT_TREE_SITTER, IPC, Response
+    from salve import HIGHLIGHT_TREE_SITTER, IPC, Response
     
     
     def main():

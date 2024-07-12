@@ -2,7 +2,7 @@
 
 # Installation
 
-In the Command Line, paste the following: `pip install salve_ipc`
+In the Command Line, paste the following: `pip install salve`
 
 ## Description
 

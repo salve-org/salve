@@ -4,7 +4,7 @@ from time import sleep
 
 from tree_sitter_python import language
 
-from salve_ipc import (
+from salve import (
     AUTOCOMPLETE,
     DEFINITION,
     EDITORCONFIG,

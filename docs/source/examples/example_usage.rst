@@ -8,7 +8,7 @@ Example Usage
     from selectors import EVENT_READ, DefaultSelector
     from sys import stdin, stdout
     
-    from salve_ipc import AUTOCOMPLETE, IPC, Response
+    from salve import AUTOCOMPLETE, IPC, Response
     
     
     def main():
