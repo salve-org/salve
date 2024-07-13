@@ -20,7 +20,7 @@ The ``IPC`` class has the following methods available for use:
 ``Response``
 ************
 
-The ``Response`` TypedDict classs allows for type checking when handling output from ``Salve``.
+The ``Response`` TypedDict classs allows for type checking when handling output from ``Salve``. To access the resulut of the command simply use ``some_response["result"]``.
 
 .. |br| raw:: html
 
