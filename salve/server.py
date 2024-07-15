@@ -190,7 +190,6 @@ class Server:
                 self.logger.debug("Creating Parser")
                 parser = Parser(lang)
                 self.logger.debug("Getting highlights from parser")
-                # TODO: give logger to tree_sitter_highlight
                 result = tree_sitter_highlight(  # type: ignore
                     self.logger,
                     self.files[file],
@@ -214,7 +213,7 @@ class Server:
         self.logger.debug("Response created")
         self.response_queue.put(response)
         self.newest_ids[command] = 0
-        self.logger.info(f"Response sent forf request of command {command}")
+        self.logger.info(f"Response sent for request of command {command}")
 
     def run_tasks(self) -> None:
         if self.requests_queue.empty():

@@ -89,7 +89,7 @@ def node_to_tokens(
             if node.child_count == 0:
                 if node.type not in mapping:
                     logger.warning(
-                        f"Node type {node.type} not mapped. Start point: {node.start_point}, end point: {node.end_point}"
+                        f'Node type "{node.type}" not mapped. Start point: {node.start_point}, end point: {node.end_point}'
                     )
                     continue
 
@@ -210,7 +210,12 @@ def edit_tree(
 
 # Given a test token from the mapping function it will try to match it with the
 # closest token type found elsewhere in the pygments list
-def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
+def token_type_of_test(
+    test_token: Token,
+    pygments_tokens: list[Token],
+    original_type: str,
+    logger: Logger | None = None,
+) -> str:
     if not pygments_tokens:
         return ""
 
@@ -238,7 +243,10 @@ def token_type_of_test(test_token: Token, pygments_tokens: list[Token]) -> str:
         # We assume there is no partial overlap
         if fully_contained:
             return new_token[2]
-
+    if logger:
+        logger.warning(
+            f'Node type "{original_type}" could not be mapped over token "{test_token}".'
+        )
     return ""
 
 
@@ -248,6 +256,7 @@ def make_unrefined_mapping(
     tree: Tree,
     custom_highlights: list[Token],
     avoid_list: list[str],
+    logger: Logger | None = None,
 ) -> dict[str, str]:
     # We assume that the pygments special output has parsed this the
     cursor: TreeCursor = tree.walk()
@@ -271,9 +280,11 @@ def make_unrefined_mapping(
                 node.end_point[1] - node.start_point[1],
                 "TEST",
             )
-            token_type = token_type_of_test(temp_token, custom_highlights)
-            if not token_type:
-                print(
+            token_type = token_type_of_test(
+                temp_token, custom_highlights, node.type, logger
+            )
+            if not token_type and token_type not in avoid_list and logger:
+                logger.warning(
                     f"CANNOT MAP: node.type: {node.type}, node temp_token: {temp_token}"
                 )
 

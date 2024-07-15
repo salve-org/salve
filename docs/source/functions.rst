@@ -14,7 +14,7 @@ This function lets you give a ``str`` as input (should only be one char long) an
 ``make_unrefined_mapping()``
 ****************************
 
-This function takes a Tree Sitter ``Tree``, the normal highlight output for the code the Tree is parsed from, and a list of Tree Sitter token's to outright avoid.
+This function takes a Tree Sitter ``Tree``, the normal highlight output for the code the Tree is parsed from, a list of Tree Sitter token's to outright avoid, and optionally a logger.
 
 .. |br| raw:: html
 
