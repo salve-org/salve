@@ -39,7 +39,6 @@ def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
 
 
 hidden_chars: dict[str, str] = {
-    "\u0009": "CHARACTER TABULATION",
     "\u00a0": "NO-BREAK SPACE",
     "\u00ad": "SOFT HYPHEN",
     "\u034f": "COMBINING GRAPHEME JOINER",
