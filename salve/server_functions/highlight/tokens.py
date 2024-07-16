@@ -109,98 +109,79 @@ def merge_tokens(tokens: list[Token]) -> list[Token]:
 def overwrite_tokens(
     old_tokens: list[Token], new_tokens: list[Token]
 ) -> list[Token]:
+    # If there are no new tokens, return the old tokens as they are
     if not new_tokens:
         return old_tokens
 
+    # List to hold the final set of tokens
     output_tokens: list[Token] = []
+    # List to track tokens that should not be added again
     dont_add_tokens: list[Token] = []
+
+    # Iterate over each new token
     for new_token in new_tokens:
+        # Extract the new token's properties
+        new_start: tuple[int, int] = new_token[0]
+        new_line: int = new_start[0]
+        new_start_col: int = new_start[1]
+        new_length: int = new_token[1]
+        new_end_col: int = new_start_col + new_length
+
+        # Iterate over each old token
         for old_token in old_tokens:
-            same_token: bool = old_token == new_token
-            if same_token:
+            # Extract the old token's properties
+            old_start: tuple[int, int] = old_token[0]
+            old_line: int = old_start[0]
+            old_start_col: int = old_start[1]
+            old_length: int = old_token[1]
+            old_end_col: int = old_start_col + old_length
+            old_type: str = old_token[2]
+
+            # If the old and new tokens are the same, skip processing
+            if old_token == new_token:
                 continue
 
-            same_line: bool = old_token[0][0] == new_token[0][0]
-            can_add_token: bool = old_token not in dont_add_tokens
-            if not same_line:
-                if can_add_token:
+            # If tokens are on different lines, add the old token to output if it's not already added
+            if old_line != new_line:
+                if old_token not in dont_add_tokens:
                     output_tokens.append(old_token)
                 continue
 
-            # Check if the ranges overlap and if so either (remove the old_token and add to don't add list) or,
-            # if part of the token is out of the new_token_range, remove the part in the new tokens range
-
-            old_token_end: int = old_token[0][1] + old_token[1]
-            new_token_end: int = new_token[0][1] + new_token[1]
-
-            partial_front_overlap: bool = (
-                new_token[0][1] <= old_token_end
-                and not old_token_end > new_token_end
-            )
-            partial_end_overlap: bool = new_token_end >= old_token[0][1]
-            fully_contained: bool = (
-                old_token_end <= new_token_end
-                and old_token[0][1] >= new_token[0][1]
-            )
-
-            if not (
-                partial_front_overlap or partial_end_overlap or fully_contained
-            ):
+            # Check for no overlap (old token is entirely before or after the new token)
+            if old_end_col <= new_start_col or old_start_col >= new_end_col:
+                if old_token not in dont_add_tokens:
+                    output_tokens.append(old_token)
                 continue
 
+            # Since there's overlap, mark the old token to avoid re-adding it
             dont_add_tokens.append(old_token)
 
+            # Remove any instances of the old token
             while old_token in output_tokens:
                 output_tokens.remove(old_token)
 
-            if fully_contained:
-                continue
-
-            # If we are here if means it's a partial overlap
-            if partial_front_overlap:
-                created_token: Token = (
-                    (new_token[0][0], old_token[0][1]),
-                    new_token[0][1] - old_token[0][1],
-                    old_token[2],
+            # Handle partial overlap where the old token starts before the new token
+            if old_start_col < new_start_col:
+                left_token: Token = (
+                    (old_line, old_start_col),
+                    new_start_col - old_start_col,
+                    old_type,
                 )
-                while created_token in output_tokens:
-                    output_tokens.remove(created_token)
-                output_tokens.append(created_token)
-                dont_add_tokens.append(created_token)
-                continue
+                output_tokens.append(left_token)
 
-            if old_token[0][1] < new_token[0][1]:
-                created_token_1: Token = (
-                    (new_token[0][0], old_token[0][1]),
-                    new_token[0][1] - old_token[0][1],
-                    old_token[2],
+            # Handle partial overlap where the old token ends after the new token
+            if old_end_col > new_end_col:
+                right_token: Token = (
+                    (old_line, new_end_col),
+                    old_end_col - new_end_col,
+                    old_type,
                 )
-                created_token_2: Token = (
-                    (new_token[0][0], new_token_end),
-                    old_token_end - new_token_end,
-                    old_token[2],
-                )
-                while created_token_1 in output_tokens:
-                    output_tokens.remove(created_token_1)
-                output_tokens.append(created_token_1)
-                while created_token_2 in output_tokens:
-                    output_tokens.remove(created_token_2)
-                output_tokens.append(created_token_2)
-                dont_add_tokens.append(created_token_1)
-                dont_add_tokens.append(created_token_2)
+                output_tokens.append(right_token)
 
-            created_token: Token = (
-                (new_token[0][0], new_token_end),
-                old_token_end - new_token_end,
-                old_token[2],
-            )
-            while created_token in output_tokens:
-                output_tokens.remove(created_token)
-            output_tokens.append(created_token)
-            dont_add_tokens.append(created_token)
-
+        # Add the new token to the output list
         output_tokens.append(new_token)
 
+    # Sort the output tokens to ensure they are in the correct order
     output_tokens = sorted(set(output_tokens))
     return output_tokens
 

@@ -1,5 +1,5 @@
 from functools import cache
-from re import MULTILINE, Match, compile
+from re import DOTALL, MULTILINE, Match, compile
 
 from beartype.typing import Callable
 from pygments.lexer import RegexLexer, default
@@ -86,9 +86,9 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
 
     for regex, token_type in proper_highlight_regexes:
         current_text = full_text
-        match: Match[str] | None = compile(regex, flags=MULTILINE).search(
-            full_text
-        )
+        match: Match[str] | None = compile(
+            regex, flags=MULTILINE | DOTALL
+        ).search(full_text)
 
         if match is None:
             # Onwards to the next regex!
