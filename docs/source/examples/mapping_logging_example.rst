@@ -55,10 +55,7 @@ Mapping Logging Example
     
         print(
             make_unrefined_mapping(
-                tree,
-                pygments_output,
-                avoid_types,
-                logger=logger
+                tree, pygments_output, avoid_types, logger=logger
             )
         )
     

@@ -2,7 +2,7 @@ from pathlib import Path
 from sys import platform
 from time import sleep
 
-from salve_dependency_hub import conversion_dict
+from salve_dependency_hub import langauge_mappings, language_functions
 
 from salve import (
     AUTOCOMPLETE,
@@ -51,32 +51,12 @@ def test_IPC():
             (r":?.*=.*", "before"),
         ],
     )
-    minimal_python_mapping: dict[str, str] = {
-        "class": "Keyword",
-        "identifier": "Name",
-        ":": "Punctuation",
-        "def": "Keyword",
-        "(": "Punctuation",
-        ")": "Punctuation",
-        "->": "Operator",
-        "none": "Keyword",
-        "if": "Keyword",
-        "string_start": "Punctuation",
-        "string_content": "String",
-        "string_end": "Punctuation",
-        "string": "String",
-        "comment": "Comment",
-        "import": "Keyword",
-        "from": "Keyword",
-        "=": "Punctuation",
-        "pass": "Keyword",
-    }
     context.request(
         HIGHLIGHT_TREE_SITTER,
         file="test",
         language="python",
-        tree_sitter_language=conversion_dict["python"],
-        mapping=minimal_python_mapping,
+        tree_sitter_language=language_functions["python"],
+        mapping=langauge_mappings["python"],
         text_range=(1, 18),
     )
 
@@ -217,22 +197,22 @@ def test_IPC():
             ((1, 17), 1, "Name"),
             ((1, 20), 12, "Comment"),
             ((3, 0), 3, "Name"),
-            ((3, 4), 1, "Punctuation"),
+            ((3, 4), 1, "Operator"),
             ((3, 6), 3, "Name"),
             ((3, 11), 7, "Comment"),
             ((5, 0), 5, "Name"),
-            ((5, 5), 2, "Punctuation"),
-            ((5, 7), 3, "String"),
-            ((5, 10), 2, "Punctuation"),
+            ((5, 5), 1, "Punctuation"),
+            ((5, 6), 5, "String"),
+            ((5, 11), 1, "Punctuation"),
             ((5, 14), 16, "Comment"),
             ((8, 0), 5, "Keyword"),
             ((8, 6), 3, "Name"),
             ((8, 9), 1, "Punctuation"),
             ((8, 10), 3, "Name"),
             ((8, 13), 2, "Punctuation"),
-            ((9, 4), 3, "Punctuation"),
+            ((9, 4), 3, "String"),
             ((10, 4), 4, "String"),
-            ((11, 4), 3, "Punctuation"),
+            ((11, 4), 3, "String"),
             ((13, 4), 3, "Keyword"),
             ((13, 8), 8, "Name"),
             ((13, 16), 1, "Punctuation"),
@@ -246,6 +226,7 @@ def test_IPC():
             ((5, 7), 1, "Hidden_Char"),
         ],
     }
+
     if platform == "win32":
         expected_output = {
             "id": 0,
@@ -259,22 +240,22 @@ def test_IPC():
                 ((1, 17), 1, "Name"),
                 ((1, 20), 12, "Comment"),
                 ((3, 0), 3, "Name"),
-                ((3, 4), 1, "Punctuation"),
+                ((3, 4), 1, "Operator"),
                 ((3, 6), 3, "Name"),
                 ((3, 11), 7, "Comment"),
                 ((5, 0), 5, "Name"),
-                ((5, 5), 2, "Punctuation"),
-                ((5, 7), 8, "String"),
-                ((5, 15), 2, "Punctuation"),
+                ((5, 5), 1, "Punctuation"),
+                ((5, 6), 10, "String"),
+                ((5, 16), 1, "Punctuation"),
                 ((5, 19), 16, "Comment"),
                 ((8, 0), 5, "Keyword"),
                 ((8, 6), 3, "Name"),
                 ((8, 9), 1, "Punctuation"),
                 ((8, 10), 3, "Name"),
                 ((8, 13), 2, "Punctuation"),
-                ((9, 4), 3, "Punctuation"),
+                ((9, 4), 3, "String"),
                 ((10, 4), 4, "String"),
-                ((11, 4), 3, "Punctuation"),
+                ((11, 4), 3, "String"),
                 ((13, 4), 3, "Keyword"),
                 ((13, 8), 8, "Name"),
                 ((13, 16), 1, "Punctuation"),
@@ -306,7 +287,7 @@ def test_IPC():
                 file="test",
                 language="python",
                 tree_sitter_language="./tests/languages-darwin.so",
-                mapping=minimal_python_mapping,
+                mapping=langauge_mappings["python"],
                 text_range=(1, 18),
             )
         else:
@@ -315,7 +296,7 @@ def test_IPC():
                 file="test",
                 language="python",
                 tree_sitter_language="./tests/languages-linux.so",
-                mapping=minimal_python_mapping,
+                mapping=langauge_mappings["python"],
                 text_range=(1, 18),
             )
 
