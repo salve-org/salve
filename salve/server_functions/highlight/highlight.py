@@ -63,6 +63,6 @@ def get_highlights(
             new_tokens, proper_docstring_tokens(lexer, full_text)
         )
 
-    new_tokens += get_special_tokens(full_text, split_text, text_range[0])
+    new_tokens.extend(get_special_tokens(full_text, split_text, text_range[0]))
     new_tokens = only_tokens_in_text_range(new_tokens, text_range)
     return new_tokens

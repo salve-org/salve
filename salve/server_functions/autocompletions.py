@@ -20,7 +20,9 @@ def find_autocompletions(
 
     no_usable_words_in_text: bool = not relevant_words
     if no_usable_words_in_text:
-        relevant_words += expected_keywords
+        relevant_words.extend(
+            expected_keywords * 3
+        )  # We add a multiplier of three to boost the score of keywords
 
     relevant_words = [
         word for word in relevant_words if word.startswith(current_word)

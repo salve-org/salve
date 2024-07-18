@@ -150,7 +150,7 @@ class Server:
                     language=request["language"],  # type: ignore
                     text_range=request["text_range"],  # type: ignore
                 )
-                result += [token for token in pre_refined_result]  # type: ignore
+                result.extend([token for token in pre_refined_result])
             case "editorconfig":
                 self.logger.info("Getting editorconfig info for request")
                 result = get_config(request["file_path"])  # type: ignore
