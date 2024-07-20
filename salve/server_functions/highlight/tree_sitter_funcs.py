@@ -54,8 +54,8 @@ def tree_sitter_highlight(
         tree = language_parser.parse(bytes(new_code, "utf8"))
         trees_and_parsers[language_str] = (tree, language_parser, new_code)
         return_tokens = node_to_tokens(tree.root_node, mapping, logger)
-        return_tokens += get_special_tokens(
-            new_code, split_text, text_range[0]
+        return_tokens.extend(
+            get_special_tokens(new_code, split_text, text_range[0])
         )
         return_tokens = only_tokens_in_text_range(return_tokens, text_range)
         return return_tokens
@@ -65,7 +65,9 @@ def tree_sitter_highlight(
     trees_and_parsers[language_str] = (new_tree, parser, new_code)
 
     return_tokens = node_to_tokens(new_tree, mapping, logger)
-    return_tokens += get_special_tokens(new_code, split_text, text_range[0])
+    return_tokens.extend(
+        get_special_tokens(new_code, split_text, text_range[0])
+    )
     return_tokens = only_tokens_in_text_range(return_tokens, text_range)
     return return_tokens
 

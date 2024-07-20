@@ -8,8 +8,8 @@ def get_replacements(
 ) -> list[str]:
     """Returns a list of possible and plausible replacements for a given word"""
     # Get all words in file
-    starter_words = find_words(full_text)
-    starter_words += (
+    starter_words: list[str] = find_words(full_text)
+    starter_words.extend(
         expected_keywords * 3
     )  # We add a multiplier of three to boost the score of keywords
     while replaceable_word in starter_words:
