@@ -43,4 +43,4 @@ Logging Tree Sitter Example
     if __name__ == "__main__":
         main()
 
-See the file example file `here <https://github.com/Moosems/salve/blob/master/examples/logging_tree_sitter_example.py>`_.
+See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/logging_tree_sitter_example.py>`_.

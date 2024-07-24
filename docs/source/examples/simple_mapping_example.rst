@@ -61,4 +61,4 @@ Simple Mapping Example
     if __name__ == "__main__":
         main()
 
-See the file example file `here <https://github.com/Moosems/salve/blob/master/examples/simple_mapping_example.py>`_.
+See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/simple_mapping_example.py>`_.

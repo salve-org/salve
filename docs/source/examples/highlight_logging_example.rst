@@ -40,4 +40,4 @@ Highlight Logging Example
     if __name__ == "__main__":
         main()
 
-See the file example file `here <https://github.com/Moosems/salve/blob/master/examples/highlight_logging_example.py>`_.
+See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/highlight_logging_example.py>`_.

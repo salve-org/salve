@@ -9,7 +9,7 @@ In the Command Line, paste the following: `pip install salve`
 Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.
 
 > **Notes:**
->  - Due to the way Windows handles chars the hidden character highlighter may not work properly. See [#57](https://github.com/Moosems/salve/pull/57). If anyone knows how to fix this, I would greatly appreciate you opening a PR :)
+>  - Due to the way Windows handles chars the hidden character highlighter may not work properly. See [#57](https://github.com/salve-org/salve/pull/57). If anyone knows how to fix this, I would greatly appreciate you opening a PR :)
 
 ## Documentation
 

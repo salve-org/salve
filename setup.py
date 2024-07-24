@@ -11,7 +11,7 @@ setup(
     description="Salve is an IPC library that can be used by code editors to easily get autocompletions, replacements, editorconfig suggestions, definitions, and syntax highlighting.",
     author="Moosems",
     author_email="moosems.j@gmail.com",
-    url="https://github.com/Moosems/salve",
+    url="https://github.com/salve-org/salve",
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=["pygments", "pyeditorconfig", "beartype", "tree-sitter"],
