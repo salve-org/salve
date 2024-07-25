@@ -3,9 +3,7 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from pathlib import Path
 from time import sleep
 
-from beartype.typing import Callable
 from pyeditorconfig import get_config
-from tree_sitter import Language, Parser
 
 from .misc import (
     COMMANDS,
@@ -21,8 +19,6 @@ from .server_functions import (
     get_definition,
     get_highlights,
     get_replacements,
-    lang_from_so,
-    tree_sitter_highlight,
 )
 
 
@@ -123,9 +119,7 @@ class Server:
         command: str = request["command"]
         id: int = self.newest_ids[command]
         file: str = request["file"]
-        result: (
-            list[str | tuple[tuple[int, int], int, str]] | dict[str, str]
-        ) = []
+        result: list[str | Token] | dict[str, str] = []
         cancelled: bool = False
 
         match request["command"]:
@@ -160,43 +154,6 @@ class Server:
                     self.files[file],
                     request["definition_starters"],  # type: ignore
                     request["current_word"],  # type: ignore
-                )
-            case "highlight-tree-sitter":
-                self.logger.info("Getting Tree Sitter highlights for request")
-
-                self.logger.debug("Getting language function")
-                language_function: Callable[[], int] | Path | str = request[
-                    "tree_sitter_language"
-                ]  # type: ignore
-                if isinstance(language_function, Path):
-                    self.logger.info("Language function is pathlib.Path")
-                    lang = lang_from_so(
-                        str(language_function.absolute()),
-                        request["language"],  # type: ignore
-                    )
-                    self.logger.debug("Language created")
-                elif isinstance(language_function, str):
-                    self.logger.info("Language function is str")
-                    lang = lang_from_so(
-                        language_function,
-                        request["language"],  # type: ignore
-                    )  # type: ignore
-                    self.logger.debug("Language created")
-                elif callable(language_function):
-                    self.logger.info("Language function is actual function")
-                    lang = Language(language_function())
-                    self.logger.debug("Language created")
-
-                self.logger.debug("Creating Parser")
-                parser = Parser(lang)
-                self.logger.debug("Getting highlights from parser")
-                result = tree_sitter_highlight(  # type: ignore
-                    self.logger,
-                    self.files[file],
-                    request["language"],  # type: ignore
-                    request["mapping"],  # type: ignore
-                    parser,
-                    request["text_range"],  # type: ignore
                 )
 
             case _:
