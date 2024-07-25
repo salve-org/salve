@@ -18,5 +18,4 @@ Welcome to ``Salve``'s Documentation! ``Salve`` is a library that can be used by
    special-classes
    variables
    functions
-   extra-tools
    examples

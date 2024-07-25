@@ -100,4 +100,4 @@ Some quick notes to remember as you use ``Salve``:
 
 |br|
 
-Of course, you can do far more with ``Salve`` than just getting syntac highlights. For example: what if you want to get autocompletions? Well, there is of course the the :doc:`command-sheet`.
+Of course, you can do far more with ``Salve`` than just getting syntax highlights. For example: what if you want to get autocompletions? Well, there is of course the the :doc:`command-sheet`.
