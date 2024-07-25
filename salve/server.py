@@ -1,6 +1,5 @@
 from logging import Logger
 from multiprocessing.queues import Queue as GenericClassQueue
-from pathlib import Path
 from time import sleep
 
 from pyeditorconfig import get_config

@@ -2,7 +2,6 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
-from beartype.typing import Callable
 
 from .server_functions import Token
 
@@ -21,6 +20,7 @@ HIGHLIGHT: COMMAND = COMMANDS[2]
 EDITORCONFIG: COMMAND = COMMANDS[3]
 DEFINITION: COMMAND = COMMANDS[4]
 
+
 class Message(TypedDict):
     """Base class for messages in and out of the server"""
 
@@ -36,9 +36,7 @@ class Request(Message):
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
     current_word: NotRequired[str]  # autocomplete, replacements, definition
     language: NotRequired[str]  # highlight
-    text_range: NotRequired[
-        tuple[int, int]
-    ]  # highlight
+    text_range: NotRequired[tuple[int, int]]  # highlight
     file_path: NotRequired[Path | str]  # editorconfig
     definition_starters: NotRequired[
         list[tuple[str, str]]
