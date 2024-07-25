@@ -14,7 +14,7 @@ setup(
     url="https://github.com/salve-org/salve",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=["pygments", "pyeditorconfig", "beartype", "tree-sitter"],
+    install_requires=["pygments", "pyeditorconfig", "beartype"],
     python_requires=">=3.11",
     license="MIT license",
     classifiers=[

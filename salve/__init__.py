@@ -9,7 +9,6 @@ from .misc import (  # noqa: F401, E402
     DEFINITION,
     EDITORCONFIG,
     HIGHLIGHT,
-    HIGHLIGHT_TREE_SITTER,
     REPLACEMENTS,
     Response,
 )
@@ -17,5 +16,4 @@ from .server_functions import (  # noqa: F401, E402
     Token,
     generic_tokens,
     is_unicode_letter,
-    make_unrefined_mapping,
 )

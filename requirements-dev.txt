@@ -2,11 +2,9 @@
 pygments
 pyeditorconfig
 beartype
-tree-sitter
 
 # Testing
 pytest
-salve_dependency_hub
 
 # Formatting
 ruff

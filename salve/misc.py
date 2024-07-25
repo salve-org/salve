@@ -2,8 +2,6 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
-from beartype.typing import Callable
-
 from .server_functions import Token
 
 COMMANDS: list[str] = [
@@ -12,7 +10,6 @@ COMMANDS: list[str] = [
     "highlight",
     "editorconfig",
     "definition",
-    "highlight-tree-sitter",
 ]
 
 COMMAND = str
@@ -21,7 +18,6 @@ REPLACEMENTS: COMMAND = COMMANDS[1]
 HIGHLIGHT: COMMAND = COMMANDS[2]
 EDITORCONFIG: COMMAND = COMMANDS[3]
 DEFINITION: COMMAND = COMMANDS[4]
-HIGHLIGHT_TREE_SITTER: COMMAND = COMMANDS[5]
 
 
 class Message(TypedDict):
@@ -38,18 +34,12 @@ class Request(Message):
     file: str
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
     current_word: NotRequired[str]  # autocomplete, replacements, definition
-    language: NotRequired[str]  # highlight, highlight-tree-sitter
-    text_range: NotRequired[
-        tuple[int, int]
-    ]  # highlight, highlight-tree-sitter
+    language: NotRequired[str]  # highlight
+    text_range: NotRequired[tuple[int, int]]  # highlight
     file_path: NotRequired[Path | str]  # editorconfig
     definition_starters: NotRequired[
         list[tuple[str, str]]
     ]  # definition (list of regexes)
-    tree_sitter_language: NotRequired[
-        Callable | Path | str
-    ]  # highlight-tree-sitter
-    mapping: NotRequired[dict[str, str]]  # highlight-tree-sitter
 
 
 class Notification(Message):

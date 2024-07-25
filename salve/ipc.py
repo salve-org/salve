@@ -3,8 +3,6 @@ from multiprocessing import Process, Queue, freeze_support
 from pathlib import Path
 from random import randint
 
-from beartype.typing import Callable
-
 from .misc import (
     COMMAND,
     COMMANDS,
@@ -119,8 +117,6 @@ class IPC:
         text_range: tuple[int, int] = (1, -1),
         file_path: Path | str = Path(__file__),
         definition_starters: list[tuple[str, str]] = [("", "before")],
-        tree_sitter_language: Callable[[], int] | Path | str | None = None,
-        mapping: dict[str, str] | None = None,
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
         self.logger.debug("Beginning request")
@@ -147,8 +143,6 @@ class IPC:
             text_range=text_range,
             file_path=file_path,
             definition_starters=definition_starters,
-            tree_sitter_language=tree_sitter_language,
-            mapping=mapping,
         )
 
     def cancel_request(self, command: str) -> None:
