@@ -16,7 +16,7 @@ The ``Token`` type contains three parts: the start index, its length, and its ty
 ``generic_tokens``
 ******************
 
-The ``generic_tokens`` ``list`` provides all the generic ``Token`` types you will encounter when using ``Salve``. Simply print this out and you will know all possible ``Token`` types you will be working with when using ``Salve`` and yoiu will never be surprised by a random ``Token`` type.
+The ``GENERIC_TOKENS`` ``list`` provides all the generic ``Token`` types you will encounter when using ``Salve``. Simply print this out and you will know all possible ``Token`` types and will never be surprised by a random ``Token`` type again.
 
 .. _Commands Overview:
 
