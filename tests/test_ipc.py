@@ -82,7 +82,7 @@ def test_IPC():
         raise AssertionError("Highlight output is None")
     highlight_output["id"] = 0
 
-    assert highlight_output == {
+    expected_output: Response = {
         "id": 0,
         "type": "response",
         "cancelled": False,
@@ -121,6 +121,49 @@ def test_IPC():
             ((18, 0), 24, "Comment"),
         ],
     }
+    # Deal with Windows weirdness
+    if platform == "win32":
+        expected_output = {
+            "id": 0,
+            "type": "response",
+            "cancelled": False,
+            "command": HIGHLIGHT,
+            "result": [
+                ((1, 0), 4, "Keyword"),
+                ((1, 5), 4, "Name"),
+                ((1, 10), 6, "Keyword"),
+                ((1, 17), 1, "Name"),
+                ((1, 20), 12, "Comment"),
+                ((3, 0), 3, "Name"),
+                ((3, 4), 1, "Operator"),
+                ((3, 6), 3, "Name"),
+                ((3, 11), 7, "Comment"),
+                ((5, 0), 5, "Name"),
+                ((5, 5), 1, "Punctuation"),
+                ((5, 6), 5, "String"),
+                ((5, 11), 1, "Punctuation"),
+                ((5, 14), 16, "Comment"),
+                ((8, 0), 5, "Keyword"),
+                ((8, 6), 3, "Name"),
+                ((8, 9), 1, "Punctuation"),
+                ((8, 10), 3, "Name"),
+                ((8, 13), 2, "Punctuation"),
+                ((9, 4), 3, "String"),
+                ((10, 4), 4, "String"),
+                ((11, 4), 3, "String"),
+                ((13, 4), 3, "Keyword"),
+                ((13, 8), 8, "Name"),
+                ((13, 16), 1, "Punctuation"),
+                ((13, 17), 4, "Name"),
+                ((13, 21), 2, "Punctuation"),
+                ((14, 8), 4, "Keyword"),
+                ((17, 0), 3, "Name"),
+                ((17, 3), 2, "Punctuation"),
+                ((18, 0), 24, "Comment"),
+            ],
+        }
+
+    assert highlight_output == expected_output
 
     links_and_hidden_chars_result: Response | None = context.get_response(
         LINKS_AND_CHARS
