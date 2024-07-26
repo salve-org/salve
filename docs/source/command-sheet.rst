@@ -13,7 +13,7 @@ Below is a chart outlining the different request commands you can give and the d
     * - ``AUTOCOMPLETE``
       - file: ``str``,
 
-        current_word: ``str`` (optional),
+        current_word: ``str`` (the portion of the word being typed),
 
         expected_keywords: ``list[str]`` (any special keywords for the language (optional))
     * - ``REPLACEMENTS``
@@ -36,5 +36,9 @@ Below is a chart outlining the different request commands you can give and the d
         current_word: ``str`` (the word being searched for),
 
         definition_starters: ``list[tuple[str, str]]`` (list of regexes to search for and a string associated (see :doc:`examples/simple_definitions_example`))
+    * - ``LINKS_AND_CHARS``
+      - file: ``str``,
 
-To see how to use any given one of these in more detail, visit the :doc:`examples` page! To continue on your journey through ``Salve`` instead, move on to the :doc:`special-classes` page instead.
+        text_range: ``tuple[int, int]`` (the lower and upper line bounds (inclusively) of what text to highlight (optional))
+
+To see how to use any given one of these in more detail, visit the :doc:`examples` page! Otherwise move on to the :doc:`special-classes` page instead.

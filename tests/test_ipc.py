@@ -8,6 +8,7 @@ from salve import (
     EDITORCONFIG,
     HIGHLIGHT,
     IPC,
+    LINKS_AND_CHARS,
     REPLACEMENTS,
     Response,
 )
@@ -48,7 +49,7 @@ def test_IPC():
             (r":?.*=.*", "before"),
         ],
     )
-
+    context.request(LINKS_AND_CHARS, file="test", text_range=(1, 18))
     sleep(1)
 
     # Check output
@@ -118,11 +119,8 @@ def test_IPC():
             ((17, 0), 3, "Name"),
             ((17, 3), 2, "Punctuation"),
             ((18, 0), 24, "Comment"),
-            ((18, 2), 22, "Link"),
-            ((5, 7), 1, "Hidden_Char"),
         ],
     }
-
     # Deal with Windows weirdness
     if platform == "win32":
         expected_output = {
@@ -162,11 +160,33 @@ def test_IPC():
                 ((17, 0), 3, "Name"),
                 ((17, 3), 2, "Punctuation"),
                 ((18, 0), 24, "Comment"),
-                ((18, 2), 22, "Link"),
             ],
         }
 
     assert highlight_output == expected_output
+
+    links_and_hidden_chars_result: Response | None = context.get_response(
+        LINKS_AND_CHARS
+    )
+    if links_and_hidden_chars_result is None:
+        raise AssertionError("links_and_hidden_chars_result output is None")
+    links_and_hidden_chars_result["id"] = 0
+    expected_output = {
+        "id": 0,
+        "type": "response",
+        "cancelled": False,
+        "command": LINKS_AND_CHARS,
+        "result": [((18, 2), 22, "Link"), ((5, 7), 1, "Hidden_Char")],
+    }
+    if platform == "win32":
+        expected_output = {
+            "id": 0,
+            "type": "response",
+            "cancelled": False,
+            "command": LINKS_AND_CHARS,
+            "result": [((18, 2), 22, "Link")],
+        }
+    assert links_and_hidden_chars_result == expected_output
 
     context.update_file(
         "foo", open(Path("tests/testing_file2.py"), "r+").read()

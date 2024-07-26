@@ -58,4 +58,4 @@ Example Usage
     if __name__ == "__main__":
         main()
 
-See the file example file `here <https://github.com/Moosems/salve/blob/master/examples/example_usage.py>`_.
+See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/example_usage.py>`_.

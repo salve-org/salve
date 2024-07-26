@@ -1,17 +1,18 @@
 from re import Match, Pattern, compile
 
-from .tokens import Token
+from token_tools import Token
 
-url_regex: Pattern = compile(r"(ftp|http|https):\/\/[a-zA-Z0-9_-]")
+url_regex: Pattern = compile(r"(ftp|http|https)://[a-zA-Z0-9_-]")
 
 
-def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
-    start_pos: tuple[int, int] = (start_line, 0)
+def get_urls(whole_text: str, text_range: tuple[int, int]) -> list[Token]:
+    lines: list[str] = whole_text.splitlines()
+    start_pos: tuple[int, int] = (text_range[0], 0)
     url_toks: list[Token] = []
     while True:
-        if start_pos[0] >= len(lines) + start_line:
+        if start_pos[0] > text_range[1]:
             break
-        line: str = lines[start_pos[0] - start_line][start_pos[1] :]
+        line: str = lines[start_pos[0] - text_range[0]][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
         if match_start is None:
             start_pos = (start_pos[0] + 1, 0)
@@ -39,7 +40,6 @@ def get_urls(lines: list[str], start_line: int = 1) -> list[Token]:
 
 
 hidden_chars: dict[str, str] = {
-    "\u0009": "CHARACTER TABULATION",
     "\u00a0": "NO-BREAK SPACE",
     "\u00ad": "SOFT HYPHEN",
     "\u034f": "COMBINING GRAPHEME JOINER",
@@ -96,9 +96,12 @@ hidden_chars: dict[str, str] = {
 }
 
 
-def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
+def find_hidden_chars(
+    whole_text: str, text_range: tuple[int, int]
+) -> list[Token]:
+    lines: list[str] = whole_text.splitlines()
     hidden_char_indexes: list[tuple[tuple[int, int], str]] = [
-        ((line_index + start_line, char_index), char)
+        ((line_index + text_range[0], char_index), char)
         for line_index, line in enumerate(lines)
         for char_index, char in enumerate(line)
         if char in list(hidden_chars.keys())
@@ -107,3 +110,14 @@ def find_hidden_chars(lines: list[str], start_line: int = 1) -> list[Token]:
         (char[0], len(char[1]), "Hidden_Char") for char in hidden_char_indexes
     ]
     return tok_list
+
+
+def get_special_tokens(
+    whole_text: str, text_range: tuple[int, int]
+) -> list[Token]:
+    return_tokens: list[Token] = []
+    return_tokens.extend(get_urls(whole_text, text_range))
+    if [char for char in hidden_chars if char in whole_text]:
+        # If there are no hidden chars we don't want to needlessly compute this
+        return_tokens.extend(find_hidden_chars(whole_text, text_range))
+    return return_tokens

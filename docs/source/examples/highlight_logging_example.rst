@@ -1,12 +1,18 @@
-========================
-Simple Highlight Example
-========================
+=========================
+Highlight Logging Example
+=========================
 
 .. code-block:: python
 
+    from logging import INFO, Logger, basicConfig, getLogger
     from time import sleep
     
     from salve import HIGHLIGHT, IPC, Response
+    
+    basicConfig(
+        level=INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    logger: Logger = getLogger("Main")
     
     
     def main():
@@ -23,11 +29,15 @@ Simple Highlight Example
     
         sleep(1)
         output: Response | None = context.get_response(HIGHLIGHT)
-        print(output)
+        if output is None:
+            logger.info("Output is None")
+    
+        logger.info(f"Output: {output}")
+    
         context.kill_IPC()
     
     
     if __name__ == "__main__":
         main()
 
-See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/simple_highlight_example.py>`_.
+See the file example file `here <https://github.com/salve-org/salve/blob/master/examples/highlight_logging_example.py>`_.

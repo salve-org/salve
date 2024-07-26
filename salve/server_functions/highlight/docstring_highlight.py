@@ -1,14 +1,15 @@
 from functools import cache
-from re import MULTILINE, Match, compile
+from re import DOTALL, MULTILINE, Match, compile
 
 from beartype.typing import Callable
 from pygments.lexer import RegexLexer, default
 from pygments.token import Comment as CommentToken
-from pygments.token import String as StringToken
+from pygments.token import String as StringToken  # noqa: F811
+from token_tools import Token
 
-from .tokens import Token, get_new_token_type
+from .misc import get_new_token_type
 
-useful_toks = {
+useful_tokens = {
     StringToken.Doc,
     StringToken.Heredoc,
     CommentToken,
@@ -26,19 +27,20 @@ _LexReturnTokens = list[tuple[_TokenType, str]]
 @cache
 def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
     """
-    Steals the regexes that pgments uses to give docstring, heredoc, comment, and multiline comment highlights
-    (css comments, though multine, aren't called multiline comments)
+    Steals the regexes that pygments uses to give docstring, heredoc, comment, and multiline comment highlights
+    (css comments, though multiline, aren't called multiline comments)
     """
 
     regexes: _TokenTupleReturnType = []
 
     for path in lexer.tokens:
-        # This should have a better type definition but I didn't have the mental capacity to
-        # write each possibility so I'm waiting for beartype to implement the functionality for me like the bum I am
+        # This should have a better type definition, but I didn't have the mental capacity to
+        # write each possibility, so I'm waiting for beartype to implement the functionality for me like the bum I am
         path_tokens: list = lexer.tokens[path]
 
         if isinstance(path_tokens[0], str):
-            # This means that the path is redirecting to another path in its place but we check them all anyway so just exit this path
+            # This means that the path is redirecting to another path in its place,
+            # but we check them all anyway so just exit this path
             continue
 
         for token_tuple in path_tokens:
@@ -46,7 +48,7 @@ def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
             if isinstance(token_tuple, default):
                 continue
 
-            if token_tuple[1] in useful_toks:
+            if token_tuple[1] in useful_tokens:
                 regexes.append((token_tuple[0], token_tuple[1]))
                 continue
 
@@ -57,7 +59,7 @@ def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
             pygments_func: Callable = token_tuple[1]
 
             if pygments_func.__closure__ is None:
-                # Will always evaluate to False but its for the static type checkers appeasement
+                # Will always evaluate to False, but it's for the static type checkers appeasement
                 continue
 
             tokens: _TokenTupleInternalType = [
@@ -67,8 +69,9 @@ def get_pygments_comment_regexes(lexer: RegexLexer) -> _TokenTupleReturnType:
             ]  # Sometimes pygments hides these types in functional programming
 
             for token in tokens:
-                if token in useful_toks:
-                    # We know if its in the useful tokens list that its a token type but the static type checker doesn't
+                if token in useful_tokens:
+                    # We know if it's in the useful tokens list that
+                    # it's a token type but the static type checker doesn't
                     regexes.append((token_tuple[0], token))  # type: ignore
                     continue
 
@@ -85,9 +88,9 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
 
     for regex, token_type in proper_highlight_regexes:
         current_text = full_text
-        match: Match[str] | None = compile(regex, flags=MULTILINE).search(
-            full_text
-        )
+        match: Match[str] | None = compile(
+            regex, flags=MULTILINE | DOTALL
+        ).search(full_text)
 
         if match is None:
             # Onwards to the next regex!

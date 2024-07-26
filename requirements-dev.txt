@@ -1,0 +1,19 @@
+# Normal requirements
+pygments
+pyeditorconfig
+beartype
+token_tools
+
+# Testing
+pytest
+
+# Formatting
+ruff
+isort
+black
+
+# Builds
+setuptools
+wheel
+twine
+build

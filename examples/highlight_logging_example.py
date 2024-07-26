@@ -1,6 +1,12 @@
+from logging import INFO, Logger, basicConfig, getLogger
 from time import sleep
 
 from salve import HIGHLIGHT, IPC, Response
+
+basicConfig(
+    level=INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger: Logger = getLogger("Main")
 
 
 def main():
@@ -17,7 +23,11 @@ def main():
 
     sleep(1)
     output: Response | None = context.get_response(HIGHLIGHT)
-    print(output)
+    if output is None:
+        logger.info("Output is None")
+
+    logger.info(f"Output: {output}")
+
     context.kill_IPC()
 
 
