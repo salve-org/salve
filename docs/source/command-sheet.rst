@@ -36,5 +36,9 @@ Below is a chart outlining the different request commands you can give and the d
         current_word: ``str`` (the word being searched for),
 
         definition_starters: ``list[tuple[str, str]]`` (list of regexes to search for and a string associated (see :doc:`examples/simple_definitions_example`))
+    * - ``LINKS_AND_CHARS``
+      - file: ``str``,
+
+        text_range: ``tuple[int, int]`` (the lower and upper line bounds (inclusively) of what text to highlight (optional))
 
 To see how to use any given one of these in more detail, visit the :doc:`examples` page! Otherwise move on to the :doc:`special-classes` page instead.

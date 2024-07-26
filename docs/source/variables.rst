@@ -28,6 +28,7 @@ The ``COMMAND`` variable is a ``str`` type alias's used to prevent spelling mist
 - ``HIGHLIGHT``
 - ``EDITORCONFIG``
 - ``DEFINITION``
+- ``LINKS_AND_CHARS``
 
 .. _Hidden Chars Overview:
 

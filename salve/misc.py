@@ -10,6 +10,7 @@ COMMANDS: list[str] = [
     "highlight",
     "editorconfig",
     "definition",
+    "links_and_chars",
 ]
 
 COMMAND = str
@@ -18,6 +19,7 @@ REPLACEMENTS: COMMAND = COMMANDS[1]
 HIGHLIGHT: COMMAND = COMMANDS[2]
 EDITORCONFIG: COMMAND = COMMANDS[3]
 DEFINITION: COMMAND = COMMANDS[4]
+LINKS_AND_CHARS: COMMAND = COMMANDS[5]
 
 
 class Message(TypedDict):
@@ -35,7 +37,7 @@ class Request(Message):
     expected_keywords: NotRequired[list[str]]  # autocomplete, replacements
     current_word: NotRequired[str]  # autocomplete, replacements, definition
     language: NotRequired[str]  # highlight
-    text_range: NotRequired[tuple[int, int]]  # highlight
+    text_range: NotRequired[tuple[int, int]]  # highlight, links_and_chars
     file_path: NotRequired[Path | str]  # editorconfig
     definition_starters: NotRequired[
         list[tuple[str, str]]
