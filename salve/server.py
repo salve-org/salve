@@ -3,7 +3,7 @@ from multiprocessing.queues import Queue as GenericClassQueue
 from time import sleep
 
 from pyeditorconfig import get_config
-from token_tools import Token
+from token_tools import Token, normal_text_range
 
 from .misc import (
     COMMANDS,
@@ -159,7 +159,9 @@ class Server:
                 self.logger.info("Searching for Links and chars")
                 result = get_special_tokens(
                     self.files[file],
-                    request["text_range"],  # type: ignore
+                    normal_text_range(self.files[file], request["text_range"])[  # type: ignore
+                        1
+                    ],
                 )
             case _:
                 self.logger.warning(f"Command {command} not recognized")

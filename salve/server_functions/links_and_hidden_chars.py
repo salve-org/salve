@@ -10,7 +10,7 @@ def get_urls(whole_text: str, text_range: tuple[int, int]) -> list[Token]:
     start_pos: tuple[int, int] = (text_range[0], 0)
     url_toks: list[Token] = []
     while True:
-        if start_pos[0] >= text_range[1]:
+        if start_pos[0] > text_range[1]:
             break
         line: str = lines[start_pos[0] - text_range[0]][start_pos[1] :]
         match_start: Match[str] | None = url_regex.search(line)
