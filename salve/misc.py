@@ -10,6 +10,7 @@ COMMANDS: list[str] = [
     "highlight",
     "editorconfig",
     "definition",
+    "links_and_chars"
 ]
 
 COMMAND = str
@@ -18,7 +19,7 @@ REPLACEMENTS: COMMAND = COMMANDS[1]
 HIGHLIGHT: COMMAND = COMMANDS[2]
 EDITORCONFIG: COMMAND = COMMANDS[3]
 DEFINITION: COMMAND = COMMANDS[4]
-
+LINKS_AND_CHARS: COMMAND = COMMANDS[5]
 
 class Message(TypedDict):
     """Base class for messages in and out of the server"""

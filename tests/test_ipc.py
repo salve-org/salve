@@ -118,8 +118,6 @@ def test_IPC():
             ((17, 0), 3, "Name"),
             ((17, 3), 2, "Punctuation"),
             ((18, 0), 24, "Comment"),
-            ((18, 2), 22, "Link"),
-            ((5, 7), 1, "Hidden_Char"),
         ],
     }
 
@@ -162,7 +160,6 @@ def test_IPC():
                 ((17, 0), 3, "Name"),
                 ((17, 3), 2, "Punctuation"),
                 ((18, 0), 24, "Comment"),
-                ((18, 2), 22, "Link"),
             ],
         }
 

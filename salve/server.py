@@ -154,7 +154,8 @@ class Server:
                     request["definition_starters"],  # type: ignore
                     request["current_word"],  # type: ignore
                 )
-
+            case "links_and_chars":
+                self.logger.info("Searching for Links and chars")
             case _:
                 self.logger.warning(f"Command {command} not recognized")
                 cancelled = True
