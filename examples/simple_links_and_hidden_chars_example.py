@@ -1,6 +1,6 @@
 from time import sleep
 
-from salve import LINKS_AND_CHARS, IPC, Response
+from salve import IPC, LINKS_AND_CHARS, Response
 
 
 def main():
@@ -11,9 +11,7 @@ def main():
         open(__file__, "r+").read(),
     )
 
-    context.request(
-        LINKS_AND_CHARS, file="test", text_range=(1, 30)
-    )
+    context.request(LINKS_AND_CHARS, file="test", text_range=(1, 30))
 
     sleep(1)
     output: Response | None = context.get_response(LINKS_AND_CHARS)
