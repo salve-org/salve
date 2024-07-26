@@ -1,6 +1,6 @@
 from re import Match, Pattern, compile
 
-from .tokens import Token
+from token_tools import Token
 
 url_regex: Pattern = compile(r"(ftp|http|https)://[a-zA-Z0-9_-]")
 

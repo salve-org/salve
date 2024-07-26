@@ -3,16 +3,16 @@ from functools import cache
 from pygments import lex
 from pygments.lexer import Lexer, RegexLexer
 from pygments.lexers import get_lexer_by_name
-
-from .docstring_highlight import _LexReturnTokens, proper_docstring_tokens
-from .links_and_hidden_chars import get_special_tokens
-from .misc import normal_text_range
-from .tokens import (
+from token_tools import (
     Token,
-    get_new_token_type,
+    normal_text_range,
     only_tokens_in_text_range,
     overwrite_and_merge_tokens,
 )
+
+from .docstring_highlight import _LexReturnTokens, proper_docstring_tokens
+from .links_and_hidden_chars import get_special_tokens
+from .misc import get_new_token_type
 
 
 @cache

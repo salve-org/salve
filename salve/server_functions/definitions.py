@@ -1,6 +1,7 @@
 from re import Match, Pattern, compile
 
-from .highlight import Token
+from token_tools import Token
+
 from .misc import find_words
 
 

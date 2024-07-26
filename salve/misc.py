@@ -2,7 +2,7 @@ from multiprocessing.queues import Queue as GenericQueueClass
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict
 
-from .server_functions import Token
+from token_tools import Token
 
 COMMANDS: list[str] = [
     "autocomplete",

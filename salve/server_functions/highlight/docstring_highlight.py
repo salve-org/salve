@@ -4,9 +4,10 @@ from re import DOTALL, MULTILINE, Match, compile
 from beartype.typing import Callable
 from pygments.lexer import RegexLexer, default
 from pygments.token import Comment as CommentToken
-from pygments.token import String as StringToken
+from pygments.token import String as StringToken  # noqa: F811
+from token_tools import Token
 
-from .tokens import Token, _TokenType, get_new_token_type
+from .misc import get_new_token_type
 
 useful_tokens = {
     StringToken.Doc,
@@ -16,6 +17,7 @@ useful_tokens = {
 }
 
 # Beartype speed optimizations
+_TokenType = type(StringToken)  # Resolves to pygments.token._TokenType
 _TokenTupleInternalType = tuple[_TokenType | Callable, ...]
 _TokenTupleReturnType = list[tuple[str, _TokenType]]
 _ListOfStrs = list[str]
