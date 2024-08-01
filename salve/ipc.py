@@ -15,6 +15,9 @@ from .misc import (
 )
 from .server import Server
 
+# from collegamento import FileClient
+
+
 
 class IPC:
     """The IPC class is used to talk to the server and run commands. The public API includes the following methods:
