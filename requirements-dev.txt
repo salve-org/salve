@@ -3,6 +3,7 @@ pygments
 pyeditorconfig
 beartype
 token_tools
+collegamento
 
 # Testing
 pytest
@@ -10,7 +11,6 @@ pytest
 # Formatting
 ruff
 isort
-black
 
 # Builds
 setuptools

@@ -1,4 +1,7 @@
 Fixes #__.
 
-Changes in PR:
+To do:
+ - [ ] ...
+
+Cuurent changes in PR:
  - ...

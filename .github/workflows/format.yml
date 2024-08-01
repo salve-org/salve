@@ -1,9 +1,9 @@
-name: Code Tests
+name: Formatting
 
 on: push
 
 jobs:
-  testing-ubuntu:
+  formatting-isort:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,36 +11,33 @@ jobs:
         with:
           python-version: 3.11.1
 
-      - name: Run tests
+      - name: Code Formatting (App)
         run: |
-          pip install .
           pip install -r requirements-dev.txt
-          python3 -m pytest .
+          isort --check .
 
-  testing-macos:
-    runs-on: macos-13
+  formatting-ruff:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.11.1
 
-      - name: Run tests
+      - name: Code Formatting (App)
         run: |
-          pip install .
           pip install -r requirements-dev.txt
-          python3 -m pytest .
+          ruff format --check .
 
-  testing-windows:
-    runs-on: windows-latest
+  ruff-check:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.11.1
 
-      - name: Run tests
+      - name: Code Formatting (App)
         run: |
-          pip install .
           pip install -r requirements-dev.txt
-          python3 -m pytest . -s
+          ruff check .
