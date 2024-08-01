@@ -1,7 +1,7 @@
+from collegamento import Request
 from pyeditorconfig import get_config
 from token_tools import Token, normal_text_range
 
-from .misc import Request
 from .server_functions import (
     find_autocompletions,
     get_definition,
@@ -11,17 +11,17 @@ from .server_functions import (
 )
 
 
-def get_replacements_request_wrapper(request: Request) -> list[str]:
-    return get_replacements(
-        full_text=request["file"],
+def find_autocompletions_request_wrapper(request: Request) -> list[str]:
+    return find_autocompletions(
+        full_text=request["file"],  # type: ignore
         expected_keywords=request["expected_keywords"],  # type: ignore
-        replaceable_word=request["current_word"],  # type: ignore
+        current_word=request["current_word"],  # type: ignore
     )
 
 
-def find_autocompletions_request_wrapper(request: Request) -> list[str]:
-    return find_autocompletions(
-        full_text=request["file"],
+def get_replacements_request_wrapper(request: Request) -> list[str]:
+    return get_replacements(
+        full_text=request["file"],  # type: ignore
         expected_keywords=request["expected_keywords"],  # type: ignore
         replaceable_word=request["current_word"],  # type: ignore
     )
@@ -29,7 +29,7 @@ def find_autocompletions_request_wrapper(request: Request) -> list[str]:
 
 def get_highlights_request_wrapper(request: Request) -> list[Token]:
     return get_highlights(
-        full_text=request["file"],
+        full_text=request["file"],  # type: ignore
         language=request["language"],  # type: ignore
         text_range=request["text_range"],  # type: ignore
     )
@@ -41,7 +41,7 @@ def editorconfig_request_wrapper(request: Request) -> dict:
 
 def get_definition_request_wrapper(request: Request) -> Token:
     return get_definition(
-        request["file"],
+        request["file"],  # type: ignore
         request["definition_starters"],  # type: ignore
         request["current_word"],  # type: ignore
     )
@@ -49,7 +49,7 @@ def get_definition_request_wrapper(request: Request) -> Token:
 
 def get_special_tokens_request_wrapper(request: Request) -> list[Token]:
     return get_special_tokens(
-        request["file"],
+        request["file"],  # type: ignore
         normal_text_range(request["file"], request["text_range"])[  # type: ignore
             1
         ],
