@@ -1,9 +1,6 @@
-from logging import Logger, getLogger
-from multiprocessing import Process, Queue, freeze_support
 from pathlib import Path
-from random import randint
 
-from collegamento import USER_FUNCTION, FileClient
+from collegamento import FileClient
 
 from .misc import (
     AUTOCOMPLETE,
@@ -85,6 +82,4 @@ class IPC(FileClient):
         }
         if file:
             request.update({"file": file})
-        super().request(
-            request
-        )
+        super().request(request)
