@@ -1,4 +1,4 @@
-from collegamento import Request, FileServer
+from collegamento import FileServer, Request
 from pyeditorconfig import get_config
 from token_tools import Token, normal_text_range
 
@@ -11,7 +11,9 @@ from .server_functions import (
 )
 
 
-def find_autocompletions_request_wrapper(server: FileServer, request: Request) -> list[str]:
+def find_autocompletions_request_wrapper(
+    server: FileServer, request: Request
+) -> list[str]:
     return find_autocompletions(
         full_text=request["file"],  # type: ignore
         expected_keywords=request["expected_keywords"],  # type: ignore
@@ -19,7 +21,9 @@ def find_autocompletions_request_wrapper(server: FileServer, request: Request) -
     )
 
 
-def get_replacements_request_wrapper(server: FileServer, request: Request) -> list[str]:
+def get_replacements_request_wrapper(
+    server: FileServer, request: Request
+) -> list[str]:
     return get_replacements(
         full_text=request["file"],  # type: ignore
         expected_keywords=request["expected_keywords"],  # type: ignore
@@ -27,7 +31,9 @@ def get_replacements_request_wrapper(server: FileServer, request: Request) -> li
     )
 
 
-def get_highlights_request_wrapper(server: FileServer, request: Request) -> list[Token]:
+def get_highlights_request_wrapper(
+    server: FileServer, request: Request
+) -> list[Token]:
     return get_highlights(
         full_text=request["file"],  # type: ignore
         language=request["language"],  # type: ignore
@@ -39,7 +45,9 @@ def editorconfig_request_wrapper(server: FileServer, request: Request) -> dict:
     return get_config(request["file_path"])  # type: ignore
 
 
-def get_definition_request_wrapper(server: FileServer, request: Request) -> Token:
+def get_definition_request_wrapper(
+    server: FileServer, request: Request
+) -> Token:
     return get_definition(
         request["file"],  # type: ignore
         request["definition_starters"],  # type: ignore
@@ -47,7 +55,9 @@ def get_definition_request_wrapper(server: FileServer, request: Request) -> Toke
     )
 
 
-def get_special_tokens_request_wrapper(server: FileServer, request: Request) -> list[Token]:
+def get_special_tokens_request_wrapper(
+    server: FileServer, request: Request
+) -> list[Token]:
     return get_special_tokens(
         request["file"],  # type: ignore
         normal_text_range(request["file"], request["text_range"])[  # type: ignore
