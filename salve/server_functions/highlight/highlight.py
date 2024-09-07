@@ -37,7 +37,7 @@ def get_highlights(
     for line in split_text:
         og_tokens: _LexReturnTokens = list(lex(line, lexer))
         for token in og_tokens:
-            new_type: str = get_new_token_type(str(token[0]))
+            new_type: str | None = get_new_token_type(str(token[0]))
             token_str: str = token[1]
             token_len: int = len(token_str)
 
@@ -45,7 +45,7 @@ def get_highlights(
                 # Lexer adds the newline back as its own token
                 continue
 
-            if not token_str.strip() or new_type == "Text":
+            if not token_str.strip() or not new_type:
                 # If the token is empty or is plain Text we simply skip it because that's ultimately useless info
                 start_index = (start_index[0], start_index[1] + token_len)
                 continue
