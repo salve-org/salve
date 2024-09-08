@@ -140,14 +140,6 @@ def test_IPC():
         "command": LINKS_AND_CHARS,
         "result": [((1, 0), 22, "Link"), ((1, 25), 1, "Hidden_Char")],
     }
-    if platform == "win32":
-        expected_output = {
-            "id": 0,
-            "type": "response",
-            "cancelled": False,
-            "command": LINKS_AND_CHARS,
-            "result": [((1, 0), 22, "Link")],
-        }
     assert links_and_hidden_chars_result == expected_output
 
     context.update_file(
