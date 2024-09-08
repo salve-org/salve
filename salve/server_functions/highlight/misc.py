@@ -37,6 +37,7 @@ def normal_text_range(
 def get_new_token_type(token: str) -> str | None:
     """Turns pygments token types into a generic predefined Token"""
     for old_token, new_token in default_tokens.items():
-        if old_token.startswith(token):
+        if token.startswith(old_token):
             return new_token
+
     return None

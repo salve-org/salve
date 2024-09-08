@@ -1,7 +1,7 @@
 from this import s  # noqa: F401
 
 Bar: type = int
-(xyz := test)
+(xyz := test)  # noqa: F821
 
 print()
 
