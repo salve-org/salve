@@ -38,7 +38,7 @@ def main():
 
         # Check output
         # context.cancel_request("autocomplete") # Uncommenting this line will cause the request to always be cancelled
-        output: Response | None = context.get_response(AUTOCOMPLETE)
+        output: Response | None = context.get_response(AUTOCOMPLETE)  # type: ignore
         if not output:
             continue
 

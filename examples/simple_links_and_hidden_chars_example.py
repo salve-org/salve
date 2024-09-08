@@ -14,7 +14,7 @@ def main():
     context.request(LINKS_AND_CHARS, file="test", text_range=(1, 30))
 
     sleep(1)
-    output: Response | None = context.get_response(LINKS_AND_CHARS)
+    output: Response | None = context.get_response(LINKS_AND_CHARS)  # type: ignore
     print(output)
     context.kill_IPC()
 

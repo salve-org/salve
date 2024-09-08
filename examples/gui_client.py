@@ -28,7 +28,7 @@ def main():
     label.pack()
 
     def loop() -> None:
-        output: Response | None = context.get_response(AUTOCOMPLETE)
+        output: Response | None = context.get_response(AUTOCOMPLETE)  # type: ignore
         data: list[str] = [""]
         if output is not None:
             data: list[str] = output["result"]  # type: ignore

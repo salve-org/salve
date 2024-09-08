@@ -37,7 +37,7 @@ Now that you have ``Salve`` installed, let's try running a simple example that p
         sleep(1)
 
         # If there is no response we give None instead of raising an Exception
-        output: Response | None = context.get_response(HIGHLIGHT)
+        output: Response | None = context.get_response(HIGHLIGHT)  # type: ignore
         print(output)
 
         # Finally, if you are done with the IPC before the rest of the program, you can
