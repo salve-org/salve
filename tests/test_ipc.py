@@ -1,5 +1,4 @@
 from pathlib import Path
-from sys import platform
 from time import sleep
 
 from salve import (
