@@ -97,7 +97,9 @@ def proper_docstring_tokens(lexer: RegexLexer, full_text: str) -> list[Token]:
             continue
 
         start_pos: tuple[int, int] = (1, 0)
-        simple_token_type: str = get_new_token_type(str(token_type))
+        simple_token_type: str | None = get_new_token_type(str(token_type))
+        if not simple_token_type:
+            continue
 
         while match:
             span: tuple[int, int] = match.span()

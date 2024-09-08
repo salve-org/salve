@@ -60,7 +60,5 @@ def get_special_tokens_request_wrapper(
 ) -> list[Token]:
     return get_special_tokens(
         request["file"],  # type: ignore
-        normal_text_range(request["file"], request["text_range"])[  # type: ignore
-            1
-        ],
+        normal_text_range(request["file"], request["text_range"])[1],  # type: ignore
     )

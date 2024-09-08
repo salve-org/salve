@@ -57,20 +57,14 @@ class IPC(FileClient):
         definition_starters: list[tuple[str, str]] = [("", "before")],
     ) -> None:
         """Sends the main_server a request of type command with given kwargs - external API"""
-        self.logger.debug("Beginning request")
         if command not in COMMANDS:
-            self.logger.exception(
-                f"Command {command} not in builtin commands. Those are {COMMANDS}!"
-            )
             raise Exception(
                 f"Command {command} not in builtin commands. Those are {COMMANDS}!"
             )
 
         if file not in self.files and command != EDITORCONFIG:
-            self.logger.exception(f"File {file} does not exist in system!")
             raise Exception(f"File {file} does not exist in system!")
 
-        self.logger.debug("Sending info to create_message()")
         request: dict = {
             "command": command,
             "expected_keywords": expected_keywords,
@@ -80,6 +74,8 @@ class IPC(FileClient):
             "file_path": file_path,
             "definition_starters": definition_starters,
         }
+
         if file:
-            request.update({"file": file})
-        super().request(request)
+            request["file"] = file
+
+        super().request(**request)

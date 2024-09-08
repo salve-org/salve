@@ -22,7 +22,7 @@ def main():
     )
 
     sleep(1)
-    output: Response | None = context.get_response(DEFINITION)
+    output: Response | None = context.get_response(DEFINITION)  # type: ignore
     print(output)
     context.kill_IPC()
 

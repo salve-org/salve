@@ -16,7 +16,7 @@ def main():
     )
 
     sleep(1)
-    output: Response | None = context.get_response(HIGHLIGHT)
+    output: Response | None = context.get_response(HIGHLIGHT)  # type: ignore
     print(output)
     context.kill_IPC()
 

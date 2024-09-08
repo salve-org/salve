@@ -19,7 +19,7 @@ def main():
     )
 
     sleep(1)
-    output: Response | None = context.get_response(REPLACEMENTS)
+    output: Response | None = context.get_response(REPLACEMENTS)  # type: ignore
     print(output)
     context.kill_IPC()
 
